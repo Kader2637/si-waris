@@ -1,0 +1,64 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+model Jenazah {
+  id           String         @id @default(cuid())
+  nama         String
+  nik          String
+  gender       String // "Laki-laki" atau "Perempuan"
+  tanggalWafat DateTime       @default(now())
+  keterangan   String?        @db.Text // Peran dalam keluarga (Kakek/Ayah/Ibu dsb)
+  hartaKotor   Float          @default(0)
+  utang        Float          @default(0)
+  wasiat       Float          @default(0)
+  ahliWaris    AhliWaris[]
+  logKalkulasi LogKalkulasi?
+  hasilWaris   HasilWaris[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model AhliWaris {
+  id        String   @id @default(cuid())
+  jenazahId String
+  jenazah   Jenazah  @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
+  nama      String
+  nik       String
+  hubungan  String // misal: "Istri", "Suami", "Anak Laki-laki", "Anak Perempuan", "Ayah", "Ibu", dll.
+  fileKtpKk String? // path file di lokal server
+  hasil     HasilWaris?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HasilWaris {
+  id           String    @id @default(cuid())
+  jenazahId    String
+  jenazah      Jenazah   @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
+  ahliWarisId  String    @unique
+  ahliWaris    AhliWaris @relation(fields: [ahliWarisId], references: [id], onDelete: Cascade)
+  status       String // "Mewarisi", "Mahjub" (Terhalang)
+  alasan       String    @db.Text
+  jatahPersen  String? // misal: "1/8", "Ashabah", dsb.
+  jatahNominal Float     @default(0)
+  createdAt    DateTime  @default(now())
+}
+
+model LogKalkulasi {
+  id               String   @id @default(cuid())
+  jenazahId        String   @unique
+  jenazah          Jenazah  @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
+  kpk              Int? // Kelipatan Persekutuan Terkecil penyebut
+  statusAulRadd    String? // "Aul", "Radd", "Normal"
+  totalHartaBersih Float
+  createdAt        DateTime @default(now())
+}
