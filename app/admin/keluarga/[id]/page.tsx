@@ -208,7 +208,14 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                     </div>
                     <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 text-left">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Berkas Lampiran</p>
-                       <p className="text-xs font-black text-slate-700 truncate">{selectedHeir.fileKtpKk || 'Tidak Ada Dokumen'}</p>
+                       {selectedHeir.fileKtpKk?.startsWith('http') ? (
+                          <a href={selectedHeir.fileKtpKk} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors">
+                            <Download size={14} />
+                            <span className="text-[10px] font-black uppercase tracking-widest underline underline-offset-4">Lihat Dokumen</span>
+                          </a>
+                       ) : (
+                          <p className="text-xs font-black text-slate-700 truncate">{selectedHeir.fileKtpKk || 'Tidak Ada Dokumen'}</p>
+                       )}
                     </div>
                  </div>
 

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { calculateFaraid } from "@/lib/faraidLogic";
+import { put } from "@vercel/blob";
 
 
 export async function getKeluargaList(search?: string) {
@@ -61,14 +62,25 @@ export async function createKeluarga(formData: FormData) {
         }
       });
 
-      for (const heir of ahliWarisData) {
+      for (let i = 0; i < ahliWarisData.length; i++) {
+        const heir = ahliWarisData[i];
+        let fileUrl = null;
+
+        const file = formData.get(`file_${i}`) as File | null;
+        if (file) {
+          const blob = await put(`ktp/${Date.now()}-${file.name}`, file, {
+            access: 'public',
+          });
+          fileUrl = blob.url;
+        }
+
         await tx.ahliWaris.create({
           data: {
             jenazahId: jenazah.id,
             nama: heir.nama,
             nik: heir.nik,
             hubungan: heir.hubungan,
-            fileKtpKk: heir.fileName || null,
+            fileKtpKk: fileUrl,
           }
         });
       }

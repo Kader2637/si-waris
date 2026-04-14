@@ -73,7 +73,15 @@ export default function TambahKeluargaPage() {
     formData.append("hartaKotor", parseNumber(harta).toString());
     formData.append("utang", parseNumber(utang).toString());
     formData.append("wasiat", parseNumber(wasiat).toString());
-    formData.append("ahliWarisJson", JSON.stringify(ahliWaris));
+    const cleanedAhliWaris = ahliWaris.map(({ file, ...rest }) => rest);
+    formData.append("ahliWarisJson", JSON.stringify(cleanedAhliWaris));
+
+    // Append files separately
+    ahliWaris.forEach((heir, idx) => {
+      if (heir.file) {
+        formData.append(`file_${idx}`, heir.file);
+      }
+    });
 
     const res = await createKeluarga(formData);
     if (res.success) {
@@ -232,7 +240,14 @@ export default function TambahKeluargaPage() {
                             className="hidden" 
                             onChange={(e) => {
                               const file = e.target.files?.[0];
-                              if (file) updateAhliWaris(idx, "fileName", file.name);
+                              if (file) {
+                                 if (file.size > 5 * 1024 * 1024) {
+                                    alert("Ukuran file terlalu besar! Maksimal 5MB.");
+                                    return;
+                                 }
+                                 updateAhliWaris(idx, "file", file);
+                                 updateAhliWaris(idx, "fileName", file.name);
+                               }
                             }}
                            />
                         </label>
