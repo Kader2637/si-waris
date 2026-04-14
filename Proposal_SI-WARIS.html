@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-MAWARITS - Sistem Informasi Waris</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.8;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            background: #f1f5f9;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 25mm 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+
+        @media print {
+            body { background: white; }
+            .page { margin: 0; box-shadow: none; border: none; padding: 20mm; page-break-after: always; }
+            button { display: none; }
+        }
+
+        /* Tifografi Cover */
+        .cover { text-align: center; padding-top: 60mm; }
+        .logo { font-size: 56px; font-weight: 900; color: #059669; letter-spacing: -2px; margin-bottom: 20px; }
+        .cover h1 { font-family: 'Merriweather', serif; font-size: 36px; font-weight: 900; margin-top: 10px; color: #0f172a; line-height: 1.2; }
+        .tagline { font-size: 18px; color: #64748b; margin-bottom: 40mm; }
+        
+        .meta-info { text-align: left; margin-left: 20%; border-left: 4px solid #059669; padding-left: 20px; }
+        .meta-info p { margin: 5px 0; font-size: 16px; }
+
+        /* Tifografi Konten */
+        h2 { font-family: 'Merriweather', serif; font-size: 24px; color: #059669; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 40px; margin-bottom: 20px; }
+        h3 { font-size: 18px; font-weight: 900; margin-top: 25px; color: #0f172a; }
+        p { text-align: justify; margin-bottom: 15px; font-size: 14.5px; }
+        ul, ol { margin-bottom: 20px; font-size: 14.5px; text-align: justify; }
+        li { margin-bottom: 8px; }
+
+        .highlight { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 15px; margin: 20px 0; font-size: 14px; font-style: italic; }
+
+        /* Tabel */
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 14px; }
+        table, th, td { border: 1px solid #cbd5e1; }
+        th, td { padding: 12px 15px; text-align: left; }
+        th { background: #f8fafc; font-weight: 700; color: #0f172a; }
+
+        /* Footer Halaman */
+        .page-footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 20mm;
+            right: 20mm;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 900;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        .btn-print:hover { background: #059669; }
+    </style>
+</head>
+<body>
+    <button class="btn-print" onclick="window.print()">Cetak Laporan PDF</button>
+
+    <!-- HALAMAN 1: COVER -->
+    <div class="page">
+        <div class="cover">
+            <div class="logo">E-MAWARITS</div>
+            <h1>LAPORAN TEKNIS SISTEM</h1>
+            <p class="tagline">Panduan Lengkap Fungsionalitas, Alur Pengguna, dan Algoritma Syariat</p>
+            
+            <div class="meta-info" style="margin-top: 60mm;">
+                <p><strong>Nama Proyek:</strong> Sistem Informasi Waris (E-MAWARITS)</p>
+                <p><strong>Platform:</strong> Web Application (SaaS)</p>
+                <p><strong>Tanggal Rilis:</strong> 14 April 2026</p>
+                <p><strong>Infrastruktur:</strong> Vercel (Hosting), Neon (DB), Blob (Storage)</p>
+            </div>
+        </div>
+        <div class="page-footer"><span>E-MAWARITS Whitepaper</span> <span>Halaman 1</span></div>
+    </div>
+
+    <!-- HALAMAN 2: PENDAHULUAN & LANDING PAGE -->
+    <div class="page">
+        <h2>1. PENDAHULUAN</h2>
+        <p>Hukum waris Islam (Faraid) adalah disiplin ilmu yang mengatur tata cara peralihan harta dari seseorang yang telah meninggal dunia kepada mereka yang berhak (Ahli Waris). Mengingat tingginya ancaman dalam Al-Qur'an (Surah An-Nisa: 14) bagi yang menyalahi aturan waris, presisi perhitungan menjadi mutlak. <strong>E-MAWARITS</strong> dikembangkan sebagai *Engine Faraid Pro* yang menjembatani keilmuan fiqih klasik dengan komputasi modern. Sistem ini tidak hanya membagikan porsi (1/2, 1/4, dst.), melainkan juga menganalisis kasus-kasus spesifik secara algoritmik.</p>
+
+        <h2>2. ALUR PENGGUNA (USER JOURNEY)</h2>
+        <p>Sistem dirancang agar dapat melayani dua jenis pengguna: masyarakat umum (Publik) dan konsultan/petugas pendata (Admin). Berikut adalah alur lengkap website dari awal pengunjung masuk hingga mendapatkan hasil.</p>
+
+        <h3>2.1. Halaman Utama (Public Landing Page)</h3>
+        <p>Halaman ini berfungsi sebagai portal informasi, edukasi, sekaligus pintu masuk (Gerbang). Halaman ini dirancang menggunakan desain modern dengan animasi transisi yang mulus (Framer Motion) guna memberikan kesan profesional dan meyakinkan.</p>
+        <ul>
+            <li><strong>Hero Section:</strong> Menampilkan pesan utama "Distribusi Waris Islam yang Adil" beserta akses cepat ke Kalkulator Faraid dan Modul Dalil Syariah.</li>
+            <li><strong>Demo Interaktif (Live Card):</strong> Menampilkan secara langsung contoh kartu analisis sebuah kasus waris (misal: Kasus Gharrawain) beserta rincian nominal dan dalil verifikasi.</li>
+            <li><strong>Fitur Unggulan (Core Values):</strong> Penjelasan 4 pilar sistem: <em>Engine Faraid Pro, Dalil Transparan, Manajemen Arsip, dan Kalkulator Instan</em>.</li>
+            <li><strong>Statistik Syari'at:</strong> Penjelasan kesiapan sistem dalam menangani kasus Normal, Aul, Radd, dan Gharrawain dengan akurasi 100% berlandaskan Al-Qur'an.</li>
+        </ul>
+
+        <h3>2.2. Modul Kalkulator Publik (Stateless)</h3>
+        <p>Sistem menyediakan Kalkulator Instan gratis bagi masyarakat yang tidak memerlukan penyimpanan dokumen berkas. Alurnya adalah:</p>
+        <ol>
+            <li>Pengguna menginputkan data total harta kotor, utang, dan wasiat.</li>
+            <li>Pengguna menambahkan daftar ahli waris sesuai hubungan kekerabatannya.</li>
+            <li>Dengan satu klik "Hitung", hasil langsung muncul tanpa perlu memuat ulang halaman (*real-time*). Sistem menghitung murni menggunakan komputasi klien/browser.</li>
+        </ol>
+
+        <div class="page-footer"><span>E-MAWARITS Whitepaper</span> <span>Halaman 2</span></div>
+    </div>
+
+    <!-- HALAMAN 3: PANEL ADMIN & ALGORITMA -->
+    <div class="page">
+        <h3>2.3. Panel Administrasi Lanjut (Admin Dashboard)</h3>
+        <p>Berbeda dengan kalkulator publik, Dashboard Admin merupakan Sistem Database Relasional penuh yang berfungsi untuk mendata dan memvalidasi secara kelembagaan.</p>
+        <ul>
+            <li><strong>Input Data Detail:</strong> Mendata NIK Jenazah, Nama Lengkap, Gender, Tanggal Wafat, dan jenis peran dalam keluarga.</li>
+            <li><strong>Input Ahli Waris & Dokumen Validasi:</strong> Setiap ahli waris yang dimasukkan wajib melengkapi data identitas. Sistem juga menyediakan fitur **Upload Dokumen (KTP/KK)**. Dokumen ini langsung terunggah dan tersimpan ke infrastruktur Cloud Storage (Vercel Blob), memastikan data tidak membebani server aplikasi.</li>
+            <li><strong>Proses Rekam Database:</strong> Menjalankan fungsi Prisma ORM secara <em>Atomic Transaction</em> (Data jenazah dan daftar waris disimpan secara sinkron dalam satu waktu untuk mencegah hilangnya relasi data).</li>
+            <li><strong>Halaman Detail & Analisis Lanjut:</strong> Menyajikan *Report Card* akhir berisikan identifikasi jenis masalah (Normal/Aul/Radd), Detail Jatah (Persentase dan Nominal Rupiah), serta alasan syar'i mengapa orang tersebut mendapat jatah (atau terhalang / <em>Mahjub</em>).</li>
+        </ul>
+
+        <h2>3. METODOLOGI PERHITUNGAN (ENGINE FARAID)</h2>
+        <p>Otak dari E-MAWARITS terletak pada algoritma <code>faraidLogic.ts</code>. Skema perhitungannya adalah sebagai berikut:</p>
+
+        <h3>Tahap 1: Cleansing Harta (Mirkah)</h3>
+        <p>Sistem mengurangi Harta Kotor dengan total Utang. Sisa harta tersebut kemudian dikurangi dengan total Wasiat. <strong>Logika Khusus:</strong> Sistem mengunci (memvalidasi) agar Wasiat tidak melebihi 1/3 (Tsuluts) dari total harta setelah dikurangi utang, sesuai hadits Sa'ad bin Abi Waqqash.</p>
+
+        <h3>Tahap 2: Algoritma Blocking (Hijab)</h3>
+        <p>Sistem memilah seluruh ahli waris. Siapa pun yang teridentifikasi memiliki penghalang akan otomatis dilabeli <em>Mahjub</em>. Contoh sistem blocking: Saudara Sekandung dikunci secara logika (return null/mahjub) jika variabel keberadaan 'Anak Laki-laki' atau 'Bapak' bernilai BENAR (True).</p>
+
+        <h3>Tahap 3: Pemetaan Fraksi Jatah Pasti (Dzawil Furud)</h3>
+        <p>Berdasarkan rumusan dalam file kalkulasi inti, sistem mengalokasikan pecahan (fraksi) kepada para <em>Dzawil Furud</em> yang lolos syarat. Secara matematis, sistem memproses sebagai berikut:</p>
+        <ul>
+            <li><strong>Suami:</strong> Mendapat <strong>1/2</strong> jika jenazah (istri) tidak meninggalkan keturunan (Anak/Cucu). Mendapat <strong>1/4</strong> jika jenazah memiliki keturunan.</li>
+            <li><strong>Istri:</strong> Mendapat <strong>1/4</strong> jika suami tidak meninggalkan keturunan. Mendapat <strong>1/8</strong> jika suami memiliki keturunan. (Jika istri lebih dari satu, pecahan tersebut dibagi rata).</li>
+            <li><strong>Ibu:</strong> Mendapat <strong>1/3</strong> jika jenazah tidak memiliki keturunan dan tidak memiliki dua atau lebih saudara. Mendapat <strong>1/6</strong> jika ada keturunan atau saudara berbilang.</li>
+            <li><strong>Anak Perempuan:</strong> Mendapat <strong>1/2</strong> jika ia anak tunggal. Mendapat <strong>2/3</strong> (dibagi rata) jika lebih dari satu. Menjadi <em>Ashabah bil Ghair</em> jika ada anak laki-laki.</li>
+            <li><strong>Bapak:</strong> Mendapat fraksi pasti <strong>1/6</strong> jika jenazah memiliki keturunan laki-laki. Memiliki posisi ganda (1/6 + Sisa) jika hanya ada keturunan perempuan. Menerima murni seluruh sisa (Ashabah) jika jenazah sama sekali tidak meninggalkan keturunan.</li>
+        </ul>
+        <p>Setelah fraksi ditentukan, komputer mencari <strong>Kelipatan Persekutuan Terkecil (KPK) / Aslul Mas'alah</strong> dari semua penyebut (denominator) pecahan yang ada untuk meratakan pembagian dalam basis angka yang seragam (biasanya basis angka 2, 3, 4, 6, 8, 12, atau 24).</p>
+
+        <div class="page-footer"><span>E-MAWARITS Whitepaper</span> <span>Halaman 3</span></div>
+    </div>
+
+    <!-- HALAMAN 4: KASUS KHUSUS & KESIMPULAN -->
+    <div class="page">
+        <h3>Tahap 4: Deteksi Kasus & Resolusi Keadilan</h3>
+        <p>Ini adalah kehebatan sistem, dimana komputer melakukan analisa terhadap jumlah total pembilang dikomparasi dengan nilai KPK:</p>
+        <div class="highlight">
+            <strong>1. Kasus Aul (Porsi Berlebih):</strong> Jika total pembilang harta (contoh: 27) melebihi penyebut/KPK (contoh: 24). Maka sistem otomatis mengubah KPK menjadi 27. Hal ini memastikan nominal harta tetap terbagi namun dengan porsi yang menyusut proporsional secara merata.<br><br>
+            <strong>2. Kasus Radd (Porsi Bersisa):</strong> Jika terdapat sisa harta namun tidak terdapat ahli waris sisa (Ashabah). Sistem akan menghitung akumulasi fraksi baru di luar hitungan Suami/Istri (karena suami/istri tidak berhak mendapat Radd), dan mengembalikan proporsi sisa harta kepada penerima jatah pasti tersebut.<br><br>
+            <strong>3. Kasus Gharrawain / Umariyatain:</strong> Algoritma pendeteksi khusus jika formasi ahli waris hanya berupa: [Suami/Istri, Ibu, Bapak]. Maka porsi Ibu dirubah menjadi "1/3 dari Sisa" (setelah hak pasangan berlalu) agar porsi Bapak terjaga selalu dua kali lipat porsi Ibu.
+        </div>
+
+        <h3>Tahap 5: Distribusi Ashabah & Konversi Rupiah</h3>
+        <p>Sisa harta final (jika ada) kemudian dibagikan kepada para Ashabah (penerima sisa). Khusus pertemuan antara Anak Laki-laki dan Anak Perempuan (Ashabah bil Ghair), sistem otomatis membuat rasio unit (Laki-laki 2 unit : Perempuan 1 unit). Setelah rasio terbentuk, seluruh bentuk pecahan dikalikan dengan Total Harta Bersih untuk menghasilkan angka akhir dalam Rupiah (Rp).</p>
+
+        <h2>4. ARSITEKTUR TEKNOLOGI</h2>
+        <table>
+            <tr><th>Komponen Infrastruktur</th><th>Teknologi Pilihan</th><th>Tujuan</th></tr>
+            <tr>
+                <td><strong>Framework Inti</strong></td>
+                <td>Next.js 15 (React 19)</td>
+                <td>Memberitkan kecepatan interaksi layaknya aplikasi desktop dengan SSR.</td>
+            </tr>
+            <tr>
+                <td><strong>Data Modeller</strong></td>
+                <td>Prisma ORM & TypeScript</td>
+                <td>Mencegah error tipe data dan query dinamis yang aman dari SQL Injection.</td>
+            </tr>
+            <tr>
+                <td><strong>Database Sentral</strong></td>
+                <td>Neon (Serverless Postgres)</td>
+                <td>Database yang otomatis <em>scale-up</em> saat banyak pengunjung mengakses situs secara bersamaan.</td>
+            </tr>
+            <tr>
+                <td><strong>Sistem Aset/Media</strong></td>
+                <td>Vercel Blob Storage</td>
+                <td>Menitipkan seluruh gambar KTP/KK ke arsitektur Cloud agar Server terbebas dari beban file besar.</td>
+            </tr>
+        </table>
+
+        <h2>5. KESIMPULAN</h2>
+        <p><strong>E-MAWARITS</strong> adalah wujud nyata adaptasi ilmu keagamaan klasik terhadap teknologi digital generasi terbaru. Situs ini bukan sekedar perangkat hitung (kalkulator) sederhana, melainkan sebuah <em>Sistem Enterprise</em> yang diawali dari pendekatan publik yang indah (Landing Page), kemampuan hitung Syariat yang cermat (Logika Faraid: Blocking, Aul, Radd), hingga sistem pengarsipan hukum dan manajemen dokumen berbasis Cloud (Vercel Admin Dashboard). E-MAWARITS menjamin pengelolaan harta waris yang profesional, transparan, dan dapat dipertanggungjawabkan di hadapan hukum negara maupun agama.</p>
+        
+        <div class="page-footer"><span>E-MAWARITS Whitepaper</span> <span>Halaman 4 (Akhir)</span></div>
+    </div>
+</body>
+</html>

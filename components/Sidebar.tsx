@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  Users, 
-  Settings, 
-  LogOut, 
-  FileStack, 
-  BookOpen, 
-  Calculator, 
-  PieChart, 
+import {
+  Home,
+  Users,
+  Settings,
+  LogOut,
+  FileStack,
+  BookOpen,
+  Calculator,
+  PieChart,
   ShieldCheck,
   Menu,
   X
@@ -51,10 +51,10 @@ export default function Sidebar() {
             <ShieldCheck className="text-white" size={18} />
           </div>
           <div>
-            <h1 className="text-lg font-black text-slate-800 tracking-tight leading-none">SI-WARIS</h1>
+            <h1 className="text-lg font-black text-slate-800 tracking-tight leading-none">E-MAWARITS</h1>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => setIsOpen(true)}
           className="p-2 bg-slate-50 text-slate-600 rounded-lg hover:bg-slate-100 transition"
         >
@@ -65,7 +65,7 @@ export default function Sidebar() {
       {/* Mobile Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -76,7 +76,7 @@ export default function Sidebar() {
       </AnimatePresence>
 
       {/* Sidebar Container */}
-      <div 
+      <div
         className={cn(
           "w-72 h-screen bg-white text-slate-900 flex flex-col fixed left-0 top-0 border-r border-slate-100 shadow-2xl shadow-slate-200/50 z-50 transition-transform duration-300 ease-in-out lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -88,27 +88,27 @@ export default function Sidebar() {
               <ShieldCheck className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-xl font-black text-slate-800 tracking-tight">SI-WARIS</h1>
+              <h1 className="text-xl font-black text-slate-800 tracking-tight">E-MAWARITS</h1>
               <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest leading-none mt-1 text-emerald-600">Admin Panel</p>
             </div>
           </div>
-          
+
           {/* Close button for mobile inside sidebar */}
-          <button 
-            onClick={() => setIsOpen(false)} 
+          <button
+            onClick={() => setIsOpen(false)}
             className="lg:hidden p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition"
           >
             <X size={24} />
           </button>
         </div>
-        
+
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
           {MENU_ITEMS.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
-              <Link 
+              <Link
                 key={item.href}
-                href={item.href} 
+                href={item.href}
                 className={cn(
                   "group relative flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 overflow-hidden",
                   isActive ? "text-emerald-700 bg-emerald-50/50" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
@@ -121,9 +121,9 @@ export default function Sidebar() {
                   <item.icon size={20} />
                 </div>
                 <span className="font-semibold text-sm tracking-tight">{item.label}</span>
-                
+
                 {isActive && (
-                  <motion.div 
+                  <motion.div
                     layoutId="activeBar"
                     className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-600 rounded-r-full"
                   />
@@ -132,7 +132,7 @@ export default function Sidebar() {
             );
           })}
         </nav>
-        
+
         <div className="p-6 border-t border-slate-50 space-y-4">
           <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition text-sm font-semibold">
             <Settings size={20} />

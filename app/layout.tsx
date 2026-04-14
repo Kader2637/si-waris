@@ -8,7 +8,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "SI-WARIS — Sistem Informasi Waris Islam",
+  title: "E-MAWARITS — Sistem Informasi Waris Islam",
   description: "Kalkulasi distribusi waris (Faraid) sesuai hukum Islam — akurat, transparan, dan berstandar syariah.",
 };
 

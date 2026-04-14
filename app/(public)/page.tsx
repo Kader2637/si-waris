@@ -69,7 +69,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-lg mb-12">
-              SI-WARIS menghitung pembagian harta warisan sesuai kaidah <strong className="text-slate-800">Faraid</strong> dari Al-Qur'an — dengan penjelasan syar'i untuk setiap ahli waris.
+              E-MAWARITS menghitung pembagian harta warisan sesuai kaidah <strong className="text-slate-800">Faraid</strong> dari Al-Qur'an — dengan penjelasan syar'i untuk setiap ahli waris.
             </p>
 
             <div className="flex flex-wrap gap-4 mb-16">

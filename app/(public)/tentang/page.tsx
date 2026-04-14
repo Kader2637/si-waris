@@ -13,7 +13,7 @@ const values = [
 
 const timeline = [
   { year: "2024", badge: "01", title: "Latar Belakang", desc: "Banyak sengketa waris terjadi karena kurangnya pemahaman dan alat bantu hitung yang mudah diakses oleh masyarakat awam." },
-  { year: "2025", badge: "02", title: "Inisiasi Proyek", desc: "SI-WARIS dikembangkan sebagai solusi digital untuk administrasi dan kalkulasi waris Islam berbasis syariah yang terstandar." },
+  { year: "2025", badge: "02", title: "Inisiasi Proyek", desc: "E-MAWARITS dikembangkan sebagai solusi digital untuk administrasi dan kalkulasi waris Islam berbasis syariah yang terstandar." },
   { year: "2026", badge: "03", title: "Peluncuran Sistem", desc: "Sistem berjalan penuh dengan engine Faraid profesional yang mampu menangani semua kasus ijtihadi dari Para Sahabat Nabi." },
 ];
 
@@ -39,14 +39,14 @@ export default function TentangPage() {
         <div className="relative max-w-5xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 px-5 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest mb-10">
-              <Sparkles size={12} fill="currentColor" /> Tentang SI-WARIS
+              <Sparkles size={12} fill="currentColor" /> Tentang E-MAWARITS
             </div>
             <h1 className="text-6xl lg:text-7xl font-black text-slate-900 leading-[0.92] tracking-[-0.04em] mb-8">
               Membangun Sistem<br />Waris yang<br />
               <span className="gradient-text">Bermartabat.</span>
             </h1>
             <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-2xl">
-              SI-WARIS lahir dari keprihatinan terhadap banyaknya sengketa waris dalam keluarga Muslim Indonesia yang sebenarnya bisa dicegah dengan panduan distribusi yang benar, adil, dan transparan.
+              E-MAWARITS lahir dari keprihatinan terhadap banyaknya sengketa waris dalam keluarga Muslim Indonesia yang sebenarnya bisa dicegah dengan panduan distribusi yang benar, adil, dan transparan.
             </p>
           </motion.div>
         </div>

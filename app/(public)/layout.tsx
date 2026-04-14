@@ -36,7 +36,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <Scale size={20} className="text-white" />
             </div>
             <div>
-              <span className="font-black text-xl tracking-tight text-slate-900">SI-WARIS</span>
+              <span className="font-black text-xl tracking-tight text-slate-900">E-MAWARITS</span>
               <p className="text-[9px] font-bold uppercase tracking-widest -mt-0.5 text-emerald-600">Sistem Informasi Waris</p>
             </div>
           </Link>
@@ -45,11 +45,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map(link => (
               <Link key={link.href} href={link.href}
-                className={`relative px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${
-                  pathname === link.href
+                className={`relative px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${pathname === link.href
                     ? "text-slate-900 bg-slate-100"
                     : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                }`}>
+                  }`}>
                 {link.label}
                 {pathname === link.href && (
                   <motion.div layoutId="nav-indicator" className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full" />
@@ -109,7 +108,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <Scale size={22} />
               </div>
               <div>
-                <span className="font-black text-2xl tracking-tight">SI-WARIS</span>
+                <span className="font-black text-2xl tracking-tight">E-MAWARITS</span>
                 <p className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest -mt-0.5">Sistem Informasi Waris Islam</p>
               </div>
             </div>
@@ -146,7 +145,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
         <div className="relative border-t border-white/5">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-500 text-sm font-medium">© {new Date().getFullYear()} SI-WARIS — Dibangun untuk keadilan distribusi waris Islam.</p>
+            <p className="text-slate-500 text-sm font-medium">© {new Date().getFullYear()} E-MAWARITS — Dibangun untuk keadilan distribusi waris Islam.</p>
             <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">Berstandar Faraid • KHI • Al-Qur'an</p>
           </div>
         </div>

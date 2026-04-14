@@ -103,7 +103,7 @@ export default function SyariahPage() {
               Hukum Waris Islam<br />Bersumber dari<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Al-Qur'an & Hadits.</span>
             </h1>
             <p className="text-xl text-slate-500 font-medium leading-relaxed">
-              Pembagian waris (Faraid) bukan sekadar angka — ia adalah perintah Allah yang wajib ditegakkan. SI-WARIS memastikan setiap kalkulasi berpijak pada dalil yang sahih.
+              Pembagian waris (Faraid) bukan sekadar angka — ia adalah perintah Allah yang wajib ditegakkan. E-MAWARITS memastikan setiap kalkulasi berpijak pada dalil yang sahih.
             </p>
           </motion.div>
         </div>
@@ -114,7 +114,7 @@ export default function SyariahPage() {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-900/20 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-900/20 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2 pointer-events-none" />
-        
+
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex items-center gap-5 mb-16">
             <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
@@ -125,7 +125,7 @@ export default function SyariahPage() {
               <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter">Dalil Al-Qur'an</h2>
             </div>
           </div>
-          
+
           <div className="space-y-8">
             {ayat.map((a, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
@@ -150,7 +150,7 @@ export default function SyariahPage() {
         {/* Dekorasi Hadits */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[500px] bg-blue-900/10 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        
+
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex items-center gap-5 mb-16">
             <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.1)]">
@@ -161,7 +161,7 @@ export default function SyariahPage() {
               <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter">Dalil Hadits Sahih</h2>
             </div>
           </div>
-          
+
           <div className="space-y-8">
             {hadits.map((h, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
