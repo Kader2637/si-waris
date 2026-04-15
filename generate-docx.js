@@ -8,7 +8,7 @@ const htmlString = fs.readFileSync('Proposal_E-MAWARITS.html', 'utf-8');
     table: { row: { cantSplit: true } },
     footer: true,
     pageNumber: true,
-    font: 'Inter' // Will fallback correctly if Inter not available in Word
+    font: 'Inter'
   });
 
   fs.writeFileSync('Proposal_E-MAWARITS.docx', fileBuffer);
