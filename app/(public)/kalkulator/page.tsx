@@ -17,8 +17,11 @@ import {
   Wallet,
   Users,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  Download
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { calculateFaraid } from "@/lib/faraidLogic";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
 
@@ -36,6 +39,8 @@ const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string 
   Aul: { color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
   Radd: { color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" },
   Gharrawain: { color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-200" },
+  "Sepikul Segendongan": { color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200" },
+  "Kum-Kum Kupat": { color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-200" },
 };
 
 const formatIDR = (val: string) => {
@@ -45,6 +50,7 @@ const formatIDR = (val: string) => {
 const parseNum = (v: string) => parseInt(v.replace(/\D/g, "")) || 0;
 
 export default function KalkulatorPage() {
+  const [namaJenazah, setNamaJenazah] = useState("");
   const [harta, setHarta] = useState("");
   const [utang, setUtang] = useState("");
   const [wasiat, setWasiat] = useState("");
@@ -82,12 +88,104 @@ export default function KalkulatorPage() {
     
     if (hukum === "Jawa") {
       const result = calculateAdatJawa(jenazah, warisList, metodeAdat);
-      setHasil({ ...result, ahliWarisGetted: result.results, kpk: null, statusAulRadd: "Normal" });
+      setHasil({ 
+        ...result, 
+        ahliWarisGetted: result.results, 
+        kpk: null, 
+        statusAulRadd: metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan" : "Kum-Kum Kupat" 
+      });
     } else {
       setHasil(calculateFaraid(jenazah as any, warisList as any));
     }
     setStep(2);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    const date = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    doc.setFontSize(22);
+    doc.text("LAPORAN PEMBAGIAN WARIS", 105, 20, { align: "center" });
+    doc.setFontSize(10);
+    doc.text("E-MAWARITS | Sistem Informasi Waris Terpadu", 105, 28, { align: "center" });
+    
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 35, 190, 35);
+
+    doc.setFontSize(12);
+    doc.text("DATA PEWARIS (ALMARHUM/AH)", 20, 45);
+    doc.setFontSize(10);
+    doc.text(`Nama: ${namaJenazah || "-"}`, 20, 52);
+    doc.text(`Jenis Kelamin: ${gender}`, 20, 57);
+    doc.text(`Dasar Hukum: ${hukum}`, 20, 62);
+    doc.text(`Status Kasus: ${hasil.statusAulRadd}`, 20, 67);
+    doc.text(`Tanggal Cetak: ${date}`, 20, 72);
+
+    doc.text("RINGKASAN HARTA", 130, 45);
+    doc.text(`Harta Kotor: Rp ${parseNum(harta).toLocaleString("id-ID")}`, 130, 52);
+    doc.text(`Utang: Rp ${parseNum(utang).toLocaleString("id-ID")}`, 130, 57);
+    doc.text(`Wasiat: Rp ${parseNum(wasiat).toLocaleString("id-ID")}`, 130, 62);
+    doc.text(`Harta Bersih (Mirkah): Rp ${hasil.hartaBersih.toLocaleString("id-ID")}`, 130, 67);
+
+    autoTable(doc, {
+      startY: 85,
+      head: [['NO', 'AHLI WARIS / HUBUNGAN', 'STATUS', 'PORSI', 'NOMINAL (IDR)', 'PENJELASAN HUKUM']],
+      body: hasil.ahliWarisGetted.map((h: any, i: number) => [
+        { content: i + 1, styles: { fontStyle: 'bold' } },
+        `${h.nama || "-"}\n(${h.hubungan})`,
+        h.status,
+        h.jatahPersen,
+        `Rp ${h.jatahNominal.toLocaleString("id-ID")}`,
+        h.alasan
+      ]),
+      headStyles: { 
+        fillColor: [15, 23, 42], 
+        textColor: [255, 255, 255],
+        fontSize: 8, 
+        fontStyle: 'bold',
+        halign: 'center',
+        valign: 'middle',
+        cellPadding: 5
+      },
+      styles: { 
+        fontSize: 7, 
+        cellPadding: 4, 
+        lineColor: [240, 240, 240],
+        lineWidth: 0.1,
+        valign: 'middle'
+      },
+      columnStyles: {
+        0: { cellWidth: 12, halign: 'center' },
+        1: { cellWidth: 35, fontStyle: 'bold' },
+        2: { cellWidth: 25, halign: 'center' },
+        3: { cellWidth: 20, halign: 'center' },
+        4: { cellWidth: 35, fontStyle: 'bold', textColor: [5, 150, 105] },
+        5: { cellWidth: 'auto' }
+      },
+      alternateRowStyles: {
+        fillColor: [252, 252, 252]
+      },
+      didDrawPage: (data) => {
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text("LAPORAN RESMI PEMBAGIAN WARIS - E-MAWARITS v2.0", 20, 10);
+        doc.text(date, 190, 10, { align: "right" });
+        doc.setDrawColor(230, 230, 230);
+        doc.line(20, 12, 190, 12);
+
+        const str = "Halaman " + doc.getNumberOfPages();
+        doc.setFontSize(7);
+        doc.setTextColor(180);
+        const pageHeight = doc.internal.pageSize.getHeight();
+        doc.text("Dokumen ini dihasilkan secara otomatis oleh sistem E-MAWARITS. Nilai bersifat presisi berdasarkan data yang diinput.", 105, pageHeight - 15, { align: "center" });
+        doc.text(str, 105, pageHeight - 10, { align: "center" });
+      },
+      margin: { top: 20, bottom: 25 }
+    });
+
+    const fileName = `pembagian waris keluarga ${namaJenazah || "tanpa nama"} - e mawarits.pdf`;
+    doc.save(fileName.toLowerCase());
   };
 
   const hartaBersih = parseNum(harta) - parseNum(utang) - parseNum(wasiat);
@@ -224,6 +322,12 @@ export default function KalkulatorPage() {
                     </div>
                   </div>
                   
+                  <div className="mb-8 relative z-10">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 ml-1">Nama Almarhum/ah</label>
+                    <input type="text" value={namaJenazah} onChange={e => setNamaJenazah(e.target.value)} placeholder="Contoh: Almarhum Budi"
+                      className="w-full px-6 py-5 bg-white border-2 border-slate-100 rounded-2xl font-black text-slate-900 text-xl outline-none transition-all shadow-sm focus:border-emerald-500 focus:bg-emerald-50/10" />
+                  </div>
+
                   <div className="mb-8 relative z-10">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Jenis Kelamin Pewaris</label>
                     <div className="grid grid-cols-2 gap-4 bg-slate-50 p-2 rounded-3xl border border-slate-100">
@@ -501,9 +605,12 @@ export default function KalkulatorPage() {
               </div>
 
               {/* ACTION BUTTONS */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="pt-10 flex justify-center">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="pt-10 flex flex-col md:flex-row justify-center gap-4">
                 <button onClick={() => setStep(1)} className="px-12 py-6 bg-white border-2 border-slate-200 rounded-[2rem] font-black text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all shadow-xl hover:shadow-2xl flex items-center gap-3">
                    ← Kembali & Edit Data
+                </button>
+                <button onClick={downloadPDF} className="px-12 py-6 bg-slate-900 text-white rounded-[2rem] font-black hover:bg-emerald-600 transition-all shadow-xl hover:shadow-2xl flex items-center gap-3">
+                   <Download size={20} /> Unduh Laporan PDF
                 </button>
               </motion.div>
             </motion.div>
