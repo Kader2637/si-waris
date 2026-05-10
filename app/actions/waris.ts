@@ -3,23 +3,42 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { calculateFaraid } from "@/lib/faraidLogic";
+import { calculateAdatJawa } from "@/lib/jawaLogic";
 import { put } from "@vercel/blob";
 
 
-export async function getKeluargaList(search?: string) {
-  return await prisma.jenazah.findMany({
-    where: search ? {
-      OR: [
-        { nama: { contains: search, mode: 'insensitive' } },
-        { nik: { contains: search, mode: 'insensitive' } }
-      ]
-    } : {},
-    include: {
-      ahliWaris: true,
-      logKalkulasi: true,
-    },
-    orderBy: { createdAt: 'desc' }
-  });
+export async function getKeluargaList(search?: string, hukum?: string, page: number = 1, limit: number = 6) {
+  const where: any = {};
+  
+  if (search) {
+    where.OR = [
+      { nama: { contains: search, mode: 'insensitive' } },
+      { nik: { contains: search, mode: 'insensitive' } }
+    ];
+  }
+
+  if (hukum && hukum !== "Semua") {
+    where.hukum = hukum;
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    prisma.jenazah.findMany({
+      where,
+      include: {
+        ahliWaris: true,
+        logKalkulasi: true,
+        hasilWaris: { select: { id: true }, take: 1 },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.jenazah.count({ where })
+  ]);
+
+  return { data, total, totalPages: Math.ceil(total / limit) };
 }
 
 export async function getKeluargaById(id: string) {
@@ -43,6 +62,9 @@ export async function createKeluarga(formData: FormData) {
   const hartaKotor = parseFloat(formData.get("hartaKotor") as string);
   const utang = parseFloat(formData.get("utang") as string) || 0;
   const wasiat = parseFloat(formData.get("wasiat") as string) || 0;
+  const hukum = formData.get("hukum") as string || "Islam";
+  const potongGonoGini = formData.get("potongGonoGini") === "true";
+  const metodeAdat = formData.get("metodeAdat") as string;
 
   const ahliWarisRaw = formData.get("ahliWarisJson") as string;
   const ahliWarisData = JSON.parse(ahliWarisRaw);
@@ -59,8 +81,13 @@ export async function createKeluarga(formData: FormData) {
           hartaKotor,
           utang,
           wasiat,
+          hukum,
+          potongGonoGini,
         }
       });
+
+      // Simpan pemetaan ID sementara ke ID database untuk parentId
+      const idMap: Record<string, string> = {};
 
       for (let i = 0; i < ahliWarisData.length; i++) {
         const heir = ahliWarisData[i];
@@ -74,13 +101,36 @@ export async function createKeluarga(formData: FormData) {
           fileUrl = blob.url;
         }
 
-        await tx.ahliWaris.create({
+        const createdHeir = await tx.ahliWaris.create({
           data: {
             jenazahId: jenazah.id,
             nama: heir.nama,
             nik: heir.nik,
             hubungan: heir.hubungan,
+            statusHidup: heir.statusHidup,
             fileKtpKk: fileUrl,
+          }
+        });
+        idMap[heir.id] = createdHeir.id;
+      }
+
+      // Update parentId setelah semua ahli waris dibuat
+      for (let i = 0; i < ahliWarisData.length; i++) {
+        const heir = ahliWarisData[i];
+        if (heir.parentId && idMap[heir.parentId]) {
+          await tx.ahliWaris.update({
+            where: { id: idMap[heir.id] },
+            data: { parentId: idMap[heir.parentId] }
+          });
+        }
+      }
+
+      if (hukum === "Jawa") {
+        await tx.logKalkulasi.create({
+          data: {
+            jenazahId: jenazah.id,
+            metodeAdat,
+            totalHartaBersih: hartaKotor - utang - wasiat,
           }
         });
       }
@@ -99,19 +149,26 @@ export async function createKeluarga(formData: FormData) {
 export async function processFaraid(jenazahId: string) {
   const jenazah = await prisma.jenazah.findUnique({
     where: { id: jenazahId },
-    include: { ahliWaris: true }
+    include: { 
+      ahliWaris: true,
+      logKalkulasi: true 
+    }
   });
 
   if (!jenazah) return { success: false, error: "Data tidak ditemukan." };
 
-  const results = calculateFaraid(jenazah, jenazah.ahliWaris);
+  const results = jenazah.hukum === "Jawa" 
+    ? calculateAdatJawa(jenazah, jenazah.ahliWaris, jenazah.logKalkulasi?.metodeAdat as any)
+    : calculateFaraid(jenazah, jenazah.ahliWaris);
 
   await prisma.$transaction(async (tx) => {
     await tx.hasilWaris.deleteMany({
       where: { jenazahId: jenazah.id }
     });
 
-    for (const res of results.ahliWarisGetted) {
+    const ahliWarisGetted = (results as any).ahliWarisGetted || (results as any).results;
+
+    for (const res of ahliWarisGetted) {
       await tx.hasilWaris.create({
         data: {
           jenazahId: jenazah.id,
@@ -127,15 +184,17 @@ export async function processFaraid(jenazahId: string) {
     await tx.logKalkulasi.upsert({
       where: { jenazahId: jenazah.id },
       update: {
-        kpk: results.kpk,
-        statusAulRadd: results.statusAulRadd,
+        kpk: (results as any).kpk || null,
+        statusAulRadd: (results as any).statusAulRadd || "Normal",
         totalHartaBersih: results.hartaBersih,
+        hartaGonoGini: (results as any).hartaGonoGini || 0,
       },
       create: {
         jenazahId: jenazah.id,
-        kpk: results.kpk,
-        statusAulRadd: results.statusAulRadd,
+        kpk: (results as any).kpk || null,
+        statusAulRadd: (results as any).statusAulRadd || "Normal",
         totalHartaBersih: results.hartaBersih,
+        hartaGonoGini: (results as any).hartaGonoGini || 0,
       }
     });
   });

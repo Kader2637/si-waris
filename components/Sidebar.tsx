@@ -28,8 +28,8 @@ const MENU_ITEMS = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: Home },
   { href: '/admin/keluarga', label: 'Data Keluarga', icon: Users },
   { href: '/admin/arsip', label: 'Arsip Perhitungan', icon: FileStack },
-  { href: '/admin/laporan', label: 'Laporan Faraid', icon: PieChart },
-  { href: '/admin/panduan', label: 'Panduan Syar\'i', icon: BookOpen },
+  { href: '/admin/laporan', label: 'Laporan Multi-Hukum', icon: PieChart },
+  { href: '/admin/panduan', label: 'Panduan Sistem', icon: BookOpen },
   { href: '/admin/kalkulator', label: 'Kalkulator Cepat', icon: Calculator },
 ];
 

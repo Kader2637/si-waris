@@ -8,19 +8,27 @@ import { getKeluargaList, deleteKeluarga } from "@/app/actions/waris";
 
 export default function KeluargaPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [hukumFilter, setHukumFilter] = useState("Semua");
   const [families, setFamilies] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const fetchFamilies = async () => {
     setLoading(true);
-    const data = await getKeluargaList(searchTerm);
-    setFamilies(data);
+    const result = await getKeluargaList(searchTerm, hukumFilter, page);
+    setFamilies(result.data);
+    setTotalPages(result.totalPages);
     setLoading(false);
   };
 
   useEffect(() => {
     fetchFamilies();
-  }, [searchTerm]);
+  }, [searchTerm, hukumFilter, page]);
+
+  useEffect(() => {
+    setPage(1); // Reset page when search or filter changes
+  }, [searchTerm, hukumFilter]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
@@ -51,22 +59,40 @@ export default function KeluargaPage() {
         </Link>
       </div>
 
-      {/* Modern Search Section */}
-      <div className="bg-white p-2 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center gap-4 transition-focus-within:border-emerald-300">
-        <div className="pl-6 text-slate-400">
-          <Search size={22} />
+      {/* Modern Search & Filter Section */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1 bg-white p-2 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center gap-4 transition-focus-within:border-emerald-300">
+          <div className="pl-6 text-slate-400">
+            <Search size={22} />
+          </div>
+          <input
+            type="text"
+            placeholder="Cari nama keluarga atau nomor NIK..."
+            className="flex-1 py-4 bg-transparent outline-none text-slate-800 font-semibold placeholder:text-slate-300"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        <input
-          type="text"
-          placeholder="Cari nama keluarga atau nomor NIK..."
-          className="flex-1 py-4 bg-transparent outline-none text-slate-800 font-semibold placeholder:text-slate-300"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <div className="pr-4 hidden md:block">
-          <span className="text-xs font-bold text-slate-300 uppercase tracking-widest pl-4 border-l border-slate-100">
-            Search Engine
-          </span>
+
+        <div className="bg-white p-2 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center gap-2">
+          {[
+            { id: "Semua", label: "Semua" },
+            { id: "Islam", label: "Islam" },
+            { id: "Jawa", label: "Adat Jawa" },
+            { id: "Perdata", label: "Perdata" },
+          ].map(h => (
+            <button 
+              key={h.id}
+              onClick={() => setHukumFilter(h.id)}
+              className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${
+                hukumFilter === h.id 
+                  ? "bg-slate-900 text-white shadow-lg" 
+                  : "text-slate-400 hover:bg-slate-50"
+              }`}
+            >
+              {h.id === "Semua" ? "Semua Hukum" : `Hukum ${h.label}`}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -99,11 +125,16 @@ export default function KeluargaPage() {
                     )}>
                       <User size={28} strokeWidth={2.5} />
                     </div>
-                    <div className={cn(
-                      "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest",
-                      item.logKalkulasi ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-                    )}>
-                      {item.logKalkulasi ? "Sudah Dihitung" : "Pending"}
+                    <div className="flex flex-col items-end gap-2">
+                      <div className={cn(
+                        "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest",
+                        item.hasilWaris?.length > 0 ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                      )}>
+                        {item.hasilWaris?.length > 0 ? "Sudah Dihitung" : "Pending"}
+                      </div>
+                      <div className="px-3 py-1 bg-slate-900 text-white rounded-lg text-[8px] font-black uppercase tracking-widest">
+                        {item.hukum === "Jawa" ? "Adat Jawa" : item.hukum === "Perdata" ? "Hukum Perdata" : "Hukum Islam"}
+                      </div>
                     </div>
                   </div>
 
@@ -174,6 +205,31 @@ export default function KeluargaPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Pagination Section */}
+      {!loading && families.length > 0 && (
+        <div className="flex items-center justify-center gap-4 mt-12 pb-20">
+          <button 
+            onClick={() => setPage(prev => Math.max(1, prev - 1))}
+            disabled={page === 1}
+            className="px-6 py-3 bg-white border border-slate-100 rounded-2xl font-black text-xs text-slate-400 hover:text-emerald-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
+          >
+            Halaman Sebelumnya
+          </button>
+          <div className="flex items-center gap-2 px-6 py-3 bg-white rounded-2xl border border-slate-100 font-black text-xs text-slate-900 shadow-sm">
+            <span className="text-emerald-600">{page}</span>
+            <span className="text-slate-300">/</span>
+            <span>{totalPages}</span>
+          </div>
+          <button 
+            onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={page === totalPages}
+            className="px-6 py-3 bg-white border border-slate-100 rounded-2xl font-black text-xs text-slate-400 hover:text-emerald-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
+          >
+            Halaman Berikutnya
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 }

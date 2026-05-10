@@ -25,6 +25,9 @@ export default function TambahKeluargaPage() {
   const [harta, setHarta] = useState("");
   const [utang, setUtang] = useState("");
   const [wasiat, setWasiat] = useState("");
+  const [hukum, setHukum] = useState<string>("Islam");
+  const [potongGonoGini, setPotongGonoGini] = useState(false);
+  const [metodeAdat, setMetodeAdat] = useState("SEPIKUL_SEGENDONGAN");
 
   const [jenazah, setJenazah] = useState({
     nama: "",
@@ -47,7 +50,16 @@ export default function TambahKeluargaPage() {
 
 
   const handleAddAhliWaris = () => {
-    setAhliWaris([...ahliWaris, { nama: "", nik: "", hubungan: "Anak Laki-laki", file: null, fileName: "" }]);
+    setAhliWaris([...ahliWaris, { 
+      id: Math.random().toString(36).substring(7), // Temp ID for parent selection
+      nama: "", 
+      nik: "", 
+      hubungan: "Anak Laki-laki", 
+      statusHidup: true,
+      parentId: "",
+      file: null, 
+      fileName: "" 
+    }]);
   };
 
   const handleRemoveAhliWaris = (idx: number) => {
@@ -73,6 +85,10 @@ export default function TambahKeluargaPage() {
     formData.append("hartaKotor", parseNumber(harta).toString());
     formData.append("utang", parseNumber(utang).toString());
     formData.append("wasiat", parseNumber(wasiat).toString());
+    formData.append("hukum", hukum);
+    formData.append("potongGonoGini", potongGonoGini.toString());
+    formData.append("metodeAdat", metodeAdat);
+
     const cleanedAhliWaris = ahliWaris.map(({ file, ...rest }) => rest);
     formData.append("ahliWarisJson", JSON.stringify(cleanedAhliWaris));
 
@@ -110,8 +126,72 @@ export default function TambahKeluargaPage() {
           <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden">
              <div className="flex items-center gap-3 mb-10 text-emerald-600 font-black uppercase text-xs tracking-[0.2em]">
                 <User size={18} />
-                <span>Identitas Almarhum/Almarhumah</span>
+                <span>Parameter & Identitas Almarhum</span>
              </div>
+
+             <div className="mb-10 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-4">Hukum Pembagian Yang Digunakan <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { id: "Islam", label: "Hukum Islam", active: true },
+                    { id: "Jawa", label: "Hukum Adat Jawa", active: true },
+                    { id: "Perdata", label: "Hukum Perdata", active: false },
+                  ].map(h => (
+                    <button 
+                      key={h.id}
+                      type="button"
+                      onClick={() => h.active && setHukum(h.id)}
+                      className={`flex items-center justify-between px-6 py-4 rounded-2xl font-black text-xs transition-all ${
+                        hukum === h.id 
+                          ? "bg-slate-900 text-white shadow-xl" 
+                          : h.active 
+                            ? "bg-white text-slate-400 border border-slate-200 hover:border-emerald-300" 
+                            : "bg-white/50 text-slate-300 border border-slate-100 cursor-not-allowed"
+                      }`}
+                    >
+                      <span>{h.label}</span>
+                      {!h.active && <span className="text-[8px] bg-slate-100 text-slate-300 px-2 py-0.5 rounded">Soon</span>}
+                    </button>
+                  ))}
+                </div>
+             </div>
+
+             {hukum === "Jawa" && (
+                <div className="mb-10 p-8 bg-emerald-50/50 rounded-[2rem] border border-emerald-100 flex flex-col md:flex-row gap-8 items-center">
+                  <div className="flex-1">
+                    <label className="text-xs font-black text-emerald-600 uppercase tracking-widest block mb-4">Metode Adat Jawa</label>
+                    <div className="flex gap-4">
+                      {[
+                        { id: "SEPIKUL_SEGENDONGAN", label: "Sepikul Segendongan (2:1)", desc: "Laki-laki 2, Perempuan 1" },
+                        { id: "KUM_KUM_KUPAT", label: "Kum Kum Kupat (1:1)", desc: "Pembagian Sama Rata" },
+                      ].map(m => (
+                        <button 
+                          key={m.id}
+                          type="button"
+                          onClick={() => setMetodeAdat(m.id)}
+                          className={`flex-1 p-4 rounded-2xl border-2 transition-all text-left ${
+                            metodeAdat === m.id ? "bg-white border-emerald-500 shadow-lg" : "bg-white/50 border-emerald-100 text-slate-400"
+                          }`}
+                        >
+                          <p className="font-black text-xs text-slate-900">{m.label}</p>
+                          <p className="text-[10px] font-medium opacity-60 mt-1">{m.desc}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-white p-6 rounded-2xl border border-emerald-100 flex items-center gap-4">
+                    <div className="flex-1">
+                      <p className="font-black text-xs text-slate-900">Harta Gono-Gini (50%)</p>
+                      <p className="text-[10px] text-slate-500 font-medium mt-1">Potong 50% untuk pasangan sebelum dibagi.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" checked={potongGonoGini} onChange={e => setPotongGonoGini(e.target.checked)} />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                  </div>
+                </div>
+             )}
+
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                 <div className="space-y-4">
                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nomor NIK (Sesuai KTP)</label>
@@ -226,11 +306,41 @@ export default function TambahKeluargaPage() {
                           <option value="Istri">Istri</option>
                           <option value="Anak Laki-laki">Anak Laki-laki</option>
                           <option value="Anak Perempuan">Anak Perempuan</option>
+                          <option value="Cucu Laki-laki">Cucu Laki-laki</option>
+                          <option value="Cucu Perempuan">Cucu Perempuan</option>
                           <option value="Ayah">Bapak</option>
                           <option value="Ibu">Ibu</option>
                           <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
                           <option value="Saudara Perempuan Sekandung">Saudara Perempuan Sekandung</option>
                         </select>
+                     </div>
+                     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 md:mt-0">
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black text-slate-400 uppercase">Status Hidup</label>
+                           <select 
+                            className={`w-full p-3 rounded-xl border font-bold text-xs outline-none transition-all ${heir.statusHidup ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-red-50 border-red-100 text-red-600"}`}
+                            value={heir.statusHidup ? "Hidup" : "Meninggal"}
+                            onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
+                           >
+                              <option value="Hidup">Masih Hidup</option>
+                              <option value="Meninggal">Sudah Meninggal</option>
+                           </select>
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black text-slate-400 uppercase">Anak Dari (Untuk Pengganti)</label>
+                           <select 
+                            className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:bg-white"
+                            value={heir.parentId}
+                            onChange={(e) => updateAhliWaris(idx, "parentId", e.target.value)}
+                           >
+                              <option value="">-- Bukan Pengganti --</option>
+                              {ahliWaris.map((parent, pIdx) => (
+                                pIdx !== idx && parent.statusHidup === false && (
+                                  <option key={parent.id} value={parent.id}>{parent.nama || `Ahli Waris ${pIdx + 1}`}</option>
+                                )
+                              ))}
+                           </select>
+                        </div>
                      </div>
                      <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2 px-4 py-3 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase cursor-pointer hover:bg-emerald-100 transition-colors">
@@ -319,8 +429,8 @@ export default function TambahKeluargaPage() {
 
           <button 
             type="submit" 
-            disabled={loading}
-            className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-lg tracking-tight hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-200 active:scale-95 flex items-center justify-center gap-4"
+            disabled={loading || !hukum}
+            className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-lg tracking-tight hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-200 active:scale-95 flex items-center justify-center gap-4 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             {loading ? <span className="animate-spin rounded-full h-6 w-6 border-4 border-white border-t-transparent" /> : <Save size={24} />}
             <span>Finalisasikan Data Waris</span>

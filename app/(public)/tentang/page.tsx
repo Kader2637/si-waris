@@ -5,16 +5,16 @@ import { Scale, BookOpen, Code, Heart, Target, ArrowRight, ShieldCheck, Sparkles
 import Link from "next/link";
 
 const values = [
-  { icon: Scale, title: "Keadilan", desc: "Setiap hitungan berpedoman pada Al-Qur'an dan Sunnah agar tidak ada hak ahli waris yang terdzalimi.", color: "emerald" },
-  { icon: BookOpen, title: "Transparansi", desc: "Setiap nominal dilengkapi dalil syar'i agar mudah dipahami dan diverifikasi oleh siapapun.", color: "blue" },
-  { icon: Heart, title: "Aksesibilitas", desc: "Gratis untuk digunakan, tidak memerlukan akun khusus. Waris adalah hak semua umat Muslim.", color: "red" },
-  { icon: Target, title: "Akurasi", desc: "Engine Faraid mendeteksi Normal, Aul, Radd, dan Gharrawain secara otomatis dan presisi.", color: "amber" },
+  { icon: Scale, title: "Keadilan", desc: "Setiap hitungan berpedoman pada sumber hukum yang sah — Al-Qur'an, tradisi adat, maupun KUHPerdata.", color: "emerald" },
+  { icon: BookOpen, title: "Transparansi", desc: "Setiap hasil dilengkapi dalil atau dasar hukum yang jelas agar mudah dipahami dan diverifikasi.", color: "blue" },
+  { icon: Heart, title: "Aksesibilitas", desc: "Gratis untuk semua. Mendukung 3 sistem hukum: Faraid, Adat Jawa, dan Perdata dalam satu platform.", color: "red" },
+  { icon: Target, title: "Akurasi", desc: "Engine multi-hukum mendeteksi Aul, Radd, Gharrawain (Islam) dan Sepikul/Kum-kum (Adat) secara otomatis.", color: "amber" },
 ];
 
 const timeline = [
-  { year: "2024", badge: "01", title: "Latar Belakang", desc: "Banyak sengketa waris terjadi karena kurangnya pemahaman dan alat bantu hitung yang mudah diakses oleh masyarakat awam." },
-  { year: "2025", badge: "02", title: "Inisiasi Proyek", desc: "E-MAWARITS dikembangkan sebagai solusi digital untuk administrasi dan kalkulasi waris Islam berbasis syariah yang terstandar." },
-  { year: "2026", badge: "03", title: "Peluncuran Sistem", desc: "Sistem berjalan penuh dengan engine Faraid profesional yang mampu menangani semua kasus ijtihadi dari Para Sahabat Nabi." },
+  { year: "2024", badge: "01", title: "Latar Belakang", desc: "Sengketa waris kerap terjadi karena perbedaan sistem hukum (Islam, Adat, Perdata) dan minimnya alat bantu hitung yang mudah diakses masyarakat." },
+  { year: "2025", badge: "02", title: "Inisiasi Proyek", desc: "E-MAWARITS dikembangkan sebagai platform multi-hukum pertama yang mengintegrasikan Faraid, Adat Jawa (Sepikul Segendongan & Kum-kum Kupat), dan Perdata." },
+  { year: "2026", badge: "03", title: "Peluncuran Sistem", desc: "Sistem berjalan penuh dengan 3 engine kalkulasi, arsip digital, dan kalkulator instan yang mendukung seluruh kebutuhan pembagian waris di Indonesia." },
 ];
 
 const techStack = [
@@ -46,8 +46,15 @@ export default function TentangPage() {
               <span className="gradient-text">Bermartabat.</span>
             </h1>
             <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-2xl">
-              E-MAWARITS lahir dari keprihatinan terhadap banyaknya sengketa waris dalam keluarga Muslim Indonesia yang sebenarnya bisa dicegah dengan panduan distribusi yang benar, adil, dan transparan.
+              E-MAWARITS lahir dari keprihatinan terhadap banyaknya sengketa waris di Indonesia — baik dalam keluarga Muslim, penganut adat, maupun hukum perdata — yang sebenarnya bisa dicegah dengan panduan distribusi yang benar, adil, dan transparan.
             </p>
+
+            {/* 3 hukum badges */}
+            <div className="flex flex-wrap gap-3 mt-8">
+              <span className="px-4 py-2 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl text-xs font-black">☪ Hukum Islam (Faraid)</span>
+              <span className="px-4 py-2 bg-amber-50 border border-amber-100 text-amber-700 rounded-xl text-xs font-black">🏛 Hukum Adat Jawa</span>
+              <span className="px-4 py-2 bg-blue-50 border border-blue-100 text-blue-700 rounded-xl text-xs font-black">⚖ Hukum Perdata (BW)</span>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -131,7 +138,7 @@ export default function TentangPage() {
               Coba Kalkulator <ArrowRight size={20} />
             </Link>
             <Link href="/syariah" className="inline-flex items-center justify-center gap-3 px-10 py-5 bg-white/10 border border-white/10 text-white rounded-2xl font-black text-lg hover:bg-white/15 transition-all">
-              <ShieldCheck size={20} /> Dalil Syariah
+              <ShieldCheck size={20} /> Pelajari Hukum
             </Link>
           </div>
         </div>
