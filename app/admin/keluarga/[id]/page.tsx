@@ -3,21 +3,23 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, 
-  User, 
-  Wallet, 
-  Download, 
-  Play, 
-  ShieldAlert, 
-  BadgeCheck, 
-  Users, 
+  Tag,
+  Download,
+  CheckCircle2,
+  BadgeCheck,
+  ShieldAlert,
+  Users,
   Info,
   Scale,
   Zap,
-  Tag
+  ArrowLeft,
+  User,
+  Wallet
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getKeluargaById, processFaraid } from "@/app/actions/waris";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function DetailKeluargaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -48,6 +50,72 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
     await processFaraid(id);
     await fetchData();
     setCalculating(false);
+  };
+
+  const downloadPDF = () => {
+    if (!data || !data.logKalkulasi) return alert("Kalkulasi harus dijalankan terlebih dahulu sebelum mengunduh laporan.");
+    
+    const doc = new jsPDF();
+    const date = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    doc.setFontSize(22);
+    doc.text("LAPORAN RESMI PEMBAGIAN WARIS", 105, 20, { align: "center" });
+    doc.setFontSize(10);
+    doc.text(`Keluarga: ${data.nama} | Database ID: ${data.id.substring(0, 8)}`, 105, 28, { align: "center" });
+    
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 35, 190, 35);
+
+    doc.setFontSize(12);
+    doc.text("IDENTITAS PEWARIS", 20, 45);
+    doc.setFontSize(10);
+    doc.text(`Nama: ${data.nama}`, 20, 52);
+    doc.text(`NIK: ${data.nik}`, 20, 57);
+    doc.text(`Jenis Kelamin: ${data.gender}`, 20, 62);
+    doc.text(`Hukum: ${data.hukum}`, 20, 67);
+    doc.text(`Status: ${data.logKalkulasi.statusAulRadd || "Normal"}`, 20, 72);
+
+    doc.text("RINGKASAN KEUANGAN", 130, 45);
+    doc.text(`Harta Kotor: Rp ${data.hartaKotor.toLocaleString("id-ID")}`, 130, 52);
+    doc.text(`Utang: Rp ${data.utang.toLocaleString("id-ID")}`, 130, 57);
+    doc.text(`Wasiat: Rp ${data.wasiat.toLocaleString("id-ID")}`, 130, 62);
+    doc.text(`Harta Bersih: Rp ${data.logKalkulasi.totalHartaBersih.toLocaleString("id-ID")}`, 130, 67);
+
+    autoTable(doc, {
+      startY: 85,
+      head: [['NO', 'AHLI WARIS / HUBUNGAN', 'STATUS', 'PORSI', 'NOMINAL (IDR)', 'PENJELASAN HUKUM']],
+      body: data.ahliWaris.map((h: any, i: number) => [
+        { content: i + 1, styles: { fontStyle: 'bold' } },
+        `${h.nama || "-"}\n(${h.hubungan})`,
+        h.hasil?.status || "Mahjub",
+        h.hasil?.jatahPersen || "0%",
+        `Rp ${(h.hasil?.jatahNominal || 0).toLocaleString("id-ID")}`,
+        h.hasil?.alasan || "Terhalang (Mahjub) atau tidak memenuhi syarat waris."
+      ]),
+      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', halign: 'center' },
+      styles: { fontSize: 7, cellPadding: 4, valign: 'middle' },
+      columnStyles: {
+        0: { cellWidth: 12, halign: 'center' },
+        1: { cellWidth: 35, fontStyle: 'bold' },
+        2: { cellWidth: 25, halign: 'center' },
+        3: { cellWidth: 20, halign: 'center' },
+        4: { cellWidth: 35, fontStyle: 'bold', textColor: [5, 150, 105] },
+        5: { cellWidth: 'auto' }
+      },
+      alternateRowStyles: { fillColor: [252, 252, 252] },
+      didDrawPage: (d) => {
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text("E-MAWARITS - DATABASE ARCHIVE REPORT", 20, 10);
+        doc.text(date, 190, 10, { align: "right" });
+        const ph = doc.internal.pageSize.getHeight();
+        doc.text("Dokumen ini adalah arsip resmi dari database E-MAWARITS.", 105, ph - 15, { align: "center" });
+        doc.text("Halaman " + doc.getNumberOfPages(), 105, ph - 10, { align: "center" });
+      },
+      margin: { top: 20, bottom: 25 }
+    });
+
+    doc.save(`arsip waris ${data.nama} - e mawarits.pdf`.toLowerCase());
   };
 
   const getProblemDescription = (status: string) => {
@@ -99,7 +167,7 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
         </div>
         <div className="flex flex-col md:flex-row gap-6 items-end">
           <div className="flex-1 w-full">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-2">Metode Pembagian</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-2">Sistem Hukum Terpilih</label>
             <div className="flex gap-2">
               {[
                 { id: "Islam", label: "Islam" },
@@ -124,10 +192,15 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
               })}
             </div>
           </div>
-          <button onClick={handleCalculate} disabled={calculating || !hukum} className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-10 py-5 ${theme.bg} text-white rounded-2xl font-black hover:opacity-90 transition-all shadow-xl ${theme.shadow} active:scale-95 disabled:opacity-50`}>
-            {calculating ? <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> : <Zap size={20} fill="currentColor" />}
-            <span>{data.ahliWaris.some((h: any) => h.hasil) ? "Kalkulasi Ulang" : "Mulai Kalkulasi Waris"}</span>
-          </button>
+          <div className="flex gap-3">
+             <button onClick={downloadPDF} disabled={!data.logKalkulasi} className="p-5 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all disabled:opacity-30 shadow-lg">
+                <Download size={20} />
+             </button>
+             <button onClick={handleCalculate} disabled={calculating} className={`flex items-center justify-center gap-3 px-10 py-5 ${theme.bg} text-white rounded-2xl font-black hover:opacity-90 transition-all shadow-xl ${theme.shadow} active:scale-95 disabled:opacity-50`}>
+                {calculating ? <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> : <Zap size={20} fill="currentColor" />}
+                <span>{data.ahliWaris.some((h: any) => h.hasil) ? "Kalkulasi Ulang" : "Mulai Kalkulasi"}</span>
+             </button>
+          </div>
         </div>
       </div>
 
@@ -184,137 +257,101 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
         </div>
 
         <div className="lg:col-span-2 space-y-8">
-           {/* Ahli Waris Cards (Daftar Distribusi) */}
-           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-2 px-4 gap-4">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Hasil Distribusi Waris</h2>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-slate-400 text-sm font-bold uppercase tracking-widest bg-white px-4 py-2 rounded-xl border border-slate-100">
-                 <Users size={18} />
-                 <span>{data.ahliWaris.length} Orang</span>
+           {/* Section Ringkasan */}
+           <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl">
+              <div className="flex justify-between items-center mb-10">
+                <div className="flex items-center gap-3 font-black uppercase text-xs tracking-widest text-slate-400">
+                  <Users size={18} />
+                  <span>Daftar Ahli Waris & Porsi Final</span>
+                </div>
+                <div className="flex gap-2">
+                   {["Semua", "Mewarisi", "Mahjub"].map(f => (
+                     <button key={f} onClick={() => setFilterWaris(f)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filterWaris === f ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}>
+                        {f}
+                     </button>
+                   ))}
+                </div>
               </div>
-              <select 
-                className="bg-white px-4 py-2.5 rounded-xl border border-slate-100 text-xs font-black uppercase tracking-widest outline-none focus:border-emerald-500 cursor-pointer text-slate-600"
-                value={filterWaris}
-                onChange={(e) => setFilterWaris(e.target.value)}
-              >
-                <option value="Semua">Semua Ahli Waris</option>
-                <option value="Menerima">Menerima Bagian</option>
-                <option value="Tidak Menerima">Tidak Menerima</option>
-              </select>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {(data.ahliWaris || [])
-                .filter((h: any) => {
-                  if (filterWaris === "Menerima") return h.hasil?.jatahNominal > 0;
-                  if (filterWaris === "Tidak Menerima") return !h.hasil || h.hasil?.jatahNominal === 0;
-                  return true;
-                })
-                .sort((a: any, b: any) => {
-                  const nominalA = a.hasil?.jatahNominal || 0;
-                  const nominalB = b.hasil?.jatahNominal || 0;
-                  return nominalB - nominalA;
-                })
-                .map((heir: any, idx: number) => {
-                 const hasil = heir.hasil;
-                 const statusMewarisi = hasil?.status === "Mewarisi";
-                 const statusMahjub = hasil?.status === "Mahjub" || hasil?.status === "Tidak Mewarisi";
-
-                 return (
-                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} key={heir.id} className={`bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/20 group hover:border-${theme.primary}-300 transition-all border-b-4 border-b-slate-50 hover:border-b-${theme.primary}-500`}>
-                     <div className="flex justify-between items-start mb-6">
-                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${statusMewarisi ? theme.light + " " + theme.text : (statusMahjub ? "bg-red-50 text-red-500" : "bg-slate-50 text-slate-300")}`}>
-                         {statusMewarisi ? <BadgeCheck size={32} /> : <ShieldAlert size={32} />}
-                       </div>
-                       <div className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl ${statusMewarisi ? "bg-emerald-100 text-emerald-700" : (statusMahjub ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-400")}`}>
-                         {hasil?.status || "Belum Dihitung"}
-                       </div>
-                     </div>
-
-                    <div className="mb-6">
-                      <h4 className="text-xl font-black text-slate-800 tracking-tighter">{heir.nama}</h4>
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1">{heir.hubungan}</p>
-                    </div>
-
-                    {hasil ? (
-                      <div className="pt-6 border-t border-slate-50 space-y-6">
-                         <div className="flex justify-between items-end">
-                            <div>
-                               <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">{data.hukum === "Jawa" ? "Porsi Adat" : "Porsi Syar'i"}</p>
-                               <span className="text-3xl font-black text-slate-900">{hasil.jatahPersen}</span>
-                            </div>
-                            <div className="text-right">
-                               <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">Bagian Nominal</p>
-                               <p className={`text-lg font-black ${theme.text}`}>Rp {hasil.jatahNominal.toLocaleString('id-ID')}</p>
-                            </div>
-                         </div>
-                         <button onClick={() => setSelectedHeir({ ...heir, ...hasil })} className="w-full flex items-center justify-center gap-3 py-4 bg-slate-50 rounded-2xl text-slate-400 hover:bg-slate-900 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
-                           <Info size={16} /> Detail Analisis
-                         </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {data.ahliWaris
+                  .filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"))
+                  .map((h: any, i: number) => (
+                  <motion.div key={h.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                    onClick={() => setSelectedHeir(h)}
+                    className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:bg-white hover:shadow-xl transition-all cursor-pointer group">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="font-black text-slate-900 text-lg tracking-tight">{h.nama}</h4>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h.hubungan}</p>
                       </div>
-                    ) : (
-                      <div className="py-4 text-center italic text-slate-300 text-[10px] font-black uppercase tracking-widest border-t border-slate-50 pt-10">Menunggu Kalkulasi</div>
-                    )}
+                      <span className={`text-[8px] font-black px-2 py-1 rounded-md border uppercase tracking-widest ${h.hasil?.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-400 border-slate-200"}`}>
+                        {h.hasil?.status || "Belum Dihitung"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-end pt-4 border-t border-slate-200/50">
+                       <div>
+                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Porsi</p>
+                         <p className="text-xl font-black text-slate-900">{h.hasil?.jatahPersen || "0%"}</p>
+                       </div>
+                       <div className="text-right">
+                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Nominal</p>
+                         <p className="text-sm font-black text-emerald-600">Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
+                       </div>
+                    </div>
                   </motion.div>
-                );
-             })}
-          </div>
+                ))}
+              </div>
+           </div>
         </div>
       </div>
 
-      {/* Detail Modal */}
-      {selectedHeir && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
-           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl overflow-hidden">
-              <div className="p-10 lg:p-14 text-center">
-                 <div className={`w-20 h-20 rounded-[1.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner ${selectedHeir.status === "Mewarisi" ? theme.light + " " + theme.text : "bg-red-50 text-red-500"}`}>
-                    {selectedHeir.status === "Mewarisi" ? <BadgeCheck size={40} /> : <ShieldAlert size={40} />}
-                 </div>
-                 <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama}</h2>
-                 <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-3">{selectedHeir.hubungan} • {selectedHeir.status}</p>
-                 
-                 <div className="mt-10 p-10 bg-slate-900 rounded-[2.5rem] text-left relative overflow-hidden ring-4 ring-slate-800 text-white">
-                    <p className={`text-[10px] font-black ${theme.text} uppercase tracking-[0.2em] mb-4`}>
-                      {data.hukum === "Jawa" ? "Hasil Analisis Adat Jawa" : "Hasil Analisis Syariat"}
-                    </p>
-                    <p className="font-medium leading-relaxed italic text-lg opacity-90">{selectedHeir.alasan}</p>
-                 </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 text-left">
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Identitas NIK</p>
-                       <p className="text-lg font-black text-slate-900">{selectedHeir.nik || '-'}</p>
-                    </div>
-                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 text-left">
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Berkas Lampiran</p>
-                       {selectedHeir.fileKtpKk?.startsWith('http') ? (
-                          <a href={selectedHeir.fileKtpKk} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 ${theme.text} hover:opacity-80 transition-colors`}>
-                            <Download size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest underline underline-offset-4">Lihat Dokumen</span>
-                          </a>
-                       ) : (
-                          <p className="text-xs font-black text-slate-700 truncate">{selectedHeir.fileKtpKk || 'Tidak Ada Dokumen'}</p>
-                       )}
-                    </div>
-                 </div>
-
-                 <div className="grid grid-cols-2 gap-6 mt-6">
-                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Porsi Bagian</p>
-                       <p className="text-2xl font-black text-slate-900 uppercase">{selectedHeir.jatahPersen}</p>
-                    </div>
-                    <div className={`${theme.bg} p-6 rounded-3xl text-white shadow-xl ${theme.shadow}`}>
-                       <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Nominal Akhir</p>
-                       <p className="text-xl font-black">Rp {selectedHeir.jatahNominal.toLocaleString('id-ID')}</p>
-                    </div>
-                 </div>
-
-                 <button onClick={() => setSelectedHeir(null)} className="mt-12 w-full py-5 bg-slate-100 text-slate-900 rounded-2xl font-black hover:bg-slate-900 hover:text-white transition-all active:scale-95">Tutup Detail Analisis</button>
+      {/* Modal Detail */}
+      <AnimatePresence>
+        {selectedHeir && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-6"
+            onClick={() => setSelectedHeir(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-xl rounded-[4rem] shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+              <div className="p-12">
+                <div className="flex items-center gap-6 mb-10">
+                  <div className={`w-20 h-20 ${theme.light} rounded-[2rem] flex items-center justify-center ${theme.text} shadow-inner`}>
+                    <Scale size={40} />
+                  </div>
+                  <div>
+                    <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama}</h2>
+                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest mt-2">{selectedHeir.hubungan}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-slate-50 rounded-[2.5rem] p-8 mb-8 border border-slate-100">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <BadgeCheck size={16} className={theme.text} /> Analisis Hukum Keputusan
+                  </p>
+                  <p className="text-slate-700 font-medium leading-relaxed text-base">{selectedHeir.hasil?.alasan || "Detail perhitungan belum tersedia. Silakan jalankan kalkulasi terlebih dahulu."}</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="p-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm text-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Porsi Final</p>
+                    <p className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.hasil?.jatahPersen || "0%"}</p>
+                  </div>
+                  <div className={`p-8 ${theme.light} border ${theme.border}/20 rounded-[2rem] shadow-sm text-center`}>
+                    <p className={`text-[10px] font-black ${theme.text} uppercase tracking-widest mb-2`}>Nominal IDR</p>
+                    <p className={`text-2xl font-black ${theme.text} tracking-tighter`}>Rp {(selectedHeir.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
+                  </div>
+                </div>
+                
+                <button onClick={() => setSelectedHeir(null)}
+                  className="mt-10 w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl">
+                  Tutup Detail
+                </button>
               </div>
-           </motion.div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
