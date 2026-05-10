@@ -93,9 +93,8 @@ export default function KalkulatorPage() {
   const hartaBersih = parseNum(harta) - parseNum(utang) - parseNum(wasiat);
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] text-slate-900 pb-40 selection:bg-emerald-100 selection:text-emerald-900 relative overflow-hidden">
+    <div className="min-h-screen bg-[#fafbfc] text-slate-900 pb-96 selection:bg-emerald-100 selection:text-emerald-900 relative overflow-hidden">
       
-      {/* ── ALIVE BACKGROUND ── */}
       <div className="fixed inset-0 pointer-events-none z-0">
          <motion.div 
            animate={{ 
@@ -150,7 +149,7 @@ export default function KalkulatorPage() {
             >
               
               <div className="xl:col-span-8 space-y-8">
-                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative overflow-hidden group">
+                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
                   <div className="flex items-center gap-4 mb-8 relative">
@@ -212,7 +211,7 @@ export default function KalkulatorPage() {
                   </AnimatePresence>
                 </motion.div>
 
-                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative overflow-hidden group">
+                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative group">
                   <div className="absolute bottom-0 right-0 w-40 h-40 bg-blue-50 rounded-full blur-3xl -mr-10 -mb-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
                   <div className="flex items-center gap-4 mb-8 relative">
@@ -255,7 +254,7 @@ export default function KalkulatorPage() {
                   </div>
                 </motion.div>
 
-                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative overflow-hidden group">
+                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative group">
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-50 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                   
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 relative z-10">
