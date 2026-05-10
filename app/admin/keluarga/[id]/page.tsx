@@ -72,8 +72,14 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
     doc.text(`Nama: ${data.nama}`, 20, 52);
     doc.text(`NIK: ${data.nik}`, 20, 57);
     doc.text(`Jenis Kelamin: ${data.gender}`, 20, 62);
-    doc.text(`Hukum: ${data.hukum}`, 20, 67);
-    doc.text(`Status: ${data.logKalkulasi.statusAulRadd || "Normal"}`, 20, 72);
+    doc.text(`Meninggal Sebagai: ${data.keterangan || "-"}`, 20, 67);
+    doc.text(`Dasar Hukum: ${data.hukum === "Islam" ? "Hukum Islam (Faraid)" : data.hukum === "Jawa" ? "Hukum Adat Jawa" : "Hukum Perdata"}`, 20, 72);
+    
+    // Dynamic Status display
+    const displayStatus = data.hukum === "Jawa" 
+      ? `Metode Adat: ${data.logKalkulasi.metodeAdat?.replace(/_/g, ' ') || 'Belum Ditentukan'}` 
+      : `Status Kasus: ${data.logKalkulasi.statusAulRadd || "Normal"}`;
+    doc.text(displayStatus, 20, 77);
 
     doc.text("RINGKASAN KEUANGAN", 130, 45);
     doc.text(`Harta Kotor: Rp ${data.hartaKotor.toLocaleString("id-ID")}`, 130, 52);

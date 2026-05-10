@@ -40,7 +40,7 @@ async function main() {
       nama: 'Bapak Hartono',
       nik: '3578012345670003',
       gender: 'Laki-laki',
-      keterangan: 'Ayah',
+      keterangan: 'Ayah (Meninggal sebagai Bapak)',
       tanggalWafat: new Date('2023-11-25'),
       hartaKotor: 400000000,
       ahliWaris: {
@@ -58,7 +58,7 @@ async function main() {
       nama: 'Ibu Aminah',
       nik: '3578012345670002',
       gender: 'Perempuan',
-      keterangan: 'Ibu',
+      keterangan: 'Ibu (Meninggal sebagai Mama/Ibu)',
       tanggalWafat: new Date('2024-02-14'),
       hartaKotor: 1200000000,
       ahliWaris: {
