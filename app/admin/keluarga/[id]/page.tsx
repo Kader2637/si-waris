@@ -14,12 +14,15 @@ import {
   Zap,
   ArrowLeft,
   User,
-  Wallet
+  Wallet,
+  FileText,
+  Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getKeluargaById, processFaraid } from "@/app/actions/waris";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import toast from "react-hot-toast";
 
 export default function DetailKeluargaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -47,15 +50,18 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
 
   const handleCalculate = async () => {
     setCalculating(true);
+    toast.loading("Memproses kalkulasi waris...", { id: "calc" });
     await processFaraid(id);
     await fetchData();
     setCalculating(false);
+    toast.success("Kalkulasi selesai!", { id: "calc" });
   };
 
   const downloadPDF = () => {
-    if (!data || !data.logKalkulasi) return alert("Kalkulasi harus dijalankan terlebih dahulu sebelum mengunduh laporan.");
+    if (!data || !data.id || !data.logKalkulasi) return toast.error("Kalkulasi harus dijalankan terlebih dahulu sebelum mengunduh laporan.");
     
     const doc = new jsPDF();
+    toast.loading("Menyiapkan dokumen PDF...", { id: "pdf" });
     const date = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
     
     doc.setFontSize(22);
@@ -122,6 +128,7 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
     });
 
     doc.save(`arsip waris ${data.nama} - e mawarits.pdf`.toLowerCase());
+    toast.success("Laporan PDF berhasil diunduh!", { id: "pdf" });
   };
 
   const getProblemDescription = (status: string) => {
@@ -280,33 +287,54 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {data.ahliWaris
-                  .filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"))
-                  .map((h: any, i: number) => (
-                  <motion.div key={h.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                    onClick={() => setSelectedHeir(h)}
-                    className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:bg-white hover:shadow-xl transition-all cursor-pointer group">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h4 className="font-black text-slate-900 text-lg tracking-tight">{h.nama}</h4>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h.hubungan}</p>
+                {(() => {
+                  const filtered = data.ahliWaris.filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"));
+                  
+                  if (filtered.length === 0) {
+                    return (
+                      <div className="col-span-full py-20 flex flex-col items-center justify-center text-center bg-slate-50/50 rounded-[3rem] border-2 border-dashed border-slate-100">
+                         <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-slate-200 shadow-sm mb-4">
+                            <Users size={40} />
+                         </div>
+                         <h3 className="text-lg font-black text-slate-400 uppercase tracking-widest">Tidak Ada Data</h3>
+                         <p className="text-slate-400 text-sm mt-1">Tidak ditemukan ahli waris dengan kategori "{filterWaris}"</p>
                       </div>
-                      <span className={`text-[8px] font-black px-2 py-1 rounded-md border uppercase tracking-widest ${h.hasil?.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-400 border-slate-200"}`}>
-                        {h.hasil?.status || "Belum Dihitung"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-end pt-4 border-t border-slate-200/50">
-                       <div>
-                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Porsi</p>
-                         <p className="text-xl font-black text-slate-900">{h.hasil?.jatahPersen || "0%"}</p>
-                       </div>
-                       <div className="text-right">
-                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Nominal</p>
-                         <p className="text-sm font-black text-emerald-600">Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
-                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    );
+                  }
+
+                  return filtered.map((h: any, i: number) => (
+                    <motion.div key={h.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                      onClick={() => setSelectedHeir(h)}
+                      className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:bg-white hover:shadow-xl transition-all cursor-pointer group">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 className="font-black text-slate-900 text-lg tracking-tight">{h.nama}</h4>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h.hubungan}</p>
+                        </div>
+                        <span className={`text-[8px] font-black px-2 py-1 rounded-md border uppercase tracking-widest ${h.hasil?.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-400 border-slate-200"}`}>
+                          {h.hasil?.status || "Belum Dihitung"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-end pt-4 border-t border-slate-200/50">
+                        <div>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Porsi</p>
+                          <div className="flex items-center gap-2">
+                              <p className="text-xl font-black text-slate-900">{h.hasil?.jatahPersen || "0%"}</p>
+                              {h.fileKtpKk && (
+                                <div className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-md flex items-center justify-center" title="KTP Tersedia">
+                                    <BadgeCheck size={12} />
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Nominal</p>
+                          <p className="text-sm font-black text-emerald-600">Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ));
+                })()}
               </div>
            </div>
         </div>
@@ -321,14 +349,27 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white w-full max-w-xl rounded-[4rem] shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
               <div className="p-12">
-                <div className="flex items-center gap-6 mb-10">
-                  <div className={`w-20 h-20 ${theme.light} rounded-[2rem] flex items-center justify-center ${theme.text} shadow-inner`}>
-                    <Scale size={40} />
+                <div className="flex justify-between items-start mb-10">
+                  <div className="flex items-center gap-6">
+                    <div className={`w-20 h-20 ${theme.light} rounded-[2rem] flex items-center justify-center ${theme.text} shadow-inner`}>
+                      <Scale size={40} />
+                    </div>
+                    <div>
+                      <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama}</h2>
+                      <p className="text-slate-400 text-xs font-black uppercase tracking-widest mt-2">{selectedHeir.hubungan} • {selectedHeir.nik || "Tanpa NIK"}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama}</h2>
-                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest mt-2">{selectedHeir.hubungan}</p>
-                  </div>
+                  {selectedHeir.fileKtpKk && (
+                     <a 
+                      href={selectedHeir.fileKtpKk} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-lg flex items-center gap-2 group"
+                     >
+                        <Download size={20} className="group-hover:translate-y-0.5 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Berkas KTP</span>
+                     </a>
+                  )}
                 </div>
                 
                 <div className="bg-slate-50 rounded-[2.5rem] p-8 mb-8 border border-slate-100">
@@ -348,11 +389,71 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                     <p className={`text-2xl font-black ${theme.text} tracking-tighter`}>Rp {(selectedHeir.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
                   </div>
                 </div>
+
+                {selectedHeir.fileKtpKk && (
+                  <div className="mt-8 p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 px-2">
+                       <User size={16} className={theme.text} /> Lampiran Identitas Terverifikasi
+                    </p>
+                    <div className="relative group rounded-[2rem] overflow-hidden border-2 border-white shadow-xl bg-white aspect-[16/9] flex items-center justify-center">
+                       {selectedHeir.fileKtpKk.toLowerCase().endsWith('.pdf') ? (
+                         <div className="flex flex-col items-center gap-3">
+                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shadow-inner">
+                               <FileText size={32} />
+                            </div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dokumen PDF Terlampir</p>
+                            <a 
+                              href={selectedHeir.fileKtpKk} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="mt-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all flex items-center gap-2"
+                            >
+                               <Eye size={14} /> Buka Dokumen PDF
+                            </a>
+                         </div>
+                       ) : (
+                         <>
+                           <img 
+                            src={selectedHeir.fileKtpKk} 
+                            alt="KTP Preview" 
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                            onError={(e) => {
+                              (e.target as any).src = "https://placehold.co/600x400?text=Berkas+Non-Gambar";
+                            }}
+                           />
+                           <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                              <a 
+                                href={selectedHeir.fileKtpKk} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="px-6 py-3 bg-white rounded-xl text-slate-900 font-black text-[10px] uppercase tracking-widest shadow-2xl hover:bg-emerald-500 hover:text-white transition-all"
+                              >
+                                Lihat Dokumen Asli
+                              </a>
+                           </div>
+                         </>
+                       )}
+                    </div>
+                  </div>
+                )}
                 
-                <button onClick={() => setSelectedHeir(null)}
-                  className="mt-10 w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl">
-                  Tutup Detail
-                </button>
+                <div className="flex gap-4 mt-10">
+                   <button onClick={() => setSelectedHeir(null)}
+                     className="flex-1 py-6 bg-slate-100 text-slate-400 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
+                     Tutup
+                   </button>
+                   {selectedHeir.fileKtpKk && (
+                     <a 
+                      href={selectedHeir.fileKtpKk} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex-[2] py-6 bg-slate-900 text-white rounded-[2rem] flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl"
+                     >
+                       <Download size={18} />
+                       Lihat Berkas KTP
+                     </a>
+                   )}
+                </div>
               </div>
             </motion.div>
           </motion.div>

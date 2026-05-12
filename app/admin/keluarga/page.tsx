@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Search, Plus, Eye, Edit, Trash2, FileText, Calendar, User, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getKeluargaList, deleteKeluarga } from "@/app/actions/waris";
+import ConfirmModal from "@/components/ConfirmModal";
+import toast from "react-hot-toast";
 
 export default function KeluargaPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +15,7 @@ export default function KeluargaPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchFamilies = async () => {
     setLoading(true);
@@ -30,10 +33,16 @@ export default function KeluargaPage() {
     setPage(1); // Reset page when search or filter changes
   }, [searchTerm, hukumFilter]);
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      await deleteKeluarga(id);
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteKeluarga(deleteId);
+      toast.success("Data keluarga berhasil dihapus");
       fetchFamilies();
+    } catch (err) {
+      toast.error("Gagal menghapus data");
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -43,6 +52,13 @@ export default function KeluargaPage() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-8"
     >
+      <ConfirmModal 
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Data Keluarga?"
+        message="Tindakan ini tidak dapat dibatalkan. Seluruh data identitas dan hasil kalkulasi waris untuk keluarga ini akan dihapus permanen dari sistem."
+      />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Keluarga & Jenazah</h1>
@@ -186,7 +202,7 @@ export default function KeluargaPage() {
                         <Eye size={18} />
                       </Link>
                       <button 
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => setDeleteId(item.id)}
                         className="p-3 bg-slate-50 text-slate-400 hover:bg-red-500 hover:text-white rounded-xl transition-all duration-300 shadow-sm"
                       >
                         <Trash2 size={18} />

@@ -1,6 +1,24 @@
 "use client";
 
 import { useState } from "react";
+// ... (imports will be handled in next step if needed)
+
+const premiumStyles = `
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .premium-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+  }
+  .input-focus-effect:focus-within {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+  }
+`;
 import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
@@ -10,14 +28,18 @@ import {
   User, 
   Users, 
   Wallet, 
-  ShieldCheck, 
+  CheckCircle2,
+  ShieldCheck,
   FileUp,
   Tag,
-  Calendar
+  Calendar,
+  ChevronDown
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { createKeluarga } from "@/app/actions/waris";
+import toast from "react-hot-toast";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function TambahKeluargaPage() {
   const router = useRouter();
@@ -28,6 +50,7 @@ export default function TambahKeluargaPage() {
   const [hukum, setHukum] = useState<string>("Islam");
   const [potongGonoGini, setPotongGonoGini] = useState(false);
   const [metodeAdat, setMetodeAdat] = useState("SEPIKUL_SEGENDONGAN");
+  const [removeIndex, setRemoveIndex] = useState<number | null>(null);
 
   const [jenazah, setJenazah] = useState({
     nama: "",
@@ -38,6 +61,7 @@ export default function TambahKeluargaPage() {
   });
 
   const [ahliWaris, setAhliWaris] = useState<any[]>([]);
+  const [errors, setErrors] = useState<any>({});
 
   const formatIDR = (val: string) => {
     const number = val.replace(/\D/g, "");
@@ -62,18 +86,46 @@ export default function TambahKeluargaPage() {
     }]);
   };
 
-  const handleRemoveAhliWaris = (idx: number) => {
-    setAhliWaris(ahliWaris.filter((_, i) => i !== idx));
+  const confirmRemoveHeir = () => {
+    if (removeIndex === null) return;
+    setAhliWaris(ahliWaris.filter((_, i) => i !== removeIndex));
+    setRemoveIndex(null);
+    toast.success("Anggota keluarga dihapus dari daftar");
   };
 
   const updateAhliWaris = (idx: number, field: string, value: any) => {
     const newArr = [...ahliWaris];
-    newArr[idx][field] = value;
+    newArr[idx] = { ...newArr[idx], [field]: value };
     setAhliWaris(newArr);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+    
+    // Validasi
+    const newErrors: any = {};
+    if (!jenazah.nama) newErrors.nama = "Nama almarhum wajib diisi";
+    if (!jenazah.nik || jenazah.nik.length < 16) newErrors.nik = "NIK wajib 16 digit";
+    if (!jenazah.keterangan) newErrors.keterangan = "Peran dalam keluarga wajib dipilih";
+    if (ahliWaris.length === 0) {
+      toast.error("Minimal harus ada 1 ahli waris");
+      return;
+    }
+
+    ahliWaris.forEach((h, i) => {
+      if (!h.nama) {
+        if (!newErrors.ahliWaris) newErrors.ahliWaris = [];
+        newErrors.ahliWaris[i] = "Nama ahli waris wajib diisi";
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Mohon lengkapi semua data yang wajib diisi");
+      return;
+    }
+
     setLoading(true);
 
     const formData = new FormData();
@@ -101,32 +153,61 @@ export default function TambahKeluargaPage() {
 
     const res = await createKeluarga(formData);
     if (res.success) {
+      toast.success("Data keluarga berhasil disimpan!");
       router.push(`/admin/keluarga/${res.id}`);
     } else {
-      alert(res.error);
+      toast.error(`Gagal: ${res.error}`, {
+        duration: 5000,
+        style: {
+          background: '#fff',
+          color: '#ef4444',
+          border: '1px solid #fee2e2',
+          fontWeight: 'bold',
+        }
+      });
       setLoading(false);
     }
   };
 
   return (
     <div className="space-y-10 pb-20">
-      <div className="flex items-center gap-6">
-        <Link href="/admin/keluarga" className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:bg-slate-50 transition-colors text-slate-500">
-          <ArrowLeft size={24} />
-        </Link>
-        <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Daftar Keluarga Baru</h1>
-          <p className="text-slate-500 mt-2 font-medium italic">Simulasi administrasi waris syariah profesional.</p>
+      <ConfirmModal 
+        isOpen={removeIndex !== null}
+        onClose={() => setRemoveIndex(null)}
+        onConfirm={confirmRemoveHeir}
+        title="Hapus Anggota Keluarga?"
+        message="Anda akan menghapus anggota ini dari daftar perhitungan. Data yang sudah diisi akan hilang."
+        confirmText="Hapus"
+      />
+      <style dangerouslySetInnerHTML={{ __html: premiumStyles }} />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/admin/keluarga" className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm hover:shadow-md hover:-translate-x-1 transition-all text-slate-400 hover:text-emerald-600">
+            <ArrowLeft size={24} />
+          </Link>
+          <div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Daftar Keluarga Baru</h1>
+            <p className="text-slate-500 mt-1 font-medium italic opacity-60">Sistem Administrasi Waris Syariah Terintegrasi</p>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-3 px-6 py-3 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100">
+           <ShieldCheck size={20} />
+           <span className="text-xs font-black uppercase tracking-widest">Akses Administrator</span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 space-y-10">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-8 space-y-10">
           {/* Identitas Section */}
-          <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden">
-             <div className="flex items-center gap-3 mb-10 text-emerald-600 font-black uppercase text-xs tracking-[0.2em]">
-                <User size={18} />
-                <span>Parameter & Identitas Almarhum</span>
+          <div className="premium-card p-10 rounded-[3rem] border border-slate-100 relative overflow-hidden">
+             <div className="flex items-center gap-4 mb-10">
+                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                   <User size={20} />
+                </div>
+                <div>
+                   <h2 className="text-xl font-black text-slate-900 leading-none">Identitas Almarhum</h2>
+                   <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Parameter & Informasi Dasar</p>
+                </div>
              </div>
 
              <div className="mb-10 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
@@ -194,25 +275,27 @@ export default function TambahKeluargaPage() {
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                 <div className="space-y-4">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nomor NIK (Sesuai KTP)</label>
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nomor NIK (Sesuai KTP) <span className="text-red-500">*</span></label>
                   <input 
                     type="text" 
                     maxLength={16}
-                    className="w-full p-5 bg-slate-50 rounded-2xl border border-slate-100 focus:border-emerald-500 focus:bg-white outline-none font-black transition-all"
+                    className={`w-full p-5 bg-slate-50 rounded-2xl border font-black transition-all ${errors.nik ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:border-emerald-500 focus:bg-white outline-none'}`}
                     placeholder="Masukkan 16 digit NIK..."
                     value={jenazah.nik}
                     onChange={(e) => setJenazah({...jenazah, nik: e.target.value})}
                   />
+                  {errors.nik && <p className="text-[10px] text-red-500 font-bold ml-2 mt-1">{errors.nik}</p>}
                 </div>
                 <div className="space-y-4">
-                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nama Lengkap</label>
+                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nama Lengkap <span className="text-red-500">*</span></label>
                    <input 
                     type="text" 
-                    className="w-full p-5 bg-slate-50 rounded-2xl border border-slate-100 font-black outline-none focus:bg-white transition-all"
+                    className={`w-full p-5 bg-slate-50 rounded-2xl border font-black outline-none transition-all ${errors.nama ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:bg-white'}`}
                     value={jenazah.nama}
                     onChange={(e) => setJenazah({...jenazah, nama: e.target.value})}
                     placeholder="Masukkan Nama Lengkap..."
                    />
+                   {errors.nama && <p className="text-[10px] text-red-500 font-bold ml-2 mt-1">{errors.nama}</p>}
                 </div>
                 <div className="space-y-4">
                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Gender</label>
@@ -235,149 +318,196 @@ export default function TambahKeluargaPage() {
                    />
                 </div>
                 <div className="md:col-span-2 space-y-4">
-                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Status / Peran dalam Keluarga</label>
-                   <div className="relative">
-                     <Tag className="absolute left-5 top-5 text-slate-300" size={20} />
-                     <select 
-                      className="w-full p-5 pl-14 bg-slate-50 rounded-2xl border border-slate-100 font-black outline-none focus:bg-white appearance-none"
-                      value={jenazah.keterangan}
-                      onChange={(e) => setJenazah({...jenazah, keterangan: e.target.value})}
-                     >
-                       <option value="">-- Pilih Peran --</option>
-                       <option value="Ayah">Ayah (Meninggal sebagai Bapak)</option>
-                       <option value="Ibu">Ibu (Meninggal sebagai Mama/Ibu)</option>
-                       <option value="Kakek">Kakek</option>
-                       <option value="Nenek">Nenek</option>
-                       <option value="Anak Laki-laki">Anak Laki-laki</option>
-                       <option value="Anak Perempuan">Anak Perempuan</option>
-                     </select>
-                   </div>
-                </div>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Status / Peran dalam Keluarga <span className="text-red-500">*</span></label>
+                    <div className="relative">
+                      <Tag className="absolute left-5 top-5 text-slate-300" size={20} />
+                      <select 
+                       className={`w-full p-5 pl-14 rounded-2xl border font-black outline-none transition-all appearance-none ${errors.keterangan ? 'border-red-500 bg-red-50' : 'bg-slate-50 border-slate-100 focus:bg-white'}`}
+                       value={jenazah.keterangan}
+                       onChange={(e) => setJenazah({...jenazah, keterangan: e.target.value})}
+                      >
+                        <option value="">-- Pilih Peran --</option>
+                        <option value="Ayah">Ayah (Meninggal sebagai Bapak)</option>
+                        <option value="Ibu">Ibu (Meninggal sebagai Mama/Ibu)</option>
+                        <option value="Kakek">Kakek</option>
+                        <option value="Nenek">Nenek</option>
+                        <option value="Anak Laki-laki">Anak Laki-laki</option>
+                        <option value="Anak Perempuan">Anak Perempuan</option>
+                      </select>
+                      <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
+                    </div>
+                    {errors.keterangan && <p className="text-[10px] text-red-500 font-bold ml-2 mt-1">{errors.keterangan}</p>}
+                 </div>
              </div>
           </div>
 
           {/* Ahli Waris Section */}
-          <div className="space-y-6">
-            <div className="flex justify-between items-center px-6">
-               <div className="flex items-center gap-3 text-emerald-600 font-black uppercase text-xs tracking-widest">
-                  <Users size={18} />
-                  <span>Daftar Ahli Waris</span>
-               </div>
-               <button 
-                type="button" 
-                onClick={handleAddAhliWaris}
-                className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200"
-               >
-                 <Plus size={16} /> Tambah Anggota
-               </button>
-            </div>
+          <div className="space-y-8">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-2">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-emerald-100 rounded-[1.25rem] flex items-center justify-center text-emerald-600 shadow-inner">
+                    <Users size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Daftar Ahli Waris</h2>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-widest">
+                       {ahliWaris.length} Anggota Keluarga
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={handleAddAhliWaris}
+                  className="group flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-2xl shadow-slate-200 active:scale-95 w-full sm:w-auto"
+                >
+                  <div className="bg-white/20 p-1 rounded-lg group-hover:rotate-90 transition-transform">
+                     <Plus size={16} />
+                  </div>
+                  <span>Tambah Anggota</span>
+                </button>
+             </div>
 
-            <div className="space-y-6">
-               <AnimatePresence>
-                 {ahliWaris.map((heir, idx) => (
-                   <motion.div 
-                    initial={{ opacity: 0, x: -20 }} 
-                    animate={{ opacity: 1, x: 0 }} 
-                    exit={{ opacity: 0, x: 20 }}
-                    key={idx} 
-                    className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-lg shadow-slate-200/30 flex flex-col md:flex-row gap-6 relative group"
-                   >
-                     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <input 
-                          type="text" 
-                          placeholder="Nama Ahli Waris"
-                          className="p-4 bg-slate-50 rounded-xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all"
-                          value={heir.nama}
-                          onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
-                        />
-                         <input 
-                          type="text" 
-                          placeholder="NIK (Opsional)"
-                          className="p-4 bg-slate-50 rounded-xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all"
-                          value={heir.nik}
-                          onChange={(e) => updateAhliWaris(idx, "nik", e.target.value)}
-                        />
-                        <select 
-                          className="p-4 bg-slate-50 rounded-xl border border-slate-50 font-bold outline-none focus:bg-white"
-                          value={heir.hubungan}
-                          onChange={(e) => updateAhliWaris(idx, "hubungan", e.target.value)}
-                        >
-                          <option value="Suami">Suami</option>
-                          <option value="Istri">Istri</option>
-                          <option value="Anak Laki-laki">Anak Laki-laki</option>
-                          <option value="Anak Perempuan">Anak Perempuan</option>
-                          <option value="Cucu Laki-laki">Cucu Laki-laki</option>
-                          <option value="Cucu Perempuan">Cucu Perempuan</option>
-                          <option value="Ayah">Bapak</option>
-                          <option value="Ibu">Ibu</option>
-                          <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
-                          <option value="Saudara Perempuan Sekandung">Saudara Perempuan Sekandung</option>
-                        </select>
-                     </div>
-                     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 md:mt-0">
-                        <div className="space-y-2">
-                           <label className="text-[9px] font-black text-slate-400 uppercase">Status Hidup</label>
-                           <select 
-                            className={`w-full p-3 rounded-xl border font-bold text-xs outline-none transition-all ${heir.statusHidup ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-red-50 border-red-100 text-red-600"}`}
-                            value={heir.statusHidup ? "Hidup" : "Meninggal"}
-                            onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
-                           >
-                              <option value="Hidup">Masih Hidup</option>
-                              <option value="Meninggal">Sudah Meninggal</option>
-                           </select>
-                        </div>
-
-                     </div>
-                     <div className="flex items-center gap-4">
-                        <label className="flex items-center gap-2 px-4 py-3 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase cursor-pointer hover:bg-emerald-100 transition-colors">
-                           <FileUp size={16} /> {heir.fileName ? "File OK" : "Upload KTP"}
+             <div className="space-y-6">
+                <AnimatePresence>
+                  {ahliWaris.map((heir, idx) => (
+                    <div key={heir.id} className="flex flex-col md:flex-row items-center gap-4 w-full group/row">
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }} 
+                        animate={{ opacity: 1, x: 0 }} 
+                        exit={{ opacity: 0, x: 20 }}
+                        className="flex-1 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-lg shadow-slate-200/30 grid grid-cols-1 md:grid-cols-10 gap-6 items-start relative group hover:border-emerald-200 transition-all"
+                      >
+                        <div className="md:col-span-3 space-y-2">
+                           <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Nama Ahli Waris</label>
                            <input 
-                            type="file" 
-                            className="hidden" 
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                 if (file.size > 5 * 1024 * 1024) {
-                                    alert("Ukuran file terlalu besar! Maksimal 5MB.");
-                                    return;
-                                 }
-                                 updateAhliWaris(idx, "file", file);
-                                 updateAhliWaris(idx, "fileName", file.name);
-                               }
-                            }}
+                             type="text" 
+                             placeholder="Masukkan Nama..."
+                             className={`w-full h-14 p-4 rounded-2xl border font-bold outline-none transition-all text-sm ${errors.ahliWaris?.[idx] ? 'border-red-500 bg-red-50' : 'bg-slate-50 border-slate-50 focus:bg-white focus:border-emerald-300'}`}
+                             value={heir.nama}
+                             onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
                            />
-                        </label>
-                        <button 
-                          type="button" 
-                          onClick={() => handleRemoveAhliWaris(idx)}
-                          className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-inner"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                     </div>
-                   </motion.div>
-                 ))}
-               </AnimatePresence>
-               {ahliWaris.length === 0 && (
-                 <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[3rem] bg-white text-slate-300 font-bold uppercase tracking-widest text-xs">Belum ada ahli waris ditambahkan</div>
-               )}
+                           {errors.ahliWaris?.[idx] && <p className="text-[9px] text-red-500 font-bold ml-1 mt-1">{errors.ahliWaris[idx]}</p>}
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                           <label className="text-[9px] font-black text-slate-400 uppercase ml-1">NIK (Opsional)</label>
+                           <input 
+                             type="text" 
+                             placeholder="NIK..."
+                             className="w-full h-14 p-4 bg-slate-50 rounded-2xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all text-sm"
+                             value={heir.nik}
+                             onChange={(e) => updateAhliWaris(idx, "nik", e.target.value)}
+                           />
+                        </div>
+                        <div className="md:col-span-3 space-y-2">
+                           <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Hubungan Keluarga</label>
+                           <div className="relative">
+                             <select 
+                               className="w-full h-14 p-4 bg-slate-50 rounded-2xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all text-sm appearance-none pr-10"
+                               value={heir.hubungan}
+                               onChange={(e) => updateAhliWaris(idx, "hubungan", e.target.value)}
+                             >
+                               <option value="Suami">Suami</option>
+                               <option value="Istri">Istri</option>
+                               <option value="Anak Laki-laki">Anak Laki-laki</option>
+                               <option value="Anak Perempuan">Anak Perempuan</option>
+                               <option value="Cucu Laki-laki">Cucu Laki-laki</option>
+                               <option value="Cucu Perempuan">Cucu Perempuan</option>
+                               <option value="Ayah">Bapak</option>
+                               <option value="Ibu">Ibu</option>
+                               <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
+                               <option value="Saudara Perempuan Sekandung">Saudara Perempuan Sekandung</option>
+                             </select>
+                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                           </div>
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                           <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Status Hidup</label>
+                           <div className="relative">
+                             <select 
+                              className={`w-full h-14 p-4 rounded-2xl border font-bold text-xs outline-none transition-all appearance-none pr-10 ${heir.statusHidup ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-red-50 border-red-100 text-red-600"}`}
+                              value={heir.statusHidup ? "Hidup" : "Meninggal"}
+                              onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
+                             >
+                                <option value="Hidup">Masih Hidup</option>
+                                <option value="Meninggal">Sudah Meninggal</option>
+                             </select>
+                             <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${heir.statusHidup ? "text-emerald-400" : "text-red-400"}`} size={16} />
+                           </div>
+                        </div>
+                      </motion.div>
+
+                      <div className="flex md:flex-col gap-3">
+                         <label 
+                          className={`w-14 h-14 flex items-center justify-center rounded-2xl border transition-all cursor-pointer shadow-sm ${heir.fileName ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200' : 'bg-white text-slate-400 border-slate-100 hover:bg-emerald-50 hover:text-emerald-600'}`} 
+                          title={heir.fileName ? `File: ${heir.fileName}` : "Upload KTP (Opsional)"}
+                         >
+                            {heir.fileName ? <CheckCircle2 size={20} /> : <FileUp size={20} />}
+                            <input 
+                             type="file" 
+                             accept="image/*,application/pdf"
+                             className="hidden" 
+                             onChange={(e) => {
+                               const file = e.target.files?.[0];
+                                 if (file) {
+                                    if (file.size > 5 * 1024 * 1024) {
+                                       toast.error("Ukuran file terlalu besar! Maksimal 5MB.");
+                                       return;
+                                    }
+                                    toast.success(`Berkas ${file.name} terpilih`);
+                                    updateAhliWaris(idx, "file", file);
+                                    updateAhliWaris(idx, "fileName", file.name);
+                                  }
+                             }}
+                            />
+                         </label>
+                         <button 
+                           type="button" 
+                           onClick={() => setRemoveIndex(idx)}
+                           className="w-14 h-14 flex items-center justify-center bg-white text-slate-400 rounded-2xl border border-slate-100 shadow-sm hover:bg-red-50 hover:text-red-500 transition-all"
+                           title="Hapus Anggota"
+                         >
+                           <Trash2 size={20} />
+                         </button>
+                      </div>
+                    </div>
+                  ))}
+                </AnimatePresence>
+                {ahliWaris.length === 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="py-24 text-center border-4 border-dashed border-slate-50 rounded-[3.5rem] bg-slate-50/30 flex flex-col items-center justify-center"
+                  >
+                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl shadow-slate-200/50 mb-6 text-slate-200">
+                       <Users size={40} />
+                    </div>
+                    <p className="text-xl font-black text-slate-300 uppercase tracking-widest">Belum ada ahli waris</p>
+                    <p className="text-slate-400 mt-2 font-medium">Klik tombol di atas untuk menambahkan anggota keluarga.</p>
+                  </motion.div>
+                )}
             </div>
           </div>
         </div>
 
-        <div className="space-y-10">
-          <div className="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group border-b-8 border-b-emerald-600">
-             <div className="relative z-10 flex items-center gap-3 mb-10 text-emerald-400 font-black uppercase text-xs tracking-widest">
-                <Wallet size={18} />
-                <span>Rincian Asset</span>
+        <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-8 h-fit">
+          <div className="premium-card bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group border-b-8 border-b-emerald-600">
+             <div className="relative z-10 flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400">
+                   <Wallet size={18} />
+                </div>
+                <div>
+                   <h3 className="font-black text-sm uppercase tracking-widest">Rincian Asset</h3>
+                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Kalkulasi Otomatis</p>
+                </div>
              </div>
-             <div className="relative z-10 space-y-8">
+             
+             <div className="relative z-10 space-y-6">
                 <div className="space-y-3">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Harta (Mirkah)</label>
+                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Total Harta (Mirkah)</label>
                    <div className="relative">
-                      <span className="absolute left-5 top-5 text-slate-500 font-black">Rp</span>
+                      <span className="absolute left-5 top-5 text-slate-600 font-black text-xs">Rp</span>
                       <input 
-                        className="w-full p-5 pl-12 bg-slate-800 rounded-2xl border border-slate-700 font-black outline-none focus:border-emerald-500 text-2xl transition-all"
+                        className="w-full p-5 pl-12 bg-white/5 rounded-2xl border border-white/10 font-black outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-emerald-400"
                         value={harta}
                         onChange={(e) => setHarta(formatIDR(e.target.value))}
                         placeholder="0"
@@ -385,11 +515,11 @@ export default function TambahKeluargaPage() {
                    </div>
                 </div>
                 <div className="space-y-3">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Utang Almarhum</label>
+                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Total Utang Almarhum</label>
                    <div className="relative">
-                      <span className="absolute left-5 top-5 text-slate-500 font-black">Rp</span>
+                      <span className="absolute left-5 top-5 text-slate-600 font-black text-xs">Rp</span>
                       <input 
-                        className="w-full p-5 pl-12 bg-slate-800 rounded-2xl border border-slate-700 font-black outline-none focus:border-red-400 transition-all"
+                        className="w-full p-5 pl-12 bg-white/5 rounded-2xl border border-white/10 font-black outline-none focus:border-red-400 focus:bg-white/10 transition-all text-red-400"
                         value={utang}
                         onChange={(e) => setUtang(formatIDR(e.target.value))}
                         placeholder="0"
@@ -397,11 +527,11 @@ export default function TambahKeluargaPage() {
                    </div>
                 </div>
                 <div className="space-y-3">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Wasiat (Max 1/3)</label>
+                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Wasiat (Max 1/3)</label>
                    <div className="relative">
-                      <span className="absolute left-5 top-5 text-slate-500 font-black">Rp</span>
+                      <span className="absolute left-5 top-5 text-slate-600 font-black text-xs">Rp</span>
                       <input 
-                        className="w-full p-5 pl-12 bg-slate-800 rounded-2xl border border-slate-700 font-black outline-none focus:border-blue-400 transition-all"
+                        className="w-full p-5 pl-12 bg-white/5 rounded-2xl border border-white/10 font-black outline-none focus:border-blue-400 focus:bg-white/10 transition-all text-blue-400"
                         value={wasiat}
                         onChange={(e) => setWasiat(formatIDR(e.target.value))}
                         placeholder="0"
@@ -409,17 +539,26 @@ export default function TambahKeluargaPage() {
                    </div>
                 </div>
              </div>
-             {/* Decorative */}
-             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -translate-x-12 -translate-y-12" />
+
+             {/* Background Decoration */}
+             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-x-8 -translate-y-8" />
+             <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/5 rounded-full translate-x-8 translate-y-8" />
           </div>
 
           <button 
             type="submit" 
             disabled={loading || !hukum}
-            className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-lg tracking-tight hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-200 active:scale-95 flex items-center justify-center gap-4 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-lg tracking-tight hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-200 active:scale-95 flex flex-col items-center justify-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed group"
           >
-            {loading ? <span className="animate-spin rounded-full h-6 w-6 border-4 border-white border-t-transparent" /> : <Save size={24} />}
-            <span>Finalisasikan Data Waris</span>
+            {loading ? (
+              <span className="animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent mb-2" />
+            ) : (
+              <div className="flex items-center gap-3">
+                <Save size={24} className="group-hover:scale-110 transition-transform" />
+                <span>Simpan & Kalkulasi</span>
+              </div>
+            )}
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Finalisasi Data Waris</span>
           </button>
         </div>
       </form>

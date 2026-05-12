@@ -69,6 +69,22 @@ export async function createKeluarga(formData: FormData) {
   const ahliWarisRaw = formData.get("ahliWarisJson") as string;
   const ahliWarisData = JSON.parse(ahliWarisRaw);
 
+  // 1. Upload semua file KTP terlebih dahulu (di luar transaksi agar tidak timeout)
+  const ahliWarisWithFiles = [...ahliWarisData];
+  for (let i = 0; i < ahliWarisWithFiles.length; i++) {
+    const file = formData.get(`file_${i}`) as File | null;
+    if (file && file.size > 0) {
+      try {
+        const blob = await put(`ktp/${Date.now()}-${file.name.replace(/\s+/g, '_')}`, file, {
+          access: 'public',
+        });
+        ahliWarisWithFiles[i].fileKtpKk = blob.url;
+      } catch (err) {
+        console.error("Gagal upload file ke Vercel Blob:", err);
+      }
+    }
+  }
+
   try {
     const result = await prisma.$transaction(async (tx) => {
       const jenazah = await tx.jenazah.create({
@@ -89,17 +105,8 @@ export async function createKeluarga(formData: FormData) {
       // Simpan pemetaan ID sementara ke ID database untuk parentId
       const idMap: Record<string, string> = {};
 
-      for (let i = 0; i < ahliWarisData.length; i++) {
-        const heir = ahliWarisData[i];
-        let fileUrl = null;
-
-        const file = formData.get(`file_${i}`) as File | null;
-        if (file) {
-          const blob = await put(`ktp/${Date.now()}-${file.name}`, file, {
-            access: 'public',
-          });
-          fileUrl = blob.url;
-        }
+      for (let i = 0; i < ahliWarisWithFiles.length; i++) {
+        const heir = ahliWarisWithFiles[i];
 
         const createdHeir = await tx.ahliWaris.create({
           data: {
@@ -108,15 +115,15 @@ export async function createKeluarga(formData: FormData) {
             nik: heir.nik,
             hubungan: heir.hubungan,
             statusHidup: heir.statusHidup,
-            fileKtpKk: fileUrl,
+            fileKtpKk: heir.fileKtpKk || null,
           }
         });
         idMap[heir.id] = createdHeir.id;
       }
 
       // Update parentId setelah semua ahli waris dibuat
-      for (let i = 0; i < ahliWarisData.length; i++) {
-        const heir = ahliWarisData[i];
+      for (let i = 0; i < ahliWarisWithFiles.length; i++) {
+        const heir = ahliWarisWithFiles[i];
         if (heir.parentId && idMap[heir.parentId]) {
           await tx.ahliWaris.update({
             where: { id: idMap[heir.id] },
@@ -136,13 +143,16 @@ export async function createKeluarga(formData: FormData) {
       }
 
       return jenazah;
+    }, {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     revalidatePath("/admin/keluarga");
     return { success: true, id: result.id };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating keluarga:", error);
-    return { success: false, error: "Gagal menyimpan data ke database profesional." };
+    return { success: false, error: error.message || "Gagal menyimpan data ke database profesional." };
   }
 }
 
@@ -197,6 +207,9 @@ export async function processFaraid(jenazahId: string) {
         hartaGonoGini: (results as any).hartaGonoGini || 0,
       }
     });
+  }, {
+    maxWait: 10000,
+    timeout: 20000,
   });
 
   revalidatePath(`/admin/keluarga/${jenazahId}`);
