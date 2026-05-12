@@ -46,7 +46,21 @@ export function calculateAdatJawa(
     }
   }
 
-  // 2. Distribusi ke Keturunan (Recursive)
+  // 2. Preprocessing: Auto-link 'Cucu' to deceased 'Anak' if parentId is missing (Otomatis dari System)
+  const deceasedChildren = ahliWarisList.filter(h => 
+    (h.hubungan === "Anak Laki-laki" || h.hubungan === "Anak Perempuan") && h.statusHidup === false
+  );
+
+  ahliWarisList.forEach(h => {
+    if ((h.hubungan === "Cucu Laki-laki" || h.hubungan === "Cucu Perempuan") && !h.parentId) {
+      // Link to the first deceased child found if not manually linked
+      if (deceasedChildren.length > 0) {
+        h.parentId = deceasedChildren[0].id;
+      }
+    }
+  });
+
+  // 3. Distribusi ke Keturunan (Recursive)
   // Cari anak-anak langsung dari Jenazah (parentId = null)
   const children = ahliWarisList.filter(h => !h.parentId && (h.hubungan === "Anak Laki-laki" || h.hubungan === "Anak Perempuan"));
 

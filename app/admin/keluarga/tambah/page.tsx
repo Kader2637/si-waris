@@ -326,21 +326,7 @@ export default function TambahKeluargaPage() {
                               <option value="Meninggal">Sudah Meninggal</option>
                            </select>
                         </div>
-                        <div className="space-y-2">
-                           <label className="text-[9px] font-black text-slate-400 uppercase">Anak Dari (Untuk Pengganti)</label>
-                           <select 
-                            className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:bg-white"
-                            value={heir.parentId}
-                            onChange={(e) => updateAhliWaris(idx, "parentId", e.target.value)}
-                           >
-                              <option value="">-- Bukan Pengganti --</option>
-                              {ahliWaris.map((parent, pIdx) => (
-                                pIdx !== idx && parent.statusHidup === false && (
-                                  <option key={parent.id} value={parent.id}>{parent.nama || `Ahli Waris ${pIdx + 1}`}</option>
-                                )
-                              ))}
-                           </select>
-                        </div>
+
                      </div>
                      <div className="flex items-center gap-4">
                         <label className="flex items-center gap-2 px-4 py-3 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase cursor-pointer hover:bg-emerald-100 transition-colors">

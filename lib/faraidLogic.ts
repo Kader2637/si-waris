@@ -15,7 +15,7 @@ export interface FaraidResult {
   }[];
 }
 
-type PartialAhliWaris = Pick<AhliWaris, 'id' | 'nama' | 'hubungan'>;
+type PartialAhliWaris = Pick<AhliWaris, 'id' | 'nama' | 'hubungan' | 'statusHidup' | 'parentId'>;
 type PartialJenazah = Pick<Jenazah, 'id' | 'gender' | 'hartaKotor' | 'utang' | 'wasiat'>;
 
 export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialAhliWaris[]): FaraidResult {
@@ -26,6 +26,19 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
   const hartaSetelahUtang = Math.max(0, hartaKotor - utang);
   if (wasiat > hartaSetelahUtang / 3) wasiat = hartaSetelahUtang / 3;
   const hartaBersih = Math.max(0, hartaSetelahUtang - wasiat);
+
+  // Preprocessing: Auto-link 'Cucu' to deceased 'Anak' if parentId is missing (Otomatis dari System)
+  const deceasedChildren = ahliWarisList.filter(h => 
+    (h.hubungan === "Anak Laki-laki" || h.hubungan === "Anak Perempuan") && h.statusHidup === false
+  );
+
+  ahliWarisList.forEach(h => {
+    if ((h.hubungan === "Cucu Laki-laki" || h.hubungan === "Cucu Perempuan") && !h.parentId) {
+      if (deceasedChildren.length > 0) {
+        h.parentId = deceasedChildren[0].id;
+      }
+    }
+  });
 
   let heirs = ahliWarisList.map(a => ({
     ...a,

@@ -93,7 +93,7 @@ export default function KalkulatorPage() {
         ahliWarisGetted: result.results, 
         kpk: null, 
         statusAulRadd: metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan" : "Kum-Kum Kupat" 
-      });
+      });  
     } else {
       setHasil(calculateFaraid(jenazah as any, warisList as any));
     }
