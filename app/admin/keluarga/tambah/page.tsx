@@ -75,7 +75,7 @@ export default function TambahKeluargaPage() {
 
   const handleAddAhliWaris = () => {
     setAhliWaris([...ahliWaris, { 
-      id: Math.random().toString(36).substring(7), // Temp ID for parent selection
+      id: Math.random().toString(36).substring(7),
       nama: "", 
       nik: "", 
       hubungan: "Anak Laki-laki", 
