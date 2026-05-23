@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Scale, Menu, X, ChevronRight, ChevronDown, Sparkles } from "lucide-react";
+import { Menu, X, ChevronRight, ChevronDown, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -39,9 +39,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="max-w-7xl mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
 
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-100 group-hover:scale-110 transition-transform">
-              <Scale size={20} className="text-white" />
-            </div>
+            <img src="/logo.png" alt="E-Mawarits Logo" className="w-14 h-14 object-contain group-hover:scale-110 transition-transform duration-300" />
             <div>
               <span className="font-black text-xl tracking-tight text-slate-900">E-MAWARITS</span>
               <p className="text-[9px] font-bold uppercase tracking-widest -mt-0.5 text-emerald-600">Sistem Informasi Waris</p>
@@ -133,9 +131,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="relative max-w-7xl mx-auto px-6 lg:px-12 py-24 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/50">
-                <Scale size={22} />
-              </div>
+              <img src="/logo.png" alt="E-Mawarits Logo" className="w-16 h-16 object-contain" />
               <div>
                 <span className="font-black text-2xl tracking-tight">E-MAWARITS</span>
                 <p className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest -mt-0.5">Sistem Informasi Waris Multi-Hukum</p>

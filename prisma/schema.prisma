@@ -1,69 +1,68 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-
 model Jenazah {
-  id             String         @id @default(cuid())
+  id             String        @id @default(cuid())
   nama           String
   nik            String
-  gender         String // "Laki-laki" atau "Perempuan"
-  tanggalWafat   DateTime       @default(now())
-  keterangan     String?        @db.Text // Peran dalam keluarga (Kakek/Ayah/Ibu dsb)
-  hartaKotor     Float          @default(0)
-  utang          Float          @default(0)
-  wasiat         Float          @default(0)
-  hukum          String         @default("Islam") // "Islam", "Jawa", "Perdata"
-  potongGonoGini Boolean        @default(false)
+  gender         String
+  hartaKotor     Float         @default(0)
+  utang          Float         @default(0)
+  wasiat         Float         @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  hukum          String        @default("Islam")
+  keterangan     String?
+  potongGonoGini Boolean       @default(false)
+  tanggalWafat   DateTime      @default(now())
   ahliWaris      AhliWaris[]
-  logKalkulasi   LogKalkulasi?
   hasilWaris     HasilWaris[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  logKalkulasi   LogKalkulasi?
 }
 
 model AhliWaris {
   id          String      @id @default(cuid())
   jenazahId   String
-  jenazah     Jenazah     @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
   nama        String
   nik         String
-  hubungan    String // misal: "Istri", "Suami", "Anak Laki-laki", "Anak Perempuan", "Ayah", "Ibu", dll.
-  statusHidup Boolean     @default(true) // Untuk Adat Jawa: Jika False, maka porsinya turun ke anak-anaknya
-  parentId    String?
-  parent      AhliWaris?  @relation("HeirSuccession", fields: [parentId], references: [id])
-  children    AhliWaris[] @relation("HeirSuccession")
-  fileKtpKk   String? // path file di lokal server
-  hasil       HasilWaris?
+  hubungan    String
+  fileKtpKk   String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  parentId    String?
+  statusHidup Boolean     @default(true)
+  jenazah     Jenazah     @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
+  parent      AhliWaris?  @relation("HeirSuccession", fields: [parentId], references: [id])
+  children    AhliWaris[] @relation("HeirSuccession")
+  hasil       HasilWaris?
 }
 
 model HasilWaris {
   id           String    @id @default(cuid())
   jenazahId    String
-  jenazah      Jenazah   @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
   ahliWarisId  String    @unique
-  ahliWaris    AhliWaris @relation(fields: [ahliWarisId], references: [id], onDelete: Cascade)
-  status       String // "Mewarisi", "Mahjub" (Terhalang)
-  alasan       String    @db.Text
-  jatahPersen  String? // misal: "1/8", "Ashabah", dsb.
+  status       String
+  alasan       String
+  jatahPersen  String?
   jatahNominal Float     @default(0)
   createdAt    DateTime  @default(now())
+  ahliWaris    AhliWaris @relation(fields: [ahliWarisId], references: [id], onDelete: Cascade)
+  jenazah      Jenazah   @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
 }
 
 model LogKalkulasi {
   id               String   @id @default(cuid())
   jenazahId        String   @unique
-  jenazah          Jenazah  @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
-  kpk              Int? // Kelipatan Persekutuan Terkecil penyebut
-  statusAulRadd    String? // "Aul", "Radd", "Normal"
-  metodeAdat       String? // "SEPIKUL_SEGENDONGAN", "KUM_KUM_KUPAT"
-  hartaGonoGini    Float?   @default(0)
+  kpk              Int?
+  statusAulRadd    String?
   totalHartaBersih Float
   createdAt        DateTime @default(now())
+  hartaGonoGini    Float?   @default(0)
+  metodeAdat       String?
+  jenazah          Jenazah  @relation(fields: [jenazahId], references: [id], onDelete: Cascade)
 }

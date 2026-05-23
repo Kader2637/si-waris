@@ -12,7 +12,6 @@ import {
   BookOpen,
   Calculator,
   PieChart,
-  ShieldCheck,
   Menu,
   X
 } from 'lucide-react';
@@ -39,7 +38,10 @@ export default function Sidebar() {
 
   // Close sidebar on navigation on mobile
   useEffect(() => {
-    setIsOpen(false);
+    const timer = setTimeout(() => {
+      setIsOpen(false);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   return (
@@ -47,9 +49,7 @@ export default function Sidebar() {
       {/* Mobile Top Navbar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 shadow-sm z-40 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-200">
-            <ShieldCheck className="text-white" size={18} />
-          </div>
+          <img src="/logo.png" alt="E-Mawarits Logo" className="w-12 h-12 object-contain" />
           <div>
             <h1 className="text-lg font-black text-slate-800 tracking-tight leading-none">E-MAWARITS</h1>
           </div>
@@ -84,9 +84,7 @@ export default function Sidebar() {
       >
         <div className="p-8 pb-6 flex items-center justify-between lg:block">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
-              <ShieldCheck className="text-white" size={24} />
-            </div>
+            <img src="/logo.png" alt="E-Mawarits Logo" className="w-14 h-14 object-contain" />
             <div>
               <h1 className="text-xl font-black text-slate-800 tracking-tight">E-MAWARITS</h1>
               <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest leading-none mt-1 text-emerald-600">Admin Panel</p>
