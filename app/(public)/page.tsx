@@ -186,6 +186,19 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Brand Showcase Banner */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-6xl mx-auto px-6 lg:px-8 relative z-20 mb-20"
+      >
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/30 p-2 md:p-4">
+          <img src="/banner.png" alt="E-Mawarits Brand Banner" className="w-full h-auto object-cover rounded-[2rem]" />
+        </div>
+      </motion.div>
+
       <section className="py-20 bg-white relative z-10 border-y border-slate-100">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <motion.div {...fadeInUp}>
