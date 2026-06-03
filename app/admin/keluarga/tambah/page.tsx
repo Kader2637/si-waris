@@ -181,38 +181,38 @@ export default function TambahKeluargaPage() {
       />
       <style dangerouslySetInnerHTML={{ __html: premiumStyles }} />
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/admin/keluarga" className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm hover:shadow-md hover:-translate-x-1 transition-all text-slate-400 hover:text-emerald-600">
-            <ArrowLeft size={24} />
+        <div className="flex items-center gap-4">
+          <Link href="/admin/keluarga" className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100 shadow-sm hover:shadow-md hover:-translate-x-1 transition-all text-slate-400 hover:text-emerald-600">
+            <ArrowLeft size={18} />
           </Link>
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Daftar Keluarga Baru</h1>
-            <p className="text-slate-500 mt-1 font-medium italic opacity-60">Sistem Administrasi Waris Syariah Terintegrasi</p>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tighter">Daftar Keluarga Baru</h1>
+            <p className="text-slate-500 mt-0.5 font-medium text-xs italic opacity-60">Sistem Administrasi Waris Syariah Terintegrasi</p>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-3 px-6 py-3 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100">
-           <ShieldCheck size={20} />
-           <span className="text-xs font-black uppercase tracking-widest">Akses Administrator</span>
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
+           <ShieldCheck size={16} />
+           <span className="text-[10px] font-black uppercase tracking-widest">Akses Administrator</span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-10">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 space-y-6">
           {/* Identitas Section */}
-          <div className="premium-card p-10 rounded-[3rem] border border-slate-100 relative overflow-hidden">
-             <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                   <User size={20} />
+          <div className="premium-card p-6 rounded-2xl border border-slate-100 relative overflow-hidden">
+             <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-emerald-200">
+                   <User size={18} />
                 </div>
                 <div>
-                   <h2 className="text-xl font-black text-slate-900 leading-none">Identitas Almarhum</h2>
-                   <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Parameter & Informasi Dasar</p>
+                   <h2 className="text-lg font-black text-slate-900 leading-none">Identitas Almarhum</h2>
+                   <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Parameter & Informasi Dasar</p>
                 </div>
              </div>
 
-             <div className="mb-10 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-4">Hukum Pembagian Yang Digunakan <span className="text-red-500">*</span></label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Hukum Pembagian Yang Digunakan <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {[
                     { id: "Islam", label: "Hukum Islam", active: true },
                     { id: "Jawa", label: "Hukum Adat Jawa", active: true },
@@ -222,9 +222,9 @@ export default function TambahKeluargaPage() {
                       key={h.id}
                       type="button"
                       onClick={() => h.active && setHukum(h.id)}
-                      className={`flex items-center justify-between px-6 py-4 rounded-2xl font-black text-xs transition-all ${
+                      className={`flex items-center justify-between px-4 py-3 rounded-xl font-black text-xs transition-all ${
                         hukum === h.id 
-                          ? "bg-slate-900 text-white shadow-xl" 
+                          ? "bg-slate-900 text-white shadow-md" 
                           : h.active 
                             ? "bg-white text-slate-400 border border-slate-200 hover:border-emerald-300" 
                             : "bg-white/50 text-slate-300 border border-slate-100 cursor-not-allowed"
@@ -238,10 +238,10 @@ export default function TambahKeluargaPage() {
              </div>
 
              {hukum === "Jawa" && (
-                <div className="mb-10 p-8 bg-emerald-50/50 rounded-[2rem] border border-emerald-100 flex flex-col md:flex-row gap-8 items-center">
+                <div className="mb-6 p-5 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col md:flex-row gap-4 items-center">
                   <div className="flex-1">
-                    <label className="text-xs font-black text-emerald-600 uppercase tracking-widest block mb-4">Metode Adat Jawa</label>
-                    <div className="flex gap-4">
+                    <label className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-3">Metode Adat Jawa</label>
+                    <div className="flex gap-3">
                       {[
                         { id: "SEPIKUL_SEGENDONGAN", label: "Sepikul Segendongan (2:1)", desc: "Laki-laki 2, Perempuan 1" },
                         { id: "KUM_KUM_KUPAT", label: "Kum Kum Kupat (1:1)", desc: "Pembagian Sama Rata" },
@@ -250,57 +250,57 @@ export default function TambahKeluargaPage() {
                           key={m.id}
                           type="button"
                           onClick={() => setMetodeAdat(m.id)}
-                          className={`flex-1 p-4 rounded-2xl border-2 transition-all text-left ${
-                            metodeAdat === m.id ? "bg-white border-emerald-500 shadow-lg" : "bg-white/50 border-emerald-100 text-slate-400"
+                          className={`flex-1 p-3 rounded-xl border transition-all text-left ${
+                            metodeAdat === m.id ? "bg-white border-emerald-500 shadow-md" : "bg-white/50 border-emerald-100 text-slate-400"
                           }`}
                         >
-                          <p className="font-black text-xs text-slate-900">{m.label}</p>
-                          <p className="text-[10px] font-medium opacity-60 mt-1">{m.desc}</p>
+                          <p className="font-bold text-xs text-slate-900">{m.label}</p>
+                          <p className="text-[9px] font-medium opacity-60 mt-0.5">{m.desc}</p>
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="bg-white p-6 rounded-2xl border border-emerald-100 flex items-center gap-4">
+                  <div className="bg-white p-4 rounded-xl border border-emerald-100 flex items-center gap-3">
                     <div className="flex-1">
-                      <p className="font-black text-xs text-slate-900">Harta Gono-Gini (50%)</p>
-                      <p className="text-[10px] text-slate-500 font-medium mt-1">Potong 50% untuk pasangan sebelum dibagi.</p>
+                      <p className="font-bold text-xs text-slate-900">Harta Gono-Gini (50%)</p>
+                      <p className="text-[9px] text-slate-500 font-medium mt-0.5">Potong 50% untuk pasangan sebelum dibagi.</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={potongGonoGini} onChange={e => setPotongGonoGini(e.target.checked)} />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
                     </label>
                   </div>
                 </div>
              )}
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                <div className="space-y-4">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nomor NIK (Sesuai KTP) <span className="text-red-500">*</span></label>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Nomor NIK (Sesuai KTP) <span className="text-red-500">*</span></label>
                   <input 
                     type="text" 
                     maxLength={16}
-                    className={`w-full p-5 bg-slate-50 rounded-2xl border font-black transition-all ${errors.nik ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:border-emerald-500 focus:bg-white outline-none'}`}
+                    className={`w-full p-3 bg-slate-50 rounded-xl border font-bold text-sm transition-all ${errors.nik ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:border-emerald-500 focus:bg-white outline-none'}`}
                     placeholder="Masukkan 16 digit NIK..."
                     value={jenazah.nik}
                     onChange={(e) => setJenazah({...jenazah, nik: e.target.value})}
                   />
-                  {errors.nik && <p className="text-[10px] text-red-500 font-bold ml-2 mt-1">{errors.nik}</p>}
+                  {errors.nik && <p className="text-[9px] text-red-500 font-bold ml-2 mt-1">{errors.nik}</p>}
                 </div>
-                <div className="space-y-4">
-                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Nama Lengkap <span className="text-red-500">*</span></label>
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Nama Lengkap <span className="text-red-500">*</span></label>
                    <input 
                     type="text" 
-                    className={`w-full p-5 bg-slate-50 rounded-2xl border font-black outline-none transition-all ${errors.nama ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:bg-white'}`}
+                    className={`w-full p-3 bg-slate-50 rounded-xl border font-bold text-sm outline-none transition-all ${errors.nama ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:bg-white'}`}
                     value={jenazah.nama}
                     onChange={(e) => setJenazah({...jenazah, nama: e.target.value})}
                     placeholder="Masukkan Nama Lengkap..."
                    />
-                   {errors.nama && <p className="text-[10px] text-red-500 font-bold ml-2 mt-1">{errors.nama}</p>}
+                   {errors.nama && <p className="text-[9px] text-red-500 font-bold ml-2 mt-1">{errors.nama}</p>}
                 </div>
-                <div className="space-y-4">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Gender</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Gender</label>
                   <select 
-                    className="w-full p-5 bg-slate-50 rounded-2xl border border-slate-100 font-black outline-none focus:bg-white appearance-none"
+                    className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold text-sm outline-none focus:bg-white appearance-none"
                     value={jenazah.gender}
                     onChange={(e) => setJenazah({...jenazah, gender: e.target.value})}
                   >
@@ -308,21 +308,21 @@ export default function TambahKeluargaPage() {
                     <option value="Perempuan">Perempuan</option>
                   </select>
                 </div>
-                <div className="space-y-4">
-                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Tanggal Wafat (Sesuai Akta)</label>
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Tanggal Wafat (Sesuai Akta)</label>
                    <input 
                     type="date" 
-                    className="w-full p-5 bg-slate-50 rounded-2xl border border-slate-100 font-black outline-none focus:bg-white transition-all"
+                    className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold text-sm outline-none focus:bg-white transition-all"
                     value={jenazah.tanggalWafat}
                     onChange={(e) => setJenazah({...jenazah, tanggalWafat: e.target.value})}
                    />
                 </div>
-                <div className="md:col-span-2 space-y-4">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2">Status / Peran dalam Keluarga <span className="text-red-500">*</span></label>
+                <div className="md:col-span-2 space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Status / Peran dalam Keluarga <span className="text-red-500">*</span></label>
                     <div className="relative">
-                      <Tag className="absolute left-5 top-5 text-slate-300" size={20} />
+                      <Tag className="absolute left-3.5 top-3.5 text-slate-300 animate-pulse" size={16} />
                       <select 
-                       className={`w-full p-5 pl-14 rounded-2xl border font-black outline-none transition-all appearance-none ${errors.keterangan ? 'border-red-500 bg-red-50' : 'bg-slate-50 border-slate-100 focus:bg-white'}`}
+                       className={`w-full p-3 pl-10 rounded-xl border font-bold text-sm outline-none transition-all appearance-none ${errors.keterangan ? 'border-red-500 bg-red-50' : 'bg-slate-50 border-slate-100 focus:bg-white'}`}
                        value={jenazah.keterangan}
                        onChange={(e) => setJenazah({...jenazah, keterangan: e.target.value})}
                       >
@@ -334,75 +334,75 @@ export default function TambahKeluargaPage() {
                         <option value="Anak Laki-laki">Anak Laki-laki</option>
                         <option value="Anak Perempuan">Anak Perempuan</option>
                       </select>
-                      <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
                     </div>
-                    {errors.keterangan && <p className="text-[10px] text-red-500 font-bold ml-2 mt-1">{errors.keterangan}</p>}
+                    {errors.keterangan && <p className="text-[9px] text-red-500 font-bold ml-2 mt-0.5">{errors.keterangan}</p>}
                  </div>
-             </div>
+              </div>
           </div>
 
           {/* Ahli Waris Section */}
-          <div className="space-y-8">
-             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-2">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-emerald-100 rounded-[1.25rem] flex items-center justify-center text-emerald-600 shadow-inner">
-                    <Users size={24} />
+          <div className="space-y-6">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 shadow-inner">
+                    <Users size={18} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Daftar Ahli Waris</h2>
+                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Daftar Ahli Waris</h2>
                     <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-widest">
                        {ahliWaris.length} Anggota Keluarga
-                    </p>
+                     </p>
                   </div>
                 </div>
                 <button 
                   type="button" 
                   onClick={handleAddAhliWaris}
-                  className="group flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-2xl shadow-slate-200 active:scale-95 w-full sm:w-auto"
+                  className="group flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-md shadow-slate-200 active:scale-95 w-full sm:w-auto"
                 >
-                  <div className="bg-white/20 p-1 rounded-lg group-hover:rotate-90 transition-transform">
-                     <Plus size={16} />
+                  <div className="bg-white/20 p-1 rounded-md group-hover:rotate-90 transition-transform">
+                     <Plus size={12} />
                   </div>
                   <span>Tambah Anggota</span>
                 </button>
              </div>
 
-             <div className="space-y-6">
+             <div className="space-y-4">
                 <AnimatePresence>
                   {ahliWaris.map((heir, idx) => (
-                    <div key={heir.id} className="flex flex-col md:flex-row items-center gap-4 w-full group/row">
+                    <div key={heir.id} className="flex flex-col md:flex-row items-center gap-3 w-full group/row">
                       <motion.div 
                         initial={{ opacity: 0, x: -20 }} 
                         animate={{ opacity: 1, x: 0 }} 
                         exit={{ opacity: 0, x: 20 }}
-                        className="flex-1 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-lg shadow-slate-200/30 grid grid-cols-1 md:grid-cols-10 gap-6 items-start relative group hover:border-emerald-200 transition-all"
+                        className="flex-1 bg-white p-4 rounded-xl border border-slate-100 shadow-md shadow-slate-200/20 grid grid-cols-1 md:grid-cols-10 gap-4 items-start relative group hover:border-emerald-200 transition-all"
                       >
-                        <div className="md:col-span-3 space-y-2">
+                        <div className="md:col-span-3 space-y-1.5">
                            <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Nama Ahli Waris</label>
                            <input 
                              type="text" 
                              placeholder="Masukkan Nama..."
-                             className={`w-full h-14 p-4 rounded-2xl border font-bold outline-none transition-all text-sm ${errors.ahliWaris?.[idx] ? 'border-red-500 bg-red-50' : 'bg-slate-50 border-slate-50 focus:bg-white focus:border-emerald-300'}`}
+                             className={`w-full h-10 p-3 rounded-xl border font-bold outline-none transition-all text-xs ${errors.ahliWaris?.[idx] ? 'border-red-500 bg-red-50' : 'bg-slate-50 border-slate-50 focus:bg-white focus:border-emerald-300'}`}
                              value={heir.nama}
                              onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
                            />
-                           {errors.ahliWaris?.[idx] && <p className="text-[9px] text-red-500 font-bold ml-1 mt-1">{errors.ahliWaris[idx]}</p>}
+                           {errors.ahliWaris?.[idx] && <p className="text-[8px] text-red-500 font-bold ml-1 mt-0.5">{errors.ahliWaris[idx]}</p>}
                         </div>
-                        <div className="md:col-span-2 space-y-2">
+                        <div className="md:col-span-2 space-y-1.5">
                            <label className="text-[9px] font-black text-slate-400 uppercase ml-1">NIK (Opsional)</label>
                            <input 
                              type="text" 
                              placeholder="NIK..."
-                             className="w-full h-14 p-4 bg-slate-50 rounded-2xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all text-sm"
+                             className="w-full h-10 p-3 bg-slate-50 rounded-xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all text-xs"
                              value={heir.nik}
                              onChange={(e) => updateAhliWaris(idx, "nik", e.target.value)}
                            />
                         </div>
-                        <div className="md:col-span-3 space-y-2">
+                        <div className="md:col-span-3 space-y-1.5">
                            <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Hubungan Keluarga</label>
                            <div className="relative">
                              <select 
-                               className="w-full h-14 p-4 bg-slate-50 rounded-2xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all text-sm appearance-none pr-10"
+                               className="w-full h-10 p-3 bg-slate-50 rounded-xl border border-slate-50 font-bold outline-none focus:bg-white focus:border-emerald-300 transition-all text-xs appearance-none pr-8"
                                value={heir.hubungan}
                                onChange={(e) => updateAhliWaris(idx, "hubungan", e.target.value)}
                              >
@@ -417,31 +417,31 @@ export default function TambahKeluargaPage() {
                                <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
                                <option value="Saudara Perempuan Sekandung">Saudara Perempuan Sekandung</option>
                              </select>
-                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
                            </div>
                         </div>
-                        <div className="md:col-span-2 space-y-2">
+                        <div className="md:col-span-2 space-y-1.5">
                            <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Status Hidup</label>
                            <div className="relative">
                              <select 
-                              className={`w-full h-14 p-4 rounded-2xl border font-bold text-xs outline-none transition-all appearance-none pr-10 ${heir.statusHidup ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-red-50 border-red-100 text-red-600"}`}
+                              className={`w-full h-10 p-3 rounded-xl border font-bold text-xs outline-none transition-all appearance-none pr-8 ${heir.statusHidup ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-red-50 border-red-100 text-red-600"}`}
                               value={heir.statusHidup ? "Hidup" : "Meninggal"}
                               onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
                              >
                                 <option value="Hidup">Masih Hidup</option>
                                 <option value="Meninggal">Sudah Meninggal</option>
                              </select>
-                             <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${heir.statusHidup ? "text-emerald-400" : "text-red-400"}`} size={16} />
+                             <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${heir.statusHidup ? "text-emerald-400" : "text-red-400"}`} size={14} />
                            </div>
                         </div>
                       </motion.div>
 
-                      <div className="flex md:flex-col gap-3">
+                      <div className="flex md:flex-col gap-2">
                          <label 
-                          className={`w-14 h-14 flex items-center justify-center rounded-2xl border transition-all cursor-pointer shadow-sm ${heir.fileName ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200' : 'bg-white text-slate-400 border-slate-100 hover:bg-emerald-50 hover:text-emerald-600'}`} 
+                          className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all cursor-pointer shadow-sm ${heir.fileName ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-white text-slate-400 border-slate-100 hover:bg-emerald-50 hover:text-emerald-600'}`} 
                           title={heir.fileName ? `File: ${heir.fileName}` : "Upload KTP (Opsional)"}
                          >
-                            {heir.fileName ? <CheckCircle2 size={20} /> : <FileUp size={20} />}
+                            {heir.fileName ? <CheckCircle2 size={16} /> : <FileUp size={16} />}
                             <input 
                              type="file" 
                              accept="image/*,application/pdf"
@@ -463,10 +463,10 @@ export default function TambahKeluargaPage() {
                          <button 
                            type="button" 
                            onClick={() => setRemoveIndex(idx)}
-                           className="w-14 h-14 flex items-center justify-center bg-white text-slate-400 rounded-2xl border border-slate-100 shadow-sm hover:bg-red-50 hover:text-red-500 transition-all"
+                           className="w-10 h-10 flex items-center justify-center bg-white text-slate-400 rounded-xl border border-slate-100 shadow-sm hover:bg-red-50 hover:text-red-500 transition-all"
                            title="Hapus Anggota"
                          >
-                           <Trash2 size={20} />
+                           <Trash2 size={16} />
                          </button>
                       </div>
                     </div>
@@ -476,62 +476,62 @@ export default function TambahKeluargaPage() {
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="py-24 text-center border-4 border-dashed border-slate-50 rounded-[3.5rem] bg-slate-50/30 flex flex-col items-center justify-center"
+                    className="py-12 text-center border-2 border-dashed border-slate-50 rounded-2xl bg-slate-50/30 flex flex-col items-center justify-center"
                   >
-                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl shadow-slate-200/50 mb-6 text-slate-200">
-                       <Users size={40} />
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md mb-4 text-slate-200">
+                       <Users size={24} />
                     </div>
-                    <p className="text-xl font-black text-slate-300 uppercase tracking-widest">Belum ada ahli waris</p>
-                    <p className="text-slate-400 mt-2 font-medium">Klik tombol di atas untuk menambahkan anggota keluarga.</p>
+                    <p className="text-base font-black text-slate-300 uppercase tracking-widest">Belum ada ahli waris</p>
+                    <p className="text-slate-400 mt-1 font-medium text-xs">Klik tombol di atas untuk menambahkan anggota keluarga.</p>
                   </motion.div>
                 )}
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-8 h-fit">
-          <div className="premium-card bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group border-b-8 border-b-emerald-600">
-             <div className="relative z-10 flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400">
-                   <Wallet size={18} />
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-6 h-fit">
+          <div className="premium-card bg-slate-900 p-6 rounded-2xl text-white shadow-xl relative overflow-hidden group border-b-4 border-b-emerald-600">
+             <div className="relative z-10 flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center text-emerald-400">
+                   <Wallet size={16} />
                 </div>
                 <div>
-                   <h3 className="font-black text-sm uppercase tracking-widest">Rincian Asset</h3>
-                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Kalkulasi Otomatis</p>
+                   <h3 className="font-black text-xs uppercase tracking-widest">Rincian Asset</h3>
+                   <p className="text-[9px] text-slate-550 font-bold uppercase tracking-widest">Kalkulasi Otomatis</p>
                 </div>
              </div>
              
-             <div className="relative z-10 space-y-6">
-                <div className="space-y-3">
-                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Total Harta (Mirkah)</label>
+             <div className="relative z-10 space-y-4">
+                <div className="space-y-2">
+                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Total Harta (Mirkah)</label>
                    <div className="relative">
-                      <span className="absolute left-5 top-5 text-slate-600 font-black text-xs">Rp</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 font-bold text-xs">Rp</span>
                       <input 
-                        className="w-full p-5 pl-12 bg-white/5 rounded-2xl border border-white/10 font-black outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-emerald-400"
+                        className="w-full p-3 pl-10 bg-white/5 rounded-xl border border-white/10 font-bold text-sm outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-emerald-400"
                         value={harta}
                         onChange={(e) => setHarta(formatIDR(e.target.value))}
                         placeholder="0"
                       />
                    </div>
                 </div>
-                <div className="space-y-3">
-                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Total Utang Almarhum</label>
+                <div className="space-y-2">
+                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Total Utang Almarhum</label>
                    <div className="relative">
-                      <span className="absolute left-5 top-5 text-slate-600 font-black text-xs">Rp</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 font-bold text-xs">Rp</span>
                       <input 
-                        className="w-full p-5 pl-12 bg-white/5 rounded-2xl border border-white/10 font-black outline-none focus:border-red-400 focus:bg-white/10 transition-all text-red-400"
+                        className="w-full p-3 pl-10 bg-white/5 rounded-xl border border-white/10 font-bold text-sm outline-none focus:border-red-400 focus:bg-white/10 transition-all text-red-400"
                         value={utang}
                         onChange={(e) => setUtang(formatIDR(e.target.value))}
                         placeholder="0"
                       />
                    </div>
                 </div>
-                <div className="space-y-3">
-                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Wasiat (Max 1/3)</label>
+                <div className="space-y-2">
+                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Wasiat (Max 1/3)</label>
                    <div className="relative">
-                      <span className="absolute left-5 top-5 text-slate-600 font-black text-xs">Rp</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 font-bold text-xs">Rp</span>
                       <input 
-                        className="w-full p-5 pl-12 bg-white/5 rounded-2xl border border-white/10 font-black outline-none focus:border-blue-400 focus:bg-white/10 transition-all text-blue-400"
+                        className="w-full p-3 pl-10 bg-white/5 rounded-xl border border-white/10 font-bold text-sm outline-none focus:border-blue-400 focus:bg-white/10 transition-all text-blue-400"
                         value={wasiat}
                         onChange={(e) => setWasiat(formatIDR(e.target.value))}
                         placeholder="0"
@@ -541,14 +541,14 @@ export default function TambahKeluargaPage() {
              </div>
 
              {/* Background Decoration */}
-             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-x-8 -translate-y-8" />
-             <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/5 rounded-full translate-x-8 translate-y-8" />
+             <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -translate-x-6 -translate-y-6" />
+             <div className="absolute bottom-0 left-0 w-20 h-20 bg-blue-500/5 rounded-full translate-x-6 translate-y-6" />
           </div>
 
           <button 
             type="submit" 
             disabled={loading || !hukum}
-            className="w-full py-8 bg-emerald-600 text-white rounded-[2.5rem] font-black text-lg tracking-tight hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-200 active:scale-95 flex flex-col items-center justify-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed group"
+            className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm tracking-tight hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200 active:scale-95 flex flex-col items-center justify-center gap-0.5 disabled:opacity-30 disabled:cursor-not-allowed group"
           >
             {loading ? (
               <span className="animate-spin rounded-full h-8 w-8 border-4 border-white border-t-transparent mb-2" />

@@ -167,21 +167,21 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
     : { primary: "emerald", bg: "bg-emerald-600", text: "text-emerald-600", border: "border-emerald-500", light: "bg-emerald-50", shadow: "shadow-emerald-200" };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pb-32">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
-        <div className="flex items-center gap-6">
-          <Link href="/admin/keluarga" className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-colors text-slate-600">
-            <ArrowLeft size={24} />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/20">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/keluarga" className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors text-slate-600">
+            <ArrowLeft size={18} />
           </Link>
           <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{data.nama}</h1>
-            <p className="text-slate-500 font-medium">Verified NIK: {data.nik} • Ditambahkan {new Date(data.createdAt).toLocaleDateString('id-ID')}</p>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">{data.nama}</h1>
+            <p className="text-slate-500 font-medium text-xs">Verified NIK: {data.nik} • Ditambahkan {new Date(data.createdAt).toLocaleDateString('id-ID')}</p>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row gap-6 items-end">
+        <div className="flex flex-col md:flex-row gap-4 items-end">
           <div className="flex-1 w-full">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-2">Sistem Hukum Terpilih</label>
-            <div className="flex gap-2">
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5 px-1.5">Sistem Hukum Terpilih</label>
+            <div className="flex gap-1.5">
               {[
                 { id: "Islam", label: "Islam" },
                 { id: "Jawa", label: "Adat Jawa" },
@@ -192,9 +192,9 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                   <button 
                     key={h.id}
                     disabled={!isSelectedLaw}
-                    className={`px-4 py-3 rounded-xl font-bold text-[11px] transition-all flex items-center gap-2 whitespace-nowrap ${
+                    className={`px-3 py-2 rounded-lg font-bold text-[10px] transition-all flex items-center gap-1.5 whitespace-nowrap ${
                       isSelectedLaw
-                        ? "bg-slate-900 text-white shadow-lg cursor-default" 
+                        ? "bg-slate-900 text-white shadow-md cursor-default" 
                         : "bg-slate-50 text-slate-200 border border-slate-50 cursor-not-allowed opacity-40"
                     }`}
                   >
@@ -205,99 +205,99 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
               })}
             </div>
           </div>
-          <div className="flex gap-3">
-             <button onClick={downloadPDF} disabled={!data.logKalkulasi} className="p-5 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-900 hover:text-white transition-all disabled:opacity-30 shadow-lg">
-                <Download size={20} />
+          <div className="flex gap-2">
+             <button onClick={downloadPDF} disabled={!data.logKalkulasi} className="p-4 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-900 hover:text-white transition-all disabled:opacity-30 shadow-md">
+                <Download size={16} />
              </button>
-             <button onClick={handleCalculate} disabled={calculating} className={`flex items-center justify-center gap-3 px-10 py-5 ${theme.bg} text-white rounded-2xl font-black hover:opacity-90 transition-all shadow-xl ${theme.shadow} active:scale-95 disabled:opacity-50`}>
-                {calculating ? <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" /> : <Zap size={20} fill="currentColor" />}
+             <button onClick={handleCalculate} disabled={calculating} className={`flex items-center justify-center gap-2 px-6 py-3.5 ${theme.bg} text-white rounded-xl font-black hover:opacity-90 transition-all shadow-lg ${theme.shadow} active:scale-95 disabled:opacity-50 text-xs`}>
+                {calculating ? <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" /> : <Zap size={16} fill="currentColor" />}
                 <span>{data.ahliWaris.some((h: any) => h.hasil) ? "Kalkulasi Ulang" : "Mulai Kalkulasi"}</span>
              </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="space-y-8">
-          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`p-8 rounded-[2.5rem] border shadow-2xl transition-all ${data.ahliWaris.some((h: any) => h.hasil) ? 'bg-slate-900 text-white border-slate-800' : 'bg-white text-slate-400 border-slate-100'}`}>
-             <div className={`flex items-center gap-3 mb-6 font-black uppercase text-xs tracking-widest ${theme.text}`}>
-                <Scale size={18} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`p-6 rounded-2xl border shadow-lg transition-all ${data.ahliWaris.some((h: any) => h.hasil) ? 'bg-slate-900 text-white border-slate-800' : 'bg-white text-slate-400 border-slate-100'}`}>
+             <div className={`flex items-center gap-2 mb-4 font-black uppercase text-[10px] tracking-widest ${theme.text}`}>
+                <Scale size={16} />
                 <span>{data.hukum === "Jawa" ? "Kategori Masalah Adat" : "Kategori Masalah Syariat"}</span>
              </div>
              <div>
-                <h3 className="text-3xl font-black mb-3">
+                <h3 className="text-xl font-black mb-2">
                   {data?.hukum === "Jawa" 
                     ? (data.logKalkulasi?.metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan" : data.logKalkulasi?.metodeAdat === "KUM_KUM_KUPAT" ? "Kum-Kum Kupat" : "Belum Dikalkulasi") 
                     : (data.logKalkulasi?.statusAulRadd || "Normal")}
                 </h3>
-                <p className="text-sm font-medium leading-relaxed opacity-70">
+                <p className="text-xs font-medium leading-relaxed opacity-70">
                    {getProblemDescription(data.logKalkulasi?.statusAulRadd)}
                 </p>
              </div>
           </motion.div>
 
           {/* Profil Almarhum */}
-          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={`bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/30 overflow-hidden relative border-b-8 ${theme.border}`}>
-            <div className={`relative z-10 flex items-center gap-3 mb-8 ${theme.text} font-black uppercase text-xs tracking-widest`}>
-              <User size={16} strokeWidth={3} />
+          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={`bg-white p-6 rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/20 overflow-hidden relative border-b-4 ${theme.border}`}>
+            <div className={`relative z-10 flex items-center gap-2 mb-6 ${theme.text} font-black uppercase text-[10px] tracking-widest`}>
+              <User size={14} strokeWidth={3} />
               <span>Identitas Jenazah</span>
             </div>
-            <div className="relative z-10 space-y-6">
-               <div className="bg-slate-50 p-6 rounded-3xl">
-                  <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">
-                     <Tag size={12} /> Status / Peran
+            <div className="relative z-10 space-y-4">
+               <div className="bg-slate-50 p-4 rounded-xl">
+                  <div className="flex items-center gap-1.5 text-slate-400 text-[9px] font-black uppercase tracking-widest mb-1.5">
+                     <Tag size={10} /> Status / Peran
                   </div>
-                  <p className="font-black text-slate-900 text-lg leading-snug">Meninggal sebagai {data.keterangan || "-"}</p>
+                  <p className="font-bold text-slate-900 text-base leading-snug">Meninggal sebagai {data.keterangan || "-"}</p>
                </div>
-               <div className="flex justify-between items-center px-4">
-                 <span className="text-slate-400 font-bold text-[10px] uppercase">Gender</span>
-                 <span className="font-black text-slate-800">{data.gender}</span>
+               <div className="flex justify-between items-center px-2 text-xs">
+                 <span className="text-slate-400 font-bold uppercase">Gender</span>
+                 <span className="font-bold text-slate-800">{data.gender}</span>
                </div>
-               <div className="flex justify-between items-center px-4">
-                 <span className="text-slate-400 font-bold text-[10px] uppercase whitespace-nowrap">Waktu Wafat</span>
-                 <span className="font-black text-slate-800 text-right">
+               <div className="flex justify-between items-center px-2 text-xs">
+                 <span className="text-slate-400 font-bold uppercase whitespace-nowrap">Waktu Wafat</span>
+                 <span className="font-bold text-slate-800 text-right">
                    {data.tanggalWafat ? new Date(data.tanggalWafat).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
                  </span>
                </div>
-                <div className="pt-6 border-t border-slate-50">
-                   <div className={`${theme.light} p-6 rounded-[2rem] ${theme.text}`}>
-                     <p className="font-bold text-[10px] uppercase tracking-widest mb-1">Total Aset (Mirkah)</p>
-                     <p className="font-black text-2xl">Rp {data.hartaKotor.toLocaleString('id-ID')}</p>
+                <div className="pt-4 border-t border-slate-50">
+                   <div className={`${theme.light} p-4 rounded-xl ${theme.text}`}>
+                     <p className="font-bold text-[9px] uppercase tracking-widest mb-0.5">Total Aset (Mirkah)</p>
+                     <p className="font-black text-xl">Rp {data.hartaKotor.toLocaleString('id-ID')}</p>
                    </div>
                 </div>
             </div>
           </motion.div>
         </div>
 
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6">
            {/* Section Ringkasan */}
-           <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl">
-              <div className="flex justify-between items-center mb-10">
-                <div className="flex items-center gap-3 font-black uppercase text-xs tracking-widest text-slate-400">
-                  <Users size={18} />
+           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-lg">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2.5 font-black uppercase text-[10px] tracking-widest text-slate-400">
+                  <Users size={16} />
                   <span>Daftar Ahli Waris & Porsi Final</span>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                    {["Semua", "Mewarisi", "Mahjub"].map(f => (
-                     <button key={f} onClick={() => setFilterWaris(f)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filterWaris === f ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}>
+                     <button key={f} onClick={() => setFilterWaris(f)} className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${filterWaris === f ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}>
                         {f}
                      </button>
                    ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(() => {
                   const filtered = data.ahliWaris.filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"));
                   
                   if (filtered.length === 0) {
                     return (
-                      <div className="col-span-full py-20 flex flex-col items-center justify-center text-center bg-slate-50/50 rounded-[3rem] border-2 border-dashed border-slate-100">
-                         <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-slate-200 shadow-sm mb-4">
-                            <Users size={40} />
+                      <div className="col-span-full py-12 flex flex-col items-center justify-center text-center bg-slate-50/50 rounded-xl border-2 border-dashed border-slate-100">
+                         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-slate-200 shadow-sm mb-3">
+                            <Users size={24} />
                          </div>
-                         <h3 className="text-lg font-black text-slate-400 uppercase tracking-widest">Tidak Ada Data</h3>
-                         <p className="text-slate-400 text-sm mt-1">Tidak ditemukan ahli waris dengan kategori "{filterWaris}"</p>
+                         <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Tidak Ada Data</h3>
+                         <p className="text-slate-400 text-xs mt-0.5">Tidak ditemukan ahli waris dengan kategori "{filterWaris}"</p>
                       </div>
                     );
                   }
@@ -305,31 +305,31 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                   return filtered.map((h: any, i: number) => (
                     <motion.div key={h.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                       onClick={() => setSelectedHeir(h)}
-                      className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:bg-white hover:shadow-xl transition-all cursor-pointer group">
-                      <div className="flex justify-between items-start mb-4">
+                      className="bg-slate-50 p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
+                      <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h4 className="font-black text-slate-900 text-lg tracking-tight">{h.nama}</h4>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h.hubungan}</p>
+                          <h4 className="font-bold text-slate-900 text-base tracking-tight">{h.nama}</h4>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{h.hubungan}</p>
                         </div>
-                        <span className={`text-[8px] font-black px-2 py-1 rounded-md border uppercase tracking-widest ${h.hasil?.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-400 border-slate-200"}`}>
+                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase tracking-widest ${h.hasil?.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-100 text-slate-400 border-slate-200"}`}>
                           {h.hasil?.status || "Belum Dihitung"}
                         </span>
                       </div>
-                      <div className="flex justify-between items-end pt-4 border-t border-slate-200/50">
+                      <div className="flex justify-between items-end pt-3 border-t border-slate-200/50">
                         <div>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Porsi</p>
-                          <div className="flex items-center gap-2">
-                              <p className="text-xl font-black text-slate-900">{h.hasil?.jatahPersen || "0%"}</p>
+                          <p className="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Porsi</p>
+                          <div className="flex items-center gap-1.5">
+                              <p className="text-lg font-black text-slate-900">{h.hasil?.jatahPersen || "0%"}</p>
                               {h.fileKtpKk && (
-                                <div className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-md flex items-center justify-center" title="KTP Tersedia">
-                                    <BadgeCheck size={12} />
+                                <div className="w-4.5 h-4.5 bg-emerald-100 text-emerald-600 rounded flex items-center justify-center" title="KTP Tersedia">
+                                    <BadgeCheck size={10} />
                                 </div>
                               )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Nominal</p>
-                          <p className="text-sm font-black text-emerald-600">Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
+                          <p className="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Nominal</p>
+                          <p className="text-xs font-black text-emerald-600">Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -347,68 +347,68 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
             className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-6"
             onClick={() => setSelectedHeir(null)}>
             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white w-full max-w-xl rounded-[4rem] shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-              <div className="p-12">
-                <div className="flex justify-between items-start mb-10">
-                  <div className="flex items-center gap-6">
-                    <div className={`w-20 h-20 ${theme.light} rounded-[2rem] flex items-center justify-center ${theme.text} shadow-inner`}>
-                      <Scale size={40} />
-                    </div>
-                    <div>
-                      <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama}</h2>
-                      <p className="text-slate-400 text-xs font-black uppercase tracking-widest mt-2">{selectedHeir.hubungan} • {selectedHeir.nik || "Tanpa NIK"}</p>
-                    </div>
-                  </div>
-                  {selectedHeir.fileKtpKk && (
-                     <a 
-                      href={selectedHeir.fileKtpKk} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-lg flex items-center gap-2 group"
-                     >
-                        <Download size={20} className="group-hover:translate-y-0.5 transition-transform" />
-                        <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Berkas KTP</span>
-                     </a>
-                  )}
+              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                   <div className="flex items-center gap-4">
+                     <div className={`w-14 h-14 ${theme.light} rounded-xl flex items-center justify-center ${theme.text} shadow-inner`}>
+                       <Scale size={28} />
+                     </div>
+                     <div>
+                       <h2 className="text-2xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama}</h2>
+                       <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">{selectedHeir.hubungan} • {selectedHeir.nik || "Tanpa NIK"}</p>
+                     </div>
+                   </div>
+                   {selectedHeir.fileKtpKk && (
+                      <a 
+                       href={selectedHeir.fileKtpKk} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-md flex items-center gap-1.5 group"
+                      >
+                         <Download size={16} className="group-hover:translate-y-0.5 transition-transform" />
+                         <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Berkas KTP</span>
+                      </a>
+                   )}
                 </div>
                 
-                <div className="bg-slate-50 rounded-[2.5rem] p-8 mb-8 border border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <BadgeCheck size={16} className={theme.text} /> Analisis Hukum Keputusan
+                <div className="bg-slate-50 rounded-2xl p-5 mb-5 border border-slate-100">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <BadgeCheck size={14} className={theme.text} /> Analisis Hukum Keputusan
                   </p>
-                  <p className="text-slate-700 font-medium leading-relaxed text-base">{selectedHeir.hasil?.alasan || "Detail perhitungan belum tersedia. Silakan jalankan kalkulasi terlebih dahulu."}</p>
+                  <p className="text-slate-700 font-medium leading-relaxed text-sm">{selectedHeir.hasil?.alasan || "Detail perhitungan belum tersedia. Silakan jalankan kalkulasi terlebih dahulu."}</p>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="p-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm text-center">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Porsi Final</p>
-                    <p className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.hasil?.jatahPersen || "0%"}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-sm text-center">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Porsi Final</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tight">{selectedHeir.hasil?.jatahPersen || "0%"}</p>
                   </div>
-                  <div className={`p-8 ${theme.light} border ${theme.border}/20 rounded-[2rem] shadow-sm text-center`}>
-                    <p className={`text-[10px] font-black ${theme.text} uppercase tracking-widest mb-2`}>Nominal IDR</p>
-                    <p className={`text-2xl font-black ${theme.text} tracking-tighter`}>Rp {(selectedHeir.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
+                  <div className={`p-5 ${theme.light} border ${theme.border}/20 rounded-xl shadow-sm text-center`}>
+                    <p className={`text-[9px] font-black ${theme.text} uppercase tracking-widest mb-1.5`}>Nominal IDR</p>
+                    <p className={`text-lg font-black ${theme.text} tracking-tight`}>Rp {(selectedHeir.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</p>
                   </div>
                 </div>
 
                 {selectedHeir.fileKtpKk && (
-                  <div className="mt-8 p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 px-2">
-                       <User size={16} className={theme.text} /> Lampiran Identitas Terverifikasi
+                  <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5 px-1.5">
+                       <User size={14} className={theme.text} /> Lampiran Identitas Terverifikasi
                     </p>
-                    <div className="relative group rounded-[2rem] overflow-hidden border-2 border-white shadow-xl bg-white aspect-[16/9] flex items-center justify-center">
+                    <div className="relative group rounded-xl overflow-hidden border-2 border-white shadow-lg bg-white aspect-[16/9] flex items-center justify-center">
                        {selectedHeir.fileKtpKk.toLowerCase().endsWith('.pdf') ? (
-                         <div className="flex flex-col items-center gap-3">
-                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shadow-inner">
-                               <FileText size={32} />
+                         <div className="flex flex-col items-center gap-2">
+                            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shadow-inner">
+                               <FileText size={24} />
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dokumen PDF Terlampir</p>
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dokumen PDF Terlampir</p>
                             <a 
                               href={selectedHeir.fileKtpKk} 
                               target="_blank" 
                               rel="noopener noreferrer" 
-                              className="mt-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all flex items-center gap-2"
+                              className="mt-1.5 px-4 py-2 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-red-600 transition-all flex items-center gap-1.5"
                             >
-                               <Eye size={14} /> Buka Dokumen PDF
+                               <Eye size={12} /> Buka Dokumen PDF
                             </a>
                          </div>
                        ) : (
@@ -426,7 +426,7 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                                 href={selectedHeir.fileKtpKk} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
-                                className="px-6 py-3 bg-white rounded-xl text-slate-900 font-black text-[10px] uppercase tracking-widest shadow-2xl hover:bg-emerald-500 hover:text-white transition-all"
+                                className="px-4 py-2 bg-white rounded-lg text-slate-900 font-bold text-[9px] uppercase tracking-widest shadow-2xl hover:bg-emerald-500 hover:text-white transition-all"
                               >
                                 Lihat Dokumen Asli
                               </a>
@@ -437,9 +437,9 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                   </div>
                 )}
                 
-                <div className="flex gap-4 mt-10">
+                <div className="flex gap-3 mt-6">
                    <button onClick={() => setSelectedHeir(null)}
-                     className="flex-1 py-6 bg-slate-100 text-slate-400 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
+                     className="flex-1 py-3.5 bg-slate-100 text-slate-400 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
                      Tutup
                    </button>
                    {selectedHeir.fileKtpKk && (
@@ -447,9 +447,9 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                       href={selectedHeir.fileKtpKk} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex-[2] py-6 bg-slate-900 text-white rounded-[2rem] flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl"
+                      className="flex-[2] py-3.5 bg-slate-900 text-white rounded-xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg"
                      >
-                       <Download size={18} />
+                       <Download size={16} />
                        Lihat Berkas KTP
                      </a>
                    )}

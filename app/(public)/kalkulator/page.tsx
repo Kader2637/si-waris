@@ -17,8 +17,9 @@ import {
   Wallet,
   Users,
   CheckCircle2,
-  Sparkles,
-  Download
+  Download,
+  Coins,
+  ChevronLeft
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -43,6 +44,27 @@ const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string 
   "Kum-Kum Kupat": { color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-200" },
 };
 
+const chartColors = [
+  "bg-emerald-500 shadow-emerald-500/10",
+  "bg-blue-500 shadow-blue-500/10",
+  "bg-indigo-500 shadow-indigo-500/10",
+  "bg-amber-500 shadow-amber-500/10",
+  "bg-purple-500 shadow-purple-500/10",
+  "bg-rose-500 shadow-rose-500/10",
+  "bg-teal-500 shadow-teal-500/10",
+  "bg-cyan-500 shadow-cyan-500/10",
+];
+const textColors = [
+  "text-emerald-650",
+  "text-blue-600",
+  "text-indigo-600",
+  "text-amber-600",
+  "text-purple-650",
+  "text-rose-600",
+  "text-teal-600",
+  "text-cyan-600",
+];
+
 const formatIDR = (val: string) => {
   const n = val.replace(/\D/g, "");
   return n ? new Intl.NumberFormat("id-ID").format(parseInt(n)) : "";
@@ -50,6 +72,9 @@ const formatIDR = (val: string) => {
 const parseNum = (v: string) => parseInt(v.replace(/\D/g, "")) || 0;
 
 export default function KalkulatorPage() {
+  // Wizard Steps: 1 (Dasar Hukum & Pewaris), 2 (Parameter Harta), 3 (Daftar Ahli Waris), 4 (Hasil Perhitungan)
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+
   const [namaJenazah, setNamaJenazah] = useState("");
   const [harta, setHarta] = useState("");
   const [utang, setUtang] = useState("");
@@ -58,11 +83,11 @@ export default function KalkulatorPage() {
   const [ahliWaris, setAhliWaris] = useState<{ nama: string; hubungan: string }[]>([]);
   const [hasil, setHasil] = useState<any>(null);
   const [selectedHeir, setSelectedHeir] = useState<any>(null);
-  const [step, setStep] = useState<1 | 2>(1);
   const [hukum, setHukum] = useState<string>("Islam");
   const [metodeAdat, setMetodeAdat] = useState<"SEPIKUL_SEGENDONGAN" | "KUM_KUM_KUPAT">("SEPIKUL_SEGENDONGAN");
   const [potongGonoGini, setPotongGonoGini] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -74,8 +99,12 @@ export default function KalkulatorPage() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  const addHeir = () => setAhliWaris([...ahliWaris, { nama: "", hubungan: "Anak Laki-laki" }]);
+  const addHeir = (hubungan: string = "Anak Laki-laki") => {
+    setAhliWaris([...ahliWaris, { nama: "", hubungan }]);
+  };
+  
   const removeHeir = (i: number) => setAhliWaris(ahliWaris.filter((_, idx) => idx !== i));
+  
   const updateHeir = (i: number, field: string, value: string) => {
     const arr = [...ahliWaris];
     arr[i] = { ...arr[i], [field]: value };
@@ -97,7 +126,7 @@ export default function KalkulatorPage() {
     } else {
       setHasil(calculateFaraid(jenazah as any, warisList as any));
     }
-    setStep(2);
+    setCurrentStep(4);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -116,15 +145,15 @@ export default function KalkulatorPage() {
     doc.setFontSize(12);
     doc.text("DATA PEWARIS (ALMARHUM/AH)", 20, 45);
     doc.setFontSize(10);
-    doc.text(`Nama: ${namaJenazah || "-"}`, 20, 52);
+    doc.text(`Nama Pewaris: ${namaJenazah || "-"}`, 20, 52);
     doc.text(`Jenis Kelamin: ${gender}`, 20, 57);
-    doc.text(`Dasar Hukum: ${hukum}`, 20, 62);
+    doc.text(`Dasar Hukum: ${hukum === "Islam" ? "Syariat Islam (Faraid)" : "Adat Jawa"}`, 20, 62);
     doc.text(`Status Kasus: ${hasil.statusAulRadd}`, 20, 67);
     doc.text(`Tanggal Cetak: ${date}`, 20, 72);
 
-    doc.text("RINGKASAN HARTA", 130, 45);
+    doc.text("RINGKASAN KEUANGAN HARTA", 130, 45);
     doc.text(`Harta Kotor: Rp ${parseNum(harta).toLocaleString("id-ID")}`, 130, 52);
-    doc.text(`Utang: Rp ${parseNum(utang).toLocaleString("id-ID")}`, 130, 57);
+    doc.text(`Utang/Kewajiban: Rp ${parseNum(utang).toLocaleString("id-ID")}`, 130, 57);
     doc.text(`Wasiat: Rp ${parseNum(wasiat).toLocaleString("id-ID")}`, 130, 62);
     doc.text(`Harta Bersih (Mirkah): Rp ${hasil.hartaBersih.toLocaleString("id-ID")}`, 130, 67);
 
@@ -166,10 +195,10 @@ export default function KalkulatorPage() {
       alternateRowStyles: {
         fillColor: [252, 252, 252]
       },
-      didDrawPage: (data) => {
+      didDrawPage: () => {
         doc.setFontSize(8);
         doc.setTextColor(150);
-        doc.text("LAPORAN RESMI PEMBAGIAN WARIS - E-MAWARITS v2.0", 20, 10);
+        doc.text("LAPORAN RESMI PEMBAGIAN WARIS - E-MAWARITS", 20, 10);
         doc.text(date, 190, 10, { align: "right" });
         doc.setDrawColor(230, 230, 230);
         doc.line(20, 12, 190, 12);
@@ -190,474 +219,733 @@ export default function KalkulatorPage() {
 
   const hartaBersih = parseNum(harta) - parseNum(utang) - parseNum(wasiat);
 
-  return (
-    <div className="min-h-screen bg-[#fafbfc] text-slate-900 pb-96 selection:bg-emerald-100 selection:text-emerald-900 relative overflow-hidden">
+  // Step names for progress tracking
+  const stepsConfig = [
+    { num: 1, label: "Hukum & Pewaris", icon: User },
+    { num: 2, label: "Parameter Harta", icon: Wallet },
+    { num: 3, label: "Ahli Waris", icon: Users },
+    { num: 4, label: "Hasil Distribusi", icon: CheckCircle2 }
+  ];
 
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-48 selection:bg-emerald-100 selection:text-emerald-900 relative overflow-hidden">
+      
+      {/* Background tracking blurs */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <motion.div
           animate={{
-            x: mousePosition.x * 0.05,
-            y: mousePosition.y * 0.05,
-            rotate: [0, 10, 0]
+            x: mousePosition.x * 0.02,
+            y: mousePosition.y * 0.02,
           }}
-          transition={{ type: "tween", ease: "linear", duration: 0.1 }}
-          className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] bg-emerald-100/40 rounded-full blur-[120px]"
+          transition={{ type: "tween", ease: "linear", duration: 0.2 }}
+          className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[100px]"
         />
         <motion.div
           animate={{
-            x: mousePosition.x * -0.05,
-            y: mousePosition.y * -0.05,
+            x: mousePosition.x * -0.02,
+            y: mousePosition.y * -0.02,
           }}
-          transition={{ type: "tween", ease: "linear", duration: 0.1 }}
-          className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-100/30 rounded-full blur-[100px]"
+          transition={{ type: "tween", ease: "linear", duration: 0.2 }}
+          className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[80px]"
         />
       </div>
 
-      <div className="relative z-10 pt-32 pb-20 px-6 max-w-6xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-emerald-100 mb-8 mx-auto">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Smart Engine v1.0</span>
+      <div className="absolute inset-0 bg-dot-grid opacity-50 pointer-events-none z-0" />
+
+      {/* Header Section */}
+      <div className="relative z-10 pt-32 pb-10 px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white border border-slate-200 mb-4 mx-auto shadow-sm">
+            <Calculator size={12} className="text-emerald-600 animate-pulse" />
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Kalkulator Waris Terintegrasi</span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-none">
-            <span className="text-slate-900">Kalkulasi </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600">Presisi.</span>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-3 leading-none text-slate-955">
+            Kalkulator Waris <span className="text-emerald-600">Multi-Hukum.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-500 font-medium max-w-3xl mx-auto leading-relaxed">
-            Sistem distribusi waris interaktif yang mensinkronisasi Syariat Islam, Adat Jawa, dan Hukum Nasional secara real-time.
+          <p className="text-xs md:text-sm text-slate-500 font-semibold max-w-xl mx-auto leading-relaxed">
+            Sistem kalkulasi porsi warisan yang presisi, mendukung hukum Faraid Islam dan Adat Jawa secara real-time.
           </p>
         </motion.div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <AnimatePresence mode="wait">
-          {step === 1 ? (
+      {/* Progress Steps Indicator Bar */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-12 relative z-10">
+        <div className="max-w-4xl mx-auto bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex justify-between items-center relative">
+          
+          {/* Progress bar background line */}
+          <div className="absolute left-[10%] right-[10%] top-[42%] h-0.5 bg-slate-100 z-0 hidden md:block" />
+
+          {stepsConfig.map((s) => {
+            const isCompleted = currentStep > s.num;
+            const isActive = currentStep === s.num;
+            const Icon = s.icon;
+            
+            return (
+              <div key={s.num} className="flex flex-col items-center z-10 relative flex-1">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-300 font-black text-xs ${
+                  isCompleted 
+                    ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                    : isActive 
+                      ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-900/10 scale-105"
+                      : "bg-white border-slate-200 text-slate-400"
+                }`}>
+                  {isCompleted ? <CheckCircle2 size={16} /> : <span>{s.num}</span>}
+                </div>
+                <span className={`text-[9px] font-black uppercase tracking-wider mt-2 hidden md:block ${isActive ? "text-slate-900" : isCompleted ? "text-emerald-600" : "text-slate-450"}`}>
+                  {s.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Main wizard frame */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <AnimatePresence mode="wait">
+          
+          {/* STEP 1: DASAR HUKUM & DATA PEWARIS */}
+          {currentStep === 1 && (
             <motion.div
               key="step1"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-              transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-8 text-left"
             >
-
-              <div className="xl:col-span-8 space-y-8">
-                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -mr-10 -mt-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                  <div className="flex items-center gap-4 mb-8 relative">
-                    <motion.div animate={{ rotate: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 5 }} className="w-14 h-14 bg-gradient-to-br from-emerald-100 to-teal-50 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner">
-                      <Scale size={28} />
-                    </motion.div>
-                    <div>
-                      <h2 className="text-3xl font-black text-slate-900 tracking-tight">1. Sistem Hukum</h2>
-                      <p className="text-sm font-semibold text-slate-400 mt-1 uppercase tracking-wider">Pilih dasar hukum</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
-                    {[
-                      { id: "Islam", label: "☪ Hukum Islam (Faraid)", active: true },
-                      { id: "Jawa", label: "🏛 Hukum Adat Jawa", active: true },
-                      { id: "Perdata", label: "⚖ Hukum Perdata", active: false },
-                    ].map(h => (
-                      <motion.button key={h.id} whileHover={h.active ? { y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" } : {}} whileTap={h.active ? { scale: 0.95 } : {}}
-                        onClick={() => h.active && setHukum(h.id)}
-                        className={`relative p-6 rounded-3xl font-bold text-sm transition-colors text-left flex items-center justify-between border-2 ${hukum === h.id ? "bg-slate-900 text-white border-slate-900" : h.active ? "bg-white text-slate-600 border-slate-100 hover:border-emerald-200" : "bg-slate-50 text-slate-300 border-slate-50 cursor-not-allowed"
-                          }`}>
-                        {h.label}
-                        {hukum === h.id && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}><BadgeCheck size={24} className="text-emerald-400" /></motion.div>}
-                      </motion.button>
-                    ))}
-                  </div>
-
-                  <AnimatePresence>
-                    {hukum === "Jawa" && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                        <div className="mt-6 p-6 bg-amber-50/50 rounded-3xl border border-amber-100/50 space-y-6">
-                          <div>
-                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-widest block mb-3">Metode Pembagian Tradisional</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {[{ id: "SEPIKUL_SEGENDONGAN", l: "Sepikul Segendongan", d: "Rasio 2:1 (L:P)" }, { id: "KUM_KUM_KUPAT", l: "Kum-Kum Kupat", d: "Sama Rata 1:1" }].map(m => (
-                                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} key={m.id} onClick={() => setMetodeAdat(m.id as any)}
-                                  className={`p-5 rounded-2xl border-2 transition-all text-left ${metodeAdat === m.id ? "bg-white border-amber-500 text-amber-900 shadow-md" : "bg-white/50 border-amber-200/50 text-amber-700/60"}`}>
-                                  <p className="font-black text-sm">{m.l}</p>
-                                  <p className="text-xs mt-1 font-bold">{m.d}</p>
-                                </motion.button>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between p-5 bg-white rounded-2xl border border-amber-100 shadow-sm">
-                            <div>
-                              <p className="font-black text-sm text-slate-900">Potong Gono-gini (50%)</p>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Potongan khusus pasangan</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input type="checkbox" className="sr-only peer" checked={potongGonoGini} onChange={e => setPotongGonoGini(e.target.checked)} />
-                              <div className="w-14 h-8 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-amber-500"></div>
-                            </label>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative group">
-                  <div className="absolute bottom-0 right-0 w-40 h-40 bg-blue-50 rounded-full blur-3xl -mr-10 -mb-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                  <div className="flex items-center gap-4 mb-8 relative">
-                    <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 4 }} className="w-14 h-14 bg-gradient-to-br from-blue-100 to-indigo-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner">
-                      <Wallet size={28} />
-                    </motion.div>
-                    <div>
-                      <h2 className="text-3xl font-black text-slate-900 tracking-tight">2. Parameter Harta</h2>
-                      <p className="text-sm font-semibold text-slate-400 mt-1 uppercase tracking-wider">Aset dan kewajiban</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-8 relative z-10">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 ml-1">Nama Almarhum/ah</label>
-                    <input type="text" value={namaJenazah} onChange={e => setNamaJenazah(e.target.value)} placeholder="Contoh: Almarhum Budi"
-                      className="w-full px-6 py-5 bg-white border-2 border-slate-100 rounded-2xl font-black text-slate-900 text-xl outline-none transition-all shadow-sm focus:border-emerald-500 focus:bg-emerald-50/10" />
-                  </div>
-
-                  <div className="mb-8 relative z-10">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Jenis Kelamin Pewaris</label>
-                    <div className="grid grid-cols-2 gap-4 bg-slate-50 p-2 rounded-3xl border border-slate-100">
-                      {["Laki-laki", "Perempuan"].map(g => (
-                        <button key={g} onClick={() => setGender(g)}
-                          className={`py-4 rounded-2xl font-bold text-sm transition-all ${gender === g ? "bg-white text-slate-900 shadow-md" : "text-slate-400 hover:bg-white/50"}`}>
-                          {g}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                    {[
-                      { l: "Total Harta Kotor", v: harta, s: setHarta, c: "focus:border-emerald-500 focus:bg-emerald-50/10" },
-                      { l: "Total Utang", v: utang, s: setUtang, c: "focus:border-red-400 focus:bg-red-50/10" },
-                      { l: "Total Wasiat", v: wasiat, s: setWasiat, c: "focus:border-blue-400 focus:bg-blue-50/10" }
-                    ].map((f, i) => (
-                      <motion.div key={i} whileFocus={{ scale: 1.02 }}>
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 ml-1">{f.l}</label>
-                        <div className="relative">
-                          <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-slate-300 text-lg">Rp</span>
-                          <input type="text" value={f.v} onChange={e => f.s(formatIDR(e.target.value))} placeholder="0"
-                            className={`w-full pl-14 pr-5 py-5 bg-white border-2 border-slate-100 rounded-2xl font-black text-slate-900 text-xl outline-none transition-all shadow-sm ${f.c}`} />
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 400 }} className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-xl shadow-slate-200/40 relative group">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-violet-50 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 relative z-10">
-                    <div className="flex items-center gap-4">
-                      <motion.div animate={{ rotate: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 6 }} className="w-14 h-14 bg-gradient-to-br from-violet-100 to-fuchsia-50 text-violet-600 rounded-2xl flex items-center justify-center shadow-inner">
-                        <User size={28} />
-                      </motion.div>
-                      <div>
-                        <h2 className="text-3xl font-black text-slate-900 tracking-tight">3. Ahli Waris</h2>
-                        <p className="text-sm font-semibold text-slate-400 mt-1 uppercase tracking-wider">Daftar keluarga almarhum/ah</p>
-                      </div>
-                    </div>
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={addHeir}
-                      className="px-6 py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 flex items-center gap-3">
-                      <Plus size={20} /> Tambah Data
-                    </motion.button>
-                  </div>
-
-                  <div className="space-y-4 relative z-10">
-                    <AnimatePresence mode="popLayout">
-                      {ahliWaris.length === 0 ? (
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                          className="py-24 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
-                          <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }}>
-                            <Users size={64} className="text-slate-200 mx-auto mb-6" />
-                          </motion.div>
-                          <p className="text-slate-400 font-black text-sm uppercase tracking-widest">Belum Ada Ahli Waris</p>
-                        </motion.div>
-                      ) : (
-                        ahliWaris.map((h, i) => (
-                          <motion.div
-                            layout
-                            key={i}
-                            initial={{ opacity: 0, x: -50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 50, filter: "blur(5px)" }}
-                            className="flex flex-col md:flex-row gap-5 p-5 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-slate-300 transition-all group/item"
-                          >
-                            <div className="w-12 h-12 bg-slate-50 border border-slate-100 text-slate-400 rounded-xl flex items-center justify-center font-black text-lg shrink-0">{i + 1}</div>
-                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-5">
-                              <div>
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nama</label>
-                                <input placeholder="Contoh: Budi" value={h.nama} onChange={e => updateHeir(i, "nama", e.target.value)}
-                                  className="w-full bg-slate-50 border-2 border-transparent rounded-2xl px-5 py-4 font-bold text-sm outline-none focus:border-slate-300 focus:bg-white transition-all shadow-inner" />
-                              </div>
-                              <div className="relative">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Hubungan</label>
-                                <button onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
-                                  className="w-full bg-slate-50 border-2 border-transparent rounded-2xl px-5 py-4 font-black text-xs text-left flex items-center justify-between hover:bg-slate-100 transition-all shadow-inner">
-                                  <span className={h.hubungan ? "text-slate-900" : "text-slate-400"}>{h.hubungan || "Pilih..."}</span>
-                                  <ChevronDown size={18} className="text-slate-400" />
-                                </button>
-                                <AnimatePresence>
-                                  {openDropdown === i && (
-                                    <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                      className="absolute top-full left-0 right-0 mt-3 p-3 bg-white border border-slate-200 rounded-3xl shadow-2xl z-50 max-h-[300px] overflow-y-auto">
-                                      {HUBUNGAN_OPTIONS.map(opt => (
-                                        <button key={opt} onClick={() => { updateHeir(i, "hubungan", opt); setOpenDropdown(null); }}
-                                          className={`w-full text-left px-5 py-3 rounded-2xl text-xs font-black transition-all ${h.hubungan === opt ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
-                                          {opt}
-                                        </button>
-                                      ))}
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                            </div>
-                            <button onClick={() => removeHeir(i)} className="w-12 h-12 flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all md:self-end shrink-0 md:mb-1">
-                              <Trash2 size={24} />
-                            </button>
-                          </motion.div>
-                        ))
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
-
+              <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
+                <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm">
+                  1
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">Dasar Hukum & Identitas Pewaris</h3>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Langkah awal penentuan skema</p>
+                </div>
               </div>
 
-              {/* ── RIGHT: LIVE STICKY PREVIEW (FULL PREVIEW DATA) ── */}
-              <div className="xl:col-span-4 relative hidden xl:block">
-                <div className="sticky top-10">
-                  <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
-                    className="bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
-
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-3 mb-10">
-                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}>
-                          <Sparkles size={24} className="text-emerald-400" />
-                        </motion.div>
-                        <h3 className="font-black text-2xl tracking-tighter">Live Preview</h3>
+              {/* Law selection cards */}
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sistem Hukum Pembagian</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { id: "Islam", label: "☪ Hukum Islam (Faraid)", desc: "Pembagian porsi pasti berdasarkan Al-Qur'an dan Hadits.", active: true },
+                    { id: "Jawa", label: "🏛 Hukum Adat Jawa", desc: "Asas rukun musyawarah dengan opsi Sepikul Segendongan.", active: true },
+                    { id: "Perdata", label: "⚖ Hukum Perdata", desc: "Penderajatan golongan ahli waris BW (Segera Hadir).", active: false },
+                  ].map(h => (
+                    <button 
+                      key={h.id}
+                      disabled={!h.active}
+                      onClick={() => h.active && setHukum(h.id)}
+                      className={`p-5 rounded-2xl text-left border transition-all duration-200 relative group flex flex-col justify-between min-h-[120px] ${
+                        hukum === h.id 
+                          ? "bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-900/15" 
+                          : h.active 
+                            ? "bg-white text-slate-700 border-slate-200/80 hover:border-emerald-500/50 hover:bg-slate-50/50 cursor-pointer" 
+                            : "bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed"
+                      }`}
+                    >
+                      <div className="flex justify-between items-start w-full">
+                        <span className="font-extrabold text-xs">{h.label}</span>
+                        {hukum === h.id && <BadgeCheck size={16} className="text-emerald-400 shrink-0" />}
                       </div>
+                      <p className={`text-[10px] mt-2 font-medium leading-relaxed ${hukum === h.id ? "text-slate-400" : "text-slate-405"}`}>{h.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                      <div className="space-y-8">
-                        <div>
-                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Hukum Aktif</p>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 size={18} className="text-emerald-400" />
-                            <span className="font-bold text-lg">{hukum === "Islam" ? "Faraid" : hukum === "Jawa" ? "Adat Jawa" : "Perdata"}</span>
+              {/* Pewaris Identity */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nama Almarhum / Almarhumah</label>
+                  <input 
+                    type="text" 
+                    value={namaJenazah} 
+                    onChange={e => setNamaJenazah(e.target.value)} 
+                    placeholder="Contoh: Almarhum Budi"
+                    className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200/80 rounded-xl font-bold text-slate-900 text-xs outline-none transition-all focus:border-emerald-500 focus:bg-white" 
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Jenis Kelamin Pewaris</label>
+                  <div className="grid grid-cols-2 gap-2 bg-slate-150 p-1.5 rounded-xl border border-slate-200/80">
+                    {["Laki-laki", "Perempuan"].map(g => (
+                      <button 
+                        key={g} 
+                        onClick={() => setGender(g)}
+                        className={`py-2.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                          gender === g 
+                            ? "bg-white text-slate-950 shadow-sm border border-slate-200/50" 
+                            : "text-slate-500 hover:bg-white/50"
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation buttons */}
+              <div className="pt-6 border-t border-slate-100 flex justify-end">
+                <button
+                  onClick={() => setCurrentStep(2)}
+                  disabled={!namaJenazah}
+                  className="px-6 py-3.5 bg-slate-950 text-white hover:bg-emerald-600 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-slate-950/10 cursor-pointer"
+                >
+                  <span>Lanjut Langkah Harta</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 2: PARAMETER HARTA */}
+          {currentStep === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-8 text-left"
+            >
+              <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
+                <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm">
+                  2
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">Parameter Nominal Harta & Utang</h3>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kalkulasi Mirats Bersih</p>
+                </div>
+              </div>
+
+              {/* Jawa specific options */}
+              <AnimatePresence mode="wait">
+                {hukum === "Jawa" && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }} 
+                    animate={{ opacity: 1, height: 'auto' }} 
+                    exit={{ opacity: 0, height: 0 }} 
+                    className="overflow-hidden bg-amber-50/40 border border-amber-100/50 rounded-2xl p-5 space-y-5"
+                  >
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-amber-700 uppercase tracking-widest block">Metode Pembagian Adat</label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {[
+                          { id: "SEPIKUL_SEGENDONGAN", l: "Sepikul Segendongan", d: "Porsi 2:1 untuk Laki-laki vs Perempuan" },
+                          { id: "KUM_KUM_KUPAT", l: "Kum-Kum Kupat", d: "Sama rata 1:1 tanpa pembedaan gender" }
+                        ].map(m => (
+                          <button 
+                            key={m.id} 
+                            onClick={() => setMetodeAdat(m.id as any)}
+                            className={`p-4 rounded-xl border transition-all text-left cursor-pointer ${
+                              metodeAdat === m.id 
+                                ? "bg-white border-amber-500 text-amber-950 shadow-sm" 
+                                : "bg-white/50 border-slate-200/80 text-slate-500 hover:border-amber-300"
+                            }`}
+                          >
+                            <p className="font-black text-xs">{m.l}</p>
+                            <p className="text-[10px] mt-1 text-slate-405 font-medium leading-relaxed">{m.d}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-amber-200/40 shadow-sm">
+                      <div>
+                        <p className="font-bold text-xs text-slate-900">Potong Harta Gono-gini (50%)</p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Keluarkan hak pasangan hidup sebelum diwariskan</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="sr-only peer" 
+                          checked={potongGonoGini} 
+                          onChange={e => setPotongGonoGini(e.target.checked)} 
+                        />
+                        <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                      </label>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Harta fields */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { l: "Total Harta Kotor", v: harta, s: setHarta, c: "focus:border-emerald-500" },
+                  { l: "Total Utang & Jenazah", v: utang, s: setUtang, c: "focus:border-rose-450" },
+                  { l: "Wasiat Terdaftar", v: wasiat, s: setWasiat, c: "focus:border-blue-500" }
+                ].map((f, i) => (
+                  <div key={i} className="space-y-1.5">
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{f.l}</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-slate-350 text-xs">Rp</span>
+                      <input 
+                        type="text" 
+                        value={f.v} 
+                        onChange={e => f.s(formatIDR(e.target.value))} 
+                        placeholder="0"
+                        className={`w-full pl-10 pr-4 py-3 bg-slate-50/50 border border-slate-200/80 rounded-xl font-bold text-slate-900 text-xs outline-none transition-all ${f.c} focus:bg-white`} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Financial calculations preview info box */}
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex items-center justify-between text-xs font-bold text-slate-600">
+                <div className="flex items-center gap-3">
+                  <Coins size={18} className="text-emerald-600" />
+                  <span>Estimasi Harta Bersih Terhitung (Mirkah):</span>
+                </div>
+                <span className="text-base font-black text-slate-950">
+                  Rp {Math.max(0, hartaBersih).toLocaleString("id-ID")}
+                </span>
+              </div>
+
+              {/* Step Navigation buttons */}
+              <div className="pt-6 border-t border-slate-100 flex justify-between items-center">
+                <button
+                  onClick={() => setCurrentStep(1)}
+                  className="px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronLeft size={14} />
+                  <span>Kembali</span>
+                </button>
+                <button
+                  onClick={() => setCurrentStep(3)}
+                  disabled={parseNum(harta) <= 0}
+                  className="px-6 py-3.5 bg-slate-950 text-white hover:bg-emerald-600 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-slate-950/10 cursor-pointer"
+                >
+                  <span>Lanjut Ahli Waris</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 3: DAFTAR AHLI WARIS */}
+          {currentStep === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-8 text-left"
+            >
+              <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900">Daftar Silsilah Ahli Waris</h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Masukkan keluarga dekat almarhum</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => addHeir()}
+                  className="px-4 py-2 bg-slate-950 text-white hover:bg-emerald-600 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <Plus size={14} /> Tambah Ahli Waris
+                </button>
+              </div>
+
+              {/* Quick Preset Buttons for heirs to make input fast */}
+              <div className="space-y-2">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pintasan Cepat Tambah Ahli Waris</span>
+                <div className="flex flex-wrap gap-2">
+                  {["Istri", "Suami", "Anak Laki-laki", "Anak Perempuan", "Ayah", "Ibu"].map((h) => {
+                    // Disable suami if almarhum is laki-laki and vice versa
+                    const isSuamiDisabled = gender === "Laki-laki" && h === "Suami";
+                    const isIstriDisabled = gender === "Perempuan" && h === "Istri";
+                    
+                    return (
+                      <button
+                        key={h}
+                        disabled={isSuamiDisabled || isIstriDisabled}
+                        onClick={() => addHeir(h)}
+                        className="px-3.5 py-2 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 rounded-xl border border-slate-200/70 text-xs font-bold text-slate-600 transition-all cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+                      >
+                        + {h}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Dynamic list of heirs */}
+              <div className="space-y-4 pt-2">
+                <AnimatePresence mode="popLayout">
+                  {ahliWaris.length === 0 ? (
+                    <motion.div 
+                      key="empty"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      className="py-14 text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/50"
+                    >
+                      <Users size={32} className="text-slate-350 mx-auto mb-3" />
+                      <p className="text-slate-450 font-black text-[10px] uppercase tracking-widest">Belum Ada Ahli Waris Terdaftar</p>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-1">Gunakan pintasan di atas atau klik tambah ahli waris untuk mendata.</p>
+                    </motion.div>
+                  ) : (
+                    ahliWaris.map((h, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="flex flex-col md:flex-row gap-4 p-4 bg-slate-50/30 rounded-2xl border border-slate-200/70 shadow-inner hover:border-slate-300 transition-colors"
+                      >
+                        {/* Number Index */}
+                        <div className="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center font-bold text-xs shrink-0">{i + 1}</div>
+                        
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Name Input */}
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black text-slate-450 uppercase tracking-widest block">Nama / Identifikasi</label>
+                            <input 
+                              placeholder="Contoh: Budi (Anak)" 
+                              value={h.nama} 
+                              onChange={e => updateHeir(i, "nama", e.target.value)}
+                              className="w-full bg-white border border-slate-200/80 rounded-xl px-4 py-2.5 font-bold text-xs outline-none focus:border-slate-400" 
+                            />
                           </div>
-                        </div>
 
-                        <div className="pt-6 border-t border-slate-800">
-                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Harta Bersih (Mirkah)</p>
-                          <p className="text-2xl lg:text-3xl font-black tracking-tighter break-words">Rp {Math.max(0, hartaBersih).toLocaleString("id-ID")}</p>
-                          <p className="text-xs font-bold text-slate-400 mt-2">Pewaris: {gender}</p>
-                        </div>
-
-                        <div className="pt-6 border-t border-slate-800">
-                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex justify-between">
-                            <span>Ahli Waris Terdata</span>
-                            <span className="bg-white/10 px-2 py-0.5 rounded-md text-white">{ahliWaris.length} Orang</span>
-                          </p>
-                          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                          {/* Relationship Selection */}
+                          <div className="space-y-1 relative">
+                            <label className="text-[9px] font-black text-slate-450 uppercase tracking-widest block">Hubungan Keluarga</label>
+                            <button 
+                              onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
+                              className="w-full bg-white border border-slate-200/80 rounded-xl px-4 py-2.5 font-bold text-xs text-left flex items-center justify-between hover:bg-slate-50 transition-all cursor-pointer"
+                            >
+                              <span className={h.hubungan ? "text-slate-900" : "text-slate-400"}>{h.hubungan || "Pilih..."}</span>
+                              <ChevronDown size={14} className="text-slate-400" />
+                            </button>
                             <AnimatePresence>
-                              {ahliWaris.map((h, i) => (
-                                <motion.div key={i} layout initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-                                  className="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                                  <div>
-                                    <p className="font-bold text-sm">{h.nama || h.hubungan || "Tanpa Nama"}</p>
-                                    <p className="text-[10px] font-black text-slate-500 uppercase mt-1">{h.hubungan}</p>
-                                  </div>
+                              {openDropdown === i && (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: 5 }}
+                                  className="absolute top-full left-0 right-0 mt-2 p-2 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-[180px] overflow-y-auto"
+                                >
+                                  {HUBUNGAN_OPTIONS.map(opt => (
+                                    <button 
+                                      key={opt} 
+                                      onClick={() => { updateHeir(i, "hubungan", opt); setOpenDropdown(null); }}
+                                      className={`w-full text-left px-4 py-2.5 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer ${
+                                        h.hubungan === opt 
+                                          ? "bg-slate-900 text-white" 
+                                          : "text-slate-600 hover:bg-slate-50"
+                                      }`}
+                                    >
+                                      {opt}
+                                    </button>
+                                  ))}
                                 </motion.div>
-                              ))}
+                              )}
                             </AnimatePresence>
                           </div>
                         </div>
-                      </div>
+                        
+                        {/* Remove Heir Button */}
+                        <button 
+                          onClick={() => removeHeir(i)} 
+                          className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all md:self-end shrink-0 md:mb-0.5 cursor-pointer border border-transparent hover:border-rose-100"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </motion.div>
+                    ))
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Step Navigation buttons */}
+              <div className="pt-6 border-t border-slate-100 flex justify-between items-center">
+                <button
+                  onClick={() => setCurrentStep(2)}
+                  className="px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronLeft size={14} />
+                  <span>Kembali</span>
+                </button>
+                <button
+                  onClick={handleHitung}
+                  disabled={ahliWaris.length === 0}
+                  className="px-6 py-3.5 bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/10 cursor-pointer"
+                >
+                  <Zap size={14} />
+                  <span>Hitung Distribusi Waris</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: HASIL PERHITUNGAN */}
+          {currentStep === 4 && hasil && (
+            <motion.div
+              key="step4"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-8"
+            >
+              {/* SUMMARY RESULT CARD */}
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col lg:flex-row items-center gap-10 relative overflow-hidden text-left">
+                <div className="flex-1 space-y-4">
+                  <div className={`inline-flex items-center gap-2 ${STATUS_CONFIG[hasil.statusAulRadd]?.bg} ${STATUS_CONFIG[hasil.statusAulRadd]?.color} px-3.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border ${STATUS_CONFIG[hasil.statusAulRadd]?.border}`}>
+                    Kasus: {hasil.statusAulRadd}
+                  </div>
+                  <h2 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 leading-none">Distribusi Berhasil Dihitung.</h2>
+                  <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                    Pembagian nominal porsi waris secara presisi dan transparan berdasarkan rujukan hukum {hukum === "Islam" ? "Syariat Islam (Faraid)" : "Adat Jawa"}.
+                  </p>
+                </div>
+
+                <div className="w-full lg:w-auto bg-slate-950 rounded-2xl p-6 text-center text-white min-w-[280px] shadow-lg">
+                  <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1.5">Harta Bersih yang Dibagikan (Mirkah)</p>
+                  <p className="text-2xl font-black tracking-tight text-white">Rp {Math.max(0, hasil.hartaBersih).toLocaleString("id-ID")}</p>
+                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-slate-500">
+                    <span>Almarhum/ah: {gender}</span>
+                    <span>Hukum: {hukum}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* DYNAMIC INTERACTIVE CHART BAR */}
+              {(() => {
+                const heirsMewarisi = hasil.ahliWarisGetted.filter((h: any) => h.status === "Mewarisi" && h.jatahNominal > 0);
+                if (heirsMewarisi.length === 0) return null;
+                
+                return (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm text-left space-y-6"
+                  >
+                    <div>
+                      <h3 className="font-bold text-base text-slate-800 tracking-tight flex items-center gap-2">
+                        <Scale size={18} className="text-emerald-600" />
+                        <span>Visualisasi Proporsi Pembagian Harta</span>
+                      </h3>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mt-1">
+                        Grafik pembagian akumulatif harta waris keluarga
+                      </p>
+                    </div>
+
+                    {/* Horizontal Stacked Bar */}
+                    <div className="w-full h-10 bg-slate-100 rounded-2xl overflow-hidden flex shadow-inner border border-slate-200/40">
+                      {heirsMewarisi.map((h: any, idx: number) => {
+                        const pct = (h.jatahNominal / hasil.hartaBersih) * 100;
+                        const isHovered = hoveredIndex === idx;
+                        return (
+                          <motion.div
+                            key={idx}
+                            onMouseEnter={() => setHoveredIndex(idx)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                            animate={{
+                              flexGrow: pct,
+                              scaleY: isHovered ? 1.05 : 1.0,
+                              filter: isHovered ? "brightness(1.1)" : "brightness(1.0)",
+                            }}
+                            className={`${chartColors[idx % chartColors.length]} h-full transition-all cursor-pointer relative group`}
+                            style={{ width: `${pct}%` }}
+                          >
+                            {/* Centered percentage on hover or if large enough */}
+                            {pct > 5 && (
+                              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white pointer-events-none drop-shadow-sm select-none opacity-80 group-hover:opacity-100 transition-opacity">
+                                {pct.toFixed(0)}%
+                              </span>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Legend Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                      {heirsMewarisi.map((h: any, idx: number) => {
+                        const pct = (h.jatahNominal / hasil.hartaBersih) * 100;
+                        const isHovered = hoveredIndex === idx;
+                        return (
+                          <div
+                            key={idx}
+                            onMouseEnter={() => setHoveredIndex(idx)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                            className={`p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer ${
+                              isHovered 
+                                ? "bg-slate-50 border-slate-900 shadow-sm" 
+                                : "bg-white border-slate-100 hover:border-slate-350"
+                            }`}
+                          >
+                            <div className={`w-3.5 h-3.5 rounded-full ${chartColors[idx % chartColors.length].split(" ")[0]} shrink-0 mt-0.5`} />
+                            <div className="space-y-1">
+                              <p className="font-extrabold text-xs text-slate-800 leading-none">{h.nama || h.hubungan}</p>
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{h.hubungan}</p>
+                              <div className="flex items-center gap-2 pt-1">
+                                <span className={`text-[10px] font-black ${textColors[idx % textColors.length]}`}>{pct.toFixed(1)}%</span>
+                                <span className="text-[10px] font-black text-slate-900">Rp {h.jatahNominal.toLocaleString("id-ID")}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </motion.div>
+                );
+              })()}
 
-                  {/* BIG CTA BUTTON BELOW PREVIEW ON DESKTOP */}
-                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                    onClick={handleHitung} disabled={!harta || ahliWaris.length === 0}
-                    className="w-full mt-6 py-8 bg-emerald-500 text-slate-950 rounded-[2.5rem] font-black text-2xl hover:bg-emerald-400 transition-all shadow-2xl shadow-emerald-500/30 disabled:opacity-30 flex items-center justify-center gap-4"
-                  >
-                    <Zap size={28} fill="currentColor" /> Kalkulasi
-                  </motion.button>
-                </div>
-              </div>
-
-              {/* BIG CTA BUTTON FOR MOBILE (HIDDEN ON XL) */}
-              <motion.div className="xl:hidden pt-8">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  onClick={handleHitung} disabled={!harta || ahliWaris.length === 0}
-                  className="w-full py-8 bg-emerald-500 text-slate-950 rounded-[3rem] font-black text-2xl hover:bg-emerald-400 transition-all shadow-2xl shadow-emerald-500/30 disabled:opacity-30 flex items-center justify-center gap-4 border-b-8 border-emerald-700"
-                >
-                  <Zap size={28} fill="currentColor" />
-                  Kalkulasi Pembagian Waris
-                  <ArrowRight size={24} />
-                </motion.button>
-              </motion.div>
-
-            </motion.div>
-          ) : (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.6, type: "spring" }}
-              className="space-y-12"
-            >
-              {/* SUMMARY RESULT */}
-              <div className="bg-white border border-slate-200 rounded-[4rem] p-12 lg:p-16 shadow-2xl shadow-slate-200/50 flex flex-col lg:flex-row items-center gap-16 relative overflow-hidden">
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-32 -right-32 w-96 h-96 bg-emerald-50 rounded-full blur-[100px] pointer-events-none" />
-
-                <div className="flex-1 text-center lg:text-left relative z-10">
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }}
-                    className={`inline-flex items-center gap-2 ${STATUS_CONFIG[hasil.statusAulRadd]?.bg} ${STATUS_CONFIG[hasil.statusAulRadd]?.color} px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest mb-8 border ${STATUS_CONFIG[hasil.statusAulRadd]?.border}`}>
-                    Status Kasus: {hasil.statusAulRadd}
-                  </motion.div>
-                  <h2 className="text-5xl lg:text-7xl font-black tracking-tighter text-slate-900 mb-6 leading-[0.9]">Distribusi<br />Selesai.</h2>
-                  <p className="text-xl text-slate-500 font-medium max-w-md">Perhitungan telah diselesaikan dengan akurasi 100% menggunakan algoritma {hukum}.</p>
-                </div>
-
-                <motion.div initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.3 }}
-                  className="w-full lg:w-auto bg-slate-900 rounded-[3rem] p-12 text-center text-white shadow-2xl min-w-[320px] max-w-full relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent pointer-events-none" />
-                  <p className="text-slate-400 text-xs font-black uppercase tracking-widest mb-4">Total Harta Mirkah</p>
-                  <p className="text-3xl lg:text-4xl font-black tracking-tighter break-words">Rp {Math.max(0, hasil.hartaBersih).toLocaleString("id-ID")}</p>
-                  <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    <span>Pewaris: {gender}</span>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* HEIRS DISTRIBUTION */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* HEIRS DISTRIBUTION LIST CARDS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                 {hasil.ahliWarisGetted.map((h: any, i: number) => {
                   const pct = hasil.hartaBersih > 0 ? (h.jatahNominal / hasil.hartaBersih * 100) : 0;
                   return (
-                    <motion.div key={i} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, type: "spring" }}
-                      whileHover={{ scale: 1.02, y: -5 }}
-                      className="bg-white rounded-[3.5rem] border border-slate-100 p-10 shadow-lg shadow-slate-200/40 hover:shadow-2xl hover:border-emerald-200 transition-all group relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-emerald-50 transition-colors pointer-events-none" />
-
-                      <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-8">
-                          <motion.div whileHover={{ rotate: 10 }} className={`w-16 h-16 rounded-2xl flex items-center justify-center ${h.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"}`}>
-                            {h.status === "Mewarisi" ? <BadgeCheck size={32} /> : <ShieldAlert size={32} />}
-                          </motion.div>
-                          <span className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border ${h.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-50 text-slate-400 border-slate-100"}`}>
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between"
+                    >
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${h.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-450"}`}>
+                            {h.status === "Mewarisi" ? <BadgeCheck size={22} /> : <ShieldAlert size={22} />}
+                          </div>
+                          <span className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded border ${h.status === "Mewarisi" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-50 text-slate-400 border-slate-100"}`}>
                             {h.status}
                           </span>
                         </div>
 
-                        <h4 className="font-black text-slate-900 text-3xl mb-2 tracking-tight">{h.nama || h.hubungan}</h4>
-                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-10">{h.hubungan}</p>
-
-                        <div className="space-y-6">
-                          <div className="flex justify-between items-end border-b border-slate-100 pb-6 gap-4">
-                            <div className="shrink-0">
-                              <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Porsi Final</p>
-                              <p className="text-3xl lg:text-4xl font-black text-slate-900">{h.jatahPersen}</p>
-                            </div>
-                            <div className="text-right min-w-0">
-                              <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Nominal IDR</p>
-                              <p className="text-xl lg:text-2xl font-black text-emerald-600 tracking-tighter truncate md:break-words md:whitespace-normal" title={`Rp ${h.jatahNominal.toLocaleString("id-ID")}`}>
-                                Rp {h.jatahNominal.toLocaleString("id-ID")}
-                              </p>
-                            </div>
-                          </div>
-
-                          {h.status === "Mewarisi" && (
-                            <div>
-                              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                                <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ delay: 0.5, duration: 1 }} className="h-full bg-emerald-500 rounded-full" />
-                              </div>
-                              <p className="text-right text-[10px] font-bold text-slate-400 mt-2">{pct.toFixed(1)}% dari Mirkah</p>
-                            </div>
-                          )}
-
-                          <button onClick={() => setSelectedHeir(h)}
-                            className="w-full py-4 bg-slate-50 hover:bg-slate-900 hover:text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest text-slate-500 transition-all flex items-center justify-center gap-3 mt-4">
-                            <Info size={16} /> Detail Keputusan Hukum
-                          </button>
+                        <div>
+                          <h4 className="font-black text-slate-900 text-lg mb-0.5 tracking-tight">{h.nama || h.hubungan}</h4>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{h.hubungan}</p>
                         </div>
+
+                        <div className="grid grid-cols-2 gap-4 border-y border-slate-150 py-4">
+                          <div>
+                            <p className="text-[9px] font-black text-slate-400 uppercase mb-1 tracking-widest">Porsi Bagian</p>
+                            <p className="text-lg font-black text-slate-900">{h.jatahPersen}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[9px] font-black text-slate-400 uppercase mb-1 tracking-widest">Nominal Rupiah</p>
+                            <p className="text-base font-black text-emerald-600 tracking-tight">
+                              Rp {h.jatahNominal.toLocaleString("id-ID")}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {h.status === "Mewarisi" && (
+                          <div className="space-y-1">
+                            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                              <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: `${pct}%` }} 
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                                className="h-full bg-emerald-500 rounded-full" 
+                              />
+                            </div>
+                            <p className="text-right text-[8px] font-black text-slate-400 uppercase tracking-widest">{pct.toFixed(1)}% Dari Total Harta</p>
+                          </div>
+                        )}
+
+                        <button 
+                          onClick={() => setSelectedHeir(h)}
+                          className="w-full py-2.5 bg-slate-50 hover:bg-slate-950 hover:text-white rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Info size={12} /> Detail Keputusan Hukum
+                        </button>
                       </div>
                     </motion.div>
                   );
                 })}
               </div>
 
-              {/* ACTION BUTTONS */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="pt-10 flex flex-col md:flex-row justify-center gap-4">
-                <button onClick={() => setStep(1)} className="px-12 py-6 bg-white border-2 border-slate-200 rounded-[2rem] font-black text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all shadow-xl hover:shadow-2xl flex items-center gap-3">
-                  ← Kembali & Edit Data
+              {/* ACTION NAVIGATION BUTTONS */}
+              <div className="pt-4 flex flex-col md:flex-row justify-center gap-4">
+                <button 
+                  onClick={() => setCurrentStep(3)} 
+                  className="px-6 py-3 bg-white border border-slate-300 hover:border-slate-900 rounded-xl font-bold text-xs text-slate-600 hover:text-slate-950 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  ← Edit Ahli Waris
                 </button>
-                <button onClick={downloadPDF} className="px-12 py-6 bg-slate-900 text-white rounded-[2rem] font-black hover:bg-emerald-600 transition-all shadow-xl hover:shadow-2xl flex items-center gap-3">
-                  <Download size={20} /> Unduh Laporan PDF
+                <button 
+                  onClick={downloadPDF} 
+                  className="px-6 py-3 bg-slate-950 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                >
+                  <Download size={14} /> Unduh Laporan PDF
                 </button>
-              </motion.div>
+              </div>
             </motion.div>
           )}
+
         </AnimatePresence>
+        </div>
       </div>
 
-      {/* Modal Analysis */}
+      {/* Modal Analysis pop-up */}
       <AnimatePresence>
         {selectedHeir && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-6"
-            onClick={() => setSelectedHeir(null)}>
-            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} transition={{ type: "spring" }}
-              className="bg-white w-full max-w-xl rounded-[4rem] shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-              <div className="p-12">
-                <div className="flex items-center gap-6 mb-10">
-                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="w-20 h-20 bg-emerald-50 rounded-[2rem] flex items-center justify-center text-emerald-600 shadow-inner">
-                    <Scale size={40} />
-                  </motion.div>
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-6"
+            onClick={() => setSelectedHeir(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden text-left" 
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="p-8 space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-100">
+                    <Scale size={24} />
+                  </div>
                   <div>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.nama || selectedHeir.hubungan}</h2>
-                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest mt-2">{selectedHeir.hubungan}</p>
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">{selectedHeir.nama || selectedHeir.hubungan}</h2>
+                    <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mt-0.5">{selectedHeir.hubungan}</p>
                   </div>
                 </div>
 
-                <div className="bg-slate-50 rounded-[2.5rem] p-8 mb-8 border border-slate-100 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-2xl opacity-50 -mr-10 -mt-10 pointer-events-none" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <BadgeCheck size={16} className="text-emerald-500" /> Analisis Hukum Syariat/Adat
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                    <BadgeCheck size={14} className="text-emerald-500" /> Analisis Hukum Rujukan
                   </p>
-                  <p className="text-slate-700 font-medium leading-relaxed text-base relative z-10">{selectedHeir.alasan}</p>
+                  <p className="text-slate-700 font-semibold leading-relaxed text-xs">{selectedHeir.alasan}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="p-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Porsi Final</p>
-                    <p className="text-4xl font-black text-slate-900 tracking-tighter">{selectedHeir.jatahPersen}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-white border border-slate-200 rounded-xl">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Porsi Bagian</p>
+                    <p className="text-xl font-black text-slate-900 tracking-tight">{selectedHeir.jatahPersen}</p>
                   </div>
-                  <div className="p-8 bg-emerald-50 border border-emerald-100 rounded-[2rem] shadow-sm">
-                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">Nominal IDR</p>
-                    <p className="text-2xl font-black text-emerald-700 tracking-tighter">Rp {selectedHeir.jatahNominal.toLocaleString("id-ID")}</p>
+                  <div className="p-4 bg-emerald-50 border border-emerald-100/50 rounded-xl">
+                    <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1.5">Nominal IDR</p>
+                    <p className="text-base font-black text-emerald-700 tracking-tight">Rp {selectedHeir.jatahNominal.toLocaleString("id-ID")}</p>
                   </div>
                 </div>
 
-                <button onClick={() => setSelectedHeir(null)}
-                  className="mt-10 w-full py-6 bg-slate-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-xl">
-                  Tutup Analisis
+                <button 
+                  onClick={() => setSelectedHeir(null)}
+                  className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-colors cursor-pointer shadow-md"
+                >
+                  Tutup Rincian
                 </button>
               </div>
             </motion.div>
