@@ -72,7 +72,7 @@ export default function PerdataPage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
 
-  const handlePlayAudio = () => {
+  const handlePlayAudio = (text: string) => {
     if (typeof window === "undefined") return;
     
     if (isSpeaking) {
@@ -84,7 +84,6 @@ export default function PerdataPage() {
     window.speechSynthesis.cancel();
     
     setTimeout(() => {
-      const text = "Hukum waris perdata diatur berdasarkan Kitab Undang-Undang Hukum Perdata. Sistem ini membagi ahli waris ke dalam empat golongan utama dengan membagi rata porsi waris tanpa membedakan gender antara laki-laki dan perempuan, serta mendahulukan keluarga dalam garis lurus ke bawah sebelum golongan menyimpang lainnya.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "id-ID";
       
@@ -148,7 +147,7 @@ export default function PerdataPage() {
                 <span>Fitur Kalkulator Perdata — Segera Hadir</span>
               </div>
               <button
-                onClick={handlePlayAudio}
+                onClick={() => handlePlayAudio("Hukum waris perdata diatur berdasarkan Kitab Undang-Undang Hukum Perdata. Sistem ini membagi ahli waris ke dalam empat golongan utama dengan membagi rata porsi waris tanpa membedakan gender antara laki-laki dan perempuan, serta mendahulukan keluarga dalam garis lurus ke bawah sebelum golongan menyimpang lainnya.")}
                 className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm border ${
                   isSpeaking 
                     ? "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100" 

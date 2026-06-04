@@ -96,7 +96,7 @@ export default function SyariahPage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
 
-  const handlePlayAudio = () => {
+  const handlePlayAudio = (text: string) => {
     if (typeof window === "undefined") return;
     
     if (isSpeaking) {
@@ -108,7 +108,6 @@ export default function SyariahPage() {
     window.speechSynthesis.cancel();
     
     setTimeout(() => {
-      const text = "Hukum waris Islam, atau Faraid, mengatur pembagian harta peninggalan secara rinci berdasarkan ketetapan Al-Qur'an dan Hadits. Ketentuan utama meliputi pembagian porsi pasti bagi masing-masing ahli waris utama seperti suami, istri, anak, dan orang tua, serta penyelesaian kasus khusus seperti Aul dan Radd jika terjadi selisih nilai harta.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "id-ID";
       
@@ -169,7 +168,7 @@ export default function SyariahPage() {
             </p>
 
             <button
-              onClick={handlePlayAudio}
+              onClick={() => handlePlayAudio("Hukum waris Islam, atau Faraid, mengatur pembagian harta peninggalan secara rinci berdasarkan ketetapan Al-Qur'an dan Hadits. Ketentuan utama meliputi pembagian porsi pasti bagi masing-masing ahli waris utama seperti suami, istri, anak, dan orang tua, serta penyelesaian kasus khusus seperti Aul dan Radd jika terjadi selisih nilai harta.")}
               className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs transition-all duration-300 shadow-sm border ${
                 isSpeaking 
                   ? "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100" 

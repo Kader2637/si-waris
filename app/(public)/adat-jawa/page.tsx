@@ -67,7 +67,7 @@ export default function AdatJawaPage() {
     };
   }, []);
 
-  const handlePlayAudio = () => {
+  const handlePlayAudio = (text: string) => {
     if (typeof window === "undefined") return;
     
     if (isSpeaking) {
@@ -79,7 +79,6 @@ export default function AdatJawaPage() {
     window.speechSynthesis.cancel();
     
     setTimeout(() => {
-      const text = "Hukum waris adat Jawa mengedepankan asas kekeluargaan dan musyawarah keluarga untuk mencapai kerukunan bersama. Dua pilar utama metode yang didukung adalah Sepikul Segendongan dengan rasio pembagian dua banding satu antara laki-laki dan perempuan berdasarkan beban tanggung jawab nafkah, serta metode Kum-kum Kupat yang membagi harta secara sama rata tanpa membedakan jenis kelamin.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "id-ID";
       
@@ -189,7 +188,7 @@ export default function AdatJawaPage() {
                 Hitung Waris Adat <ArrowRight size={14} />
               </Link>
               <button
-                onClick={handlePlayAudio}
+                onClick={() => handlePlayAudio("Hukum waris adat Jawa mengedepankan asas kekeluargaan dan musyawarah keluarga untuk mencapai kerukunan bersama. Dua pilar utama metode yang didukung adalah Sepikul Segendongan dengan rasio pembagian dua banding satu antara laki-laki dan perempuan berdasarkan beban tanggung jawab nafkah, serta metode Kum-kum Kupat yang membagi harta secara sama rata tanpa membedakan jenis kelamin.")}
                 className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm border ${
                   isSpeaking 
                     ? "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100" 
