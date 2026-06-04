@@ -44,6 +44,12 @@ const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string 
   "Kum-Kum Kupat": { color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-200" },
 };
 
+const LAW_CARD_ACTIVE_CONFIG: Record<string, string> = {
+  Islam: "bg-emerald-50/80 border-emerald-500 text-emerald-950 shadow-md shadow-emerald-500/5",
+  Jawa: "bg-amber-50/80 border-amber-500 text-amber-955 shadow-md shadow-amber-500/5",
+  Perdata: "bg-blue-50/80 border-blue-500 text-blue-955 shadow-md shadow-blue-500/5",
+};
+
 const chartColors = [
   "bg-emerald-500 shadow-emerald-500/10",
   "bg-blue-500 shadow-blue-500/10",
@@ -290,9 +296,9 @@ export default function KalkulatorPage() {
               <div key={s.num} className="flex flex-col items-center z-10 relative flex-1">
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-300 font-black text-xs ${
                   isCompleted 
-                    ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-600 shadow-sm"
                     : isActive 
-                      ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-900/10 scale-105"
+                      ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-550/25 scale-105"
                       : "bg-white border-slate-200 text-slate-400"
                 }`}>
                   {isCompleted ? <CheckCircle2 size={16} /> : <span>{s.num}</span>}
@@ -321,7 +327,7 @@ export default function KalkulatorPage() {
               className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-8 text-left"
             >
               <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
-                <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm">
+                <div className="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-650 rounded-xl flex items-center justify-center font-bold text-sm">
                   1
                 </div>
                 <div>
@@ -345,7 +351,7 @@ export default function KalkulatorPage() {
                       onClick={() => h.active && setHukum(h.id)}
                       className={`p-5 rounded-2xl text-left border transition-all duration-200 relative group flex flex-col justify-between min-h-[120px] ${
                         hukum === h.id 
-                          ? "bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-900/15" 
+                          ? `${LAW_CARD_ACTIVE_CONFIG[h.id]} border-2`
                           : h.active 
                             ? "bg-white text-slate-700 border-slate-200/80 hover:border-emerald-500/50 hover:bg-slate-50/50 cursor-pointer" 
                             : "bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed"
@@ -353,9 +359,9 @@ export default function KalkulatorPage() {
                     >
                       <div className="flex justify-between items-start w-full">
                         <span className="font-extrabold text-xs">{h.label}</span>
-                        {hukum === h.id && <BadgeCheck size={16} className="text-emerald-400 shrink-0" />}
+                        {hukum === h.id && <BadgeCheck size={16} className={`${h.id === "Islam" ? "text-emerald-600" : h.id === "Jawa" ? "text-amber-600" : "text-blue-600"} shrink-0`} />}
                       </div>
-                      <p className={`text-[10px] mt-2 font-medium leading-relaxed ${hukum === h.id ? "text-slate-400" : "text-slate-405"}`}>{h.desc}</p>
+                      <p className={`text-[10px] mt-2 font-medium leading-relaxed ${hukum === h.id ? "text-slate-600" : "text-slate-400"}`}>{h.desc}</p>
                     </button>
                   ))}
                 </div>
@@ -398,7 +404,7 @@ export default function KalkulatorPage() {
                 <button
                   onClick={() => setCurrentStep(2)}
                   disabled={!namaJenazah}
-                  className="px-6 py-3.5 bg-slate-950 text-white hover:bg-emerald-600 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-slate-950/10 cursor-pointer"
+                  className="px-6 py-3.5 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-emerald-550/15 cursor-pointer"
                 >
                   <span>Lanjut Langkah Harta</span>
                   <ArrowRight size={14} />
@@ -417,7 +423,7 @@ export default function KalkulatorPage() {
               className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-8 text-left"
             >
               <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
-                <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm">
+                <div className="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-650 rounded-xl flex items-center justify-center font-bold text-sm">
                   2
                 </div>
                 <div>
@@ -523,7 +529,7 @@ export default function KalkulatorPage() {
                 <button
                   onClick={() => setCurrentStep(3)}
                   disabled={parseNum(harta) <= 0}
-                  className="px-6 py-3.5 bg-slate-950 text-white hover:bg-emerald-600 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-slate-950/10 cursor-pointer"
+                  className="px-6 py-3.5 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 rounded-xl font-black text-xs transition-all flex items-center gap-2 shadow-lg shadow-emerald-550/15 cursor-pointer"
                 >
                   <span>Lanjut Ahli Waris</span>
                   <ArrowRight size={14} />
@@ -543,7 +549,7 @@ export default function KalkulatorPage() {
             >
               <div className="flex justify-between items-center border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-sm">
+                  <div className="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-650 rounded-xl flex items-center justify-center font-bold text-sm">
                     3
                   </div>
                   <div>
@@ -553,7 +559,7 @@ export default function KalkulatorPage() {
                 </div>
                 <button 
                   onClick={() => addHeir()}
-                  className="px-4 py-2 bg-slate-950 text-white hover:bg-emerald-600 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  className="px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
                 >
                   <Plus size={14} /> Tambah Ahli Waris
                 </button>
@@ -607,7 +613,7 @@ export default function KalkulatorPage() {
                         className="flex flex-col md:flex-row gap-4 p-4 bg-slate-50/30 rounded-2xl border border-slate-200/70 shadow-inner hover:border-slate-300 transition-colors"
                       >
                         {/* Number Index */}
-                        <div className="w-8 h-8 bg-slate-900 text-white rounded-lg flex items-center justify-center font-bold text-xs shrink-0">{i + 1}</div>
+                        <div className="w-8 h-8 bg-emerald-50 border border-emerald-100 text-emerald-750 rounded-lg flex items-center justify-center font-bold text-xs shrink-0">{i + 1}</div>
                         
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Name Input */}
@@ -645,7 +651,7 @@ export default function KalkulatorPage() {
                                       onClick={() => { updateHeir(i, "hubungan", opt); setOpenDropdown(null); }}
                                       className={`w-full text-left px-4 py-2.5 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer ${
                                         h.hubungan === opt 
-                                          ? "bg-slate-900 text-white" 
+                                          ? "bg-emerald-600 text-white" 
                                           : "text-slate-600 hover:bg-slate-50"
                                       }`}
                                     >
@@ -713,10 +719,10 @@ export default function KalkulatorPage() {
                   </p>
                 </div>
 
-                <div className="w-full lg:w-auto bg-slate-950 rounded-2xl p-6 text-center text-white min-w-[280px] shadow-lg">
-                  <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1.5">Harta Bersih yang Dibagikan (Mirkah)</p>
+                <div className="w-full lg:w-auto bg-gradient-to-br from-emerald-600 to-teal-700 rounded-3xl p-6 text-center text-white min-w-[280px] shadow-lg shadow-emerald-500/10">
+                  <p className="text-emerald-100/70 text-[9px] font-black uppercase tracking-widest mb-1.5">Harta Bersih yang Dibagikan (Mirkah)</p>
                   <p className="text-2xl font-black tracking-tight text-white">Rp {Math.max(0, hasil.hartaBersih).toLocaleString("id-ID")}</p>
-                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-slate-500">
+                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-emerald-100/70">
                     <span>Almarhum/ah: {gender}</span>
                     <span>Hukum: {hukum}</span>
                   </div>
@@ -786,8 +792,8 @@ export default function KalkulatorPage() {
                             onMouseLeave={() => setHoveredIndex(null)}
                             className={`p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer ${
                               isHovered 
-                                ? "bg-slate-50 border-slate-900 shadow-sm" 
-                                : "bg-white border-slate-100 hover:border-slate-350"
+                                ? "bg-emerald-50/40 border-emerald-500 shadow-sm" 
+                                : "bg-white border-slate-150 hover:border-slate-300"
                             }`}
                           >
                             <div className={`w-3.5 h-3.5 rounded-full ${chartColors[idx % chartColors.length].split(" ")[0]} shrink-0 mt-0.5`} />
@@ -863,7 +869,7 @@ export default function KalkulatorPage() {
 
                         <button 
                           onClick={() => setSelectedHeir(h)}
-                          className="w-full py-2.5 bg-slate-50 hover:bg-slate-950 hover:text-white rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                          className="w-full py-2.5 bg-slate-50 border border-transparent hover:border-emerald-250 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-550 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                         >
                           <Info size={12} /> Detail Keputusan Hukum
                         </button>
@@ -883,7 +889,7 @@ export default function KalkulatorPage() {
                 </button>
                 <button 
                   onClick={downloadPDF} 
-                  className="px-6 py-3 bg-slate-950 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-550/15"
                 >
                   <Download size={14} /> Unduh Laporan PDF
                 </button>
@@ -943,7 +949,7 @@ export default function KalkulatorPage() {
 
                 <button 
                   onClick={() => setSelectedHeir(null)}
-                  className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-colors cursor-pointer shadow-md"
+                  className="w-full py-3.5 bg-emerald-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors cursor-pointer shadow-md shadow-emerald-550/15"
                 >
                   Tutup Rincian
                 </button>
