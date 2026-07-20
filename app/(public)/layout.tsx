@@ -2,13 +2,26 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isFixed, setIsFixed] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 35) {
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleHukumSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
@@ -20,31 +33,30 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <div className="d-flex flex-column min-vh-100 bg-light overflow-x-hidden">
       
-      {/* Topbar Syariat Announcement & Smooth Ticker Marquee */}
-      <div className="wp-topbar py-1.5 px-3">
-        <div className="container d-flex align-items-center justify-content-between gap-2">
+      {/* Topbar Syariat Announcement (Scrolls away naturally) */}
+      <div className="wp-topbar py-2 px-3">
+        <div className="container d-flex align-items-center justify-content-between gap-3 text-nowrap">
           
-          <div className="d-flex align-items-center gap-2 shrink-0">
-            <span className="wp-ticker-label">
-              <i className="bi bi-moon-stars-fill me-1"></i> PORTAL SYARIAT
+          {/* Left Badge */}
+          <div className="d-flex align-items-center gap-2 shrink-0 text-nowrap">
+            <span className="wp-ticker-label text-nowrap">
+              <i className="bi bi-moon-stars-fill me-1 text-warning"></i> PORTAL SYARIAT
             </span>
           </div>
 
-          {/* Smooth Marquee Running Quote Text */}
-          <div className="wp-ticker-container flex-fill mx-2">
-            <div className="wp-ticker-track text-light small">
+          {/* Middle Quote Text */}
+          <div className="wp-ticker-container flex-fill mx-2 text-nowrap">
+            <div className="wp-ticker-track text-light small text-nowrap">
               <i className="bi bi-quote text-warning me-1"></i> 
-              Surah An-Nisa: 11 — <em>"Allah mensyariatkan bagimu tentang (pembagian pusaka untuk) anak-anakmu, yaitu bagian seorang anak laki-laki sama dengan bagian dua anak perempuan..."</em>
-              <span className="mx-4 text-warning">•</span>
-              <i className="bi bi-quote text-warning me-1"></i> 
-              Surah An-Nisa: 12 — <em>"Dan bagimu (suami-suami) seperdua dari harta yang ditinggalkan oleh istri-istrimu, jika mereka tidak mempunyai anak..."</em>
+              Surah An-Nisa: 11 — <em>"Allah mensyariatkan bagimu tentang (pembagian pusaka untuk) anak-anakmu..."</em>
             </div>
           </div>
 
-          <div className="d-none d-lg-flex align-items-center gap-3 small shrink-0">
-            <span className="text-light"><i className="bi bi-calendar-check me-1 text-warning"></i> 20 Muharram 1448 H</span>
+          {/* Right Date & Admin Panel */}
+          <div className="d-none d-lg-flex align-items-center gap-3 small shrink-0 text-nowrap">
+            <span className="text-light text-nowrap"><i className="bi bi-calendar-check me-1 text-warning"></i> 20 Muharram 1448 H</span>
             <span className="text-secondary opacity-50">|</span>
-            <Link href="/admin/dashboard" className="btn btn-sm btn-outline-warning py-0 px-2.5 fs-7 fw-bold">
+            <Link href="/admin/dashboard" className="btn btn-sm btn-outline-warning py-1 px-2.5 fs-8 fw-bold text-nowrap">
               <i className="bi bi-speedometer2 me-1"></i> Portal Admin
             </Link>
           </div>
@@ -52,14 +64,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
 
-      {/* Main Header Clean Text Branding Navbar */}
-      <nav className="navbar navbar-expand-lg wp-navbar sticky-top">
+      {/* MAIN NAVBAR MENU (FIXED TOP WHEN SCROLLED) */}
+      <nav className={`navbar navbar-expand-lg wp-navbar transition-all ${isFixed ? "position-fixed top-0 start-0 w-100 shadow-md z-3" : ""}`}>
         <div className="container">
           
           {/* Clean Text Brand Logo */}
           <Link href="/" className="navbar-brand py-0">
             <div className="wp-brand-title">SI-WARIS</div>
-            <div className="wp-brand-tagline">
+            <div className="wp-brand-tagline d-none d-lg-block">
               Sistem Informasi Waris Multi-Hukum
             </div>
           </Link>
@@ -165,10 +177,16 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
             </ul>
 
-            {/* Header Right Action CTA */}
+            {/* Header Right Action CTA (Responsive Text -> Icon Only on Tiny Screen) */}
             <div className="d-flex align-items-center gap-2 mt-2 mt-lg-0">
-              <Link href="/kalkulator" className="btn btn-success fw-bold px-4 py-2 shadow-sm w-100 w-lg-auto text-center" onClick={() => setNavbarOpen(false)}>
-                <i className="bi bi-calculator-fill me-1"></i> Hitung Waris
+              <Link 
+                href="/kalkulator" 
+                className="btn btn-success fw-bold px-3 py-1.5 shadow-sm d-flex align-items-center justify-content-center gap-1.5" 
+                onClick={() => setNavbarOpen(false)}
+                title="Hitung Waris"
+              >
+                <i className="bi bi-calculator-fill fs-6"></i>
+                <span className="d-none d-sm-inline">Hitung Waris</span>
               </Link>
             </div>
           </div>

@@ -48,35 +48,72 @@ h5, .h5 { font-size: 1.02rem !important; font-weight: 700 !important; }
 
 p { font-size: 0.92rem !important; line-height: 1.65 !important; color: #475569; }
 
+/* Responsive Buttons */
+.btn {
+  font-size: clamp(0.72rem, 1vw, 0.92rem) !important;
+  white-space: nowrap !important;
+}
+
 /* --- Public Header & Topbar --- */
 .wp-topbar {
   background-color: var(--wp-dark);
   color: #cbd5e1;
   font-size: 0.82rem;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 7px;
+  padding-bottom: 7px;
   border-bottom: 3px solid var(--wp-gold-main);
   overflow: hidden;
+  white-space: nowrap !important;
+}
+
+.wp-topbar *, 
+.wp-topbar a, 
+.wp-topbar span, 
+.wp-topbar div, 
+.wp-ticker-label {
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
 }
 
 .wp-topbar a { color: #e2e8f0; text-decoration: none; }
 .wp-topbar a:hover { color: var(--wp-gold-main); }
 
+.wp-ticker-label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  color: var(--wp-gold-main);
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap !important;
+}
+
 .wp-ticker-container {
   overflow: hidden;
-  white-space: nowrap;
+  white-space: nowrap !important;
   position: relative;
   width: 100%;
 }
 
 .wp-ticker-track {
   display: inline-block;
-  white-space: nowrap;
-  animation: marqueeTicker 25s linear infinite;
+  white-space: nowrap !important;
 }
 
-.wp-ticker-track:hover {
-  animation-play-state: paused;
+/* MARQUEE ANIMATION ONLY FOR MOBILE (< 992px) */
+@media (max-width: 991px) {
+  .wp-ticker-track {
+    animation: marqueeTicker 55s linear infinite;
+  }
+}
+
+/* DESKTOP STATIC (NO SCROLLING) */
+@media (min-width: 992px) {
+  .wp-ticker-track {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 @keyframes marqueeTicker {
@@ -84,12 +121,14 @@ p { font-size: 0.92rem !important; line-height: 1.65 !important; color: #475569;
   100% { transform: translateX(-100%); }
 }
 
+/* MAIN NAVBAR MENU STYLING */
 .wp-navbar {
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+  transition: all 0.2s ease-in-out;
 }
 
 .wp-brand-title {
@@ -99,6 +138,16 @@ p { font-size: 0.92rem !important; line-height: 1.65 !important; color: #475569;
   letter-spacing: 1px;
   font-size: clamp(1.3rem, 1.5vw, 1.65rem);
   line-height: 1;
+}
+
+.wp-brand-tagline {
+  font-family: 'Open Sans', sans-serif;
+  font-size: clamp(0.6rem, 0.65vw, 0.68rem);
+  font-weight: 700;
+  color: var(--wp-gold-main);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 2px;
 }
 
 .wp-nav-link {
