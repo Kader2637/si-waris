@@ -1,37 +1,53 @@
-import { Settings, Shield, Bell, Database } from "lucide-react";
-
 export default function SettingsPage() {
-  const sections = [
-    { title: "Profil Pengguna", desc: "Kelola informasi akun Anda.", icon: Shield },
-    { title: "Notifikasi", desc: "Atur preferensi pemberitahuan.", icon: Bell },
-    { title: "Koneksi Database", desc: "Konfigurasi PostgreSQL & Prisma.", icon: Database },
-  ];
-
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pengaturan</h1>
-        <p className="text-slate-500 mt-1 font-medium text-xs">Konfigurasi sistem, keamanan, dan preferensi admin panel.</p>
+    <div>
+      
+      {/* Header Title */}
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 border-bottom pb-3">
+        <div>
+          <h2 className="font-serif fw-bold text-dark m-0">Pengaturan WP-Admin</h2>
+          <p className="text-secondary small m-0">Konfigurasi sistem, keamanan database, dan preferensi portal.</p>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {sections.map((s, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-md shadow-slate-200/20 flex items-center justify-between group hover:border-emerald-200 transition-all cursor-pointer">
-             <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
-                   <s.icon size={20} />
-                </div>
-                <div>
-                   <h3 className="text-base font-black text-slate-900">{s.title}</h3>
-                   <p className="text-slate-500 font-medium text-xs">{s.desc}</p>
-                </div>
-             </div>
-             <div className="p-2.5 bg-slate-50 rounded-lg text-slate-300 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                <Settings size={16} />
-             </div>
+      {/* Settings Sections */}
+      <div className="row g-4">
+        
+        <div className="col-md-4">
+          <div className="card wp-card p-4">
+            <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="bg-success text-white rounded p-2"><i className="bi bi-shield-lock fs-4"></i></div>
+              <h5 className="font-serif fw-bold m-0 text-dark">Profil & Keamanan</h5>
+            </div>
+            <p className="small text-secondary mb-3">Kelola kredensial administrator & sesi masuk WP-Admin.</p>
+            <button className="btn btn-outline-success btn-sm w-100 fw-bold">Kelola Akun</button>
           </div>
-        ))}
+        </div>
+
+        <div className="col-md-4">
+          <div className="card wp-card p-4">
+            <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="bg-primary text-white rounded p-2"><i className="bi bi-database-gear fs-4"></i></div>
+              <h5 className="font-serif fw-bold m-0 text-dark">Database Prisma</h5>
+            </div>
+            <p className="small text-secondary mb-3">Status koneksi PostgreSQL & migrasi skema waris.</p>
+            <button className="btn btn-outline-primary btn-sm w-100 fw-bold">Status DB</button>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="card wp-card p-4">
+            <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="bg-warning text-dark rounded p-2"><i className="bi bi-sliders fs-4"></i></div>
+              <h5 className="font-serif fw-bold m-0 text-dark">Preferensi Portal</h5>
+            </div>
+            <p className="small text-secondary mb-3">Pengaturan judul website, versi syariat, & banner topbar.</p>
+            <button className="btn btn-outline-warning btn-sm text-dark w-100 fw-bold">Pengaturan General</button>
+          </div>
+        </div>
+
       </div>
+
     </div>
   );
 }

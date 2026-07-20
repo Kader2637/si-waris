@@ -1,81 +1,263 @@
-@import "tailwindcss";
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap');
+
+/* ======================================================
+   SI-WARIS SaaS Modern Dashboard & Portal Styles
+   ====================================================== */
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --primary: rgb(33, 132, 213);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-}
-
-html {
-  font-size: 14px;
+  --wp-emerald-dark: #062617;
+  --wp-emerald-main: #0f5132;
+  --wp-emerald-accent: #198754;
+  --wp-emerald-light: #e8f5e9;
+  --wp-gold-main: #d97706;
+  --wp-dark: #0f172a;
+  --wp-slate: #334155;
+  --wp-gray-bg: #f8fafc;
+  --saas-primary: #4f46e5;
+  --saas-primary-dark: #3730a3;
+  --saas-primary-light: #e0e7ff;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: 'Open Sans', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
-/* Custom scroll */
-::-webkit-scrollbar { width: 6px; }
+/* --- Heading Typography --- */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.font-serif, .wp-brand-title {
+  font-family: 'Poppins', 'Montserrat', sans-serif !important;
+}
+
+h1, .h1 { font-size: 2.15rem !important; font-weight: 800 !important; line-height: 1.3 !important; }
+h2, .h2 { font-size: 1.7rem !important; font-weight: 800 !important; line-height: 1.35 !important; }
+h3, .h3 { font-size: 1.35rem !important; font-weight: 700 !important; }
+h4, .h4 { font-size: 1.15rem !important; font-weight: 700 !important; }
+h5, .h5 { font-size: 1.02rem !important; font-weight: 700 !important; }
+
+p { font-size: 0.92rem !important; line-height: 1.65 !important; color: #475569; }
+
+/* --- Public Header & Topbar --- */
+.wp-topbar {
+  background-color: var(--wp-dark);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--wp-gold-main);
+}
+
+.wp-topbar a { color: #e2e8f0; text-decoration: none; }
+.wp-topbar a:hover { color: var(--wp-gold-main); }
+
+.wp-navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+.wp-brand-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 900 !important;
+  color: var(--wp-emerald-dark);
+  letter-spacing: 1px;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.wp-nav-link {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: var(--wp-slate) !important;
+  font-size: 0.95rem !important;
+  padding: 0.5rem 1.1rem !important;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.wp-nav-link:hover, .wp-nav-link.active {
+  color: var(--wp-emerald-accent) !important;
+  background-color: rgba(25, 135, 84, 0.08);
+}
+
+.wp-hero-banner {
+  background: linear-gradient(135deg, #061a10 0%, #0f5132 50%, #198754 100%);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.wp-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.wp-footer {
+  background-color: #04120b;
+  color: #94a3b8;
+  border-top: 4px solid var(--wp-gold-main);
+}
+
+.wp-footer a { color: #cbd5e1; text-decoration: none; }
+.wp-footer a:hover { color: var(--wp-gold-main); }
+
+/* ======================================================
+   DRIBBBLE-STYLE SAAS ADMIN DASHBOARD STYLING
+   ====================================================== */
+
+.saas-layout-wrapper {
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.saas-sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.saas-sidebar .nav-link {
+  font-family: 'Poppins', sans-serif;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.saas-sidebar .nav-link:hover {
+  color: #4f46e5;
+  background-color: #f1f5f9;
+}
+
+.saas-sidebar .nav-link.active {
+  color: #4f46e5;
+  background-color: #e0e7ff;
+  font-weight: 700;
+}
+
+.saas-brand-icon {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  color: #ffffff;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.saas-topbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  height: 64px;
+  padding: 0 1.75rem;
+}
+
+.saas-content {
+  flex: 1;
+  background-color: #f8fafc;
+  padding: 1.75rem;
+}
+
+/* Feature Hero Card (Gradient Indigo) */
+.saas-hero-card {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+
+.saas-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 140px;
+  height: 140px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.saas-stat-card-sm {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease;
+}
+
+.saas-stat-card-sm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Mini Calendar Widget */
+.saas-calendar-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.saas-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.saas-calendar-day {
+  padding: 6px 0;
+  border-radius: 8px;
+  color: #475569;
+}
+
+.saas-calendar-day.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgb(33,132,213); }
-
-/* Brand text */
-.gradient-text {
-  background: linear-gradient(135deg, #047857 0%, #10b981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Primary text */
-.text-primary { color: rgb(33, 132, 213); }
-.bg-primary { background-color: rgb(33, 132, 213); }
-.border-primary { border-color: rgb(33, 132, 213); }
-
-/* Dot grid background (s52-style) */
-.bg-dot-grid {
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-/* Line grid background */
-.bg-line-grid {
-  background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
-}
-
-/* Floating animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-.float { animation: float 6s ease-in-out infinite; }
-.float-delay { animation: float 6s ease-in-out 2s infinite; }
-
-/* Pulse */
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-.animate-pulse { animation: pulse-dot 2s ease-in-out infinite; }
-
-/* Mono label */
-.label-mono {
-  font-family: var(--font-geist-sans), monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-weight: 500;
-}
+::-webkit-scrollbar-thumb:hover { background: #4f46e5; }

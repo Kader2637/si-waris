@@ -1,264 +1,150 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
-import { Scale, BookOpen, Heart, Target, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const values = [
-  { icon: Scale, title: "Keadilan", desc: "Setiap hitungan berpedoman pada sumber hukum yang sah — Al-Qur'an, tradisi adat, maupun KUHPerdata.", color: "emerald" },
-  { icon: BookOpen, title: "Transparansi", desc: "Setiap hasil dilengkapi dalil atau dasar hukum yang jelas agar mudah dipahami dan diverifikasi.", color: "blue" },
-  { icon: Heart, title: "Aksesibilitas", desc: "Gratis untuk semua. Mendukung 3 sistem hukum: Faraid, Adat Jawa, dan Perdata dalam satu platform.", color: "red" },
-  { icon: Target, title: "Akurasi", desc: "Engine multi-hukum mendeteksi Aul, Radd, Gharrawain (Islam) dan Sepikul/Kum-kum (Adat) secara otomatis.", color: "amber" },
-];
-const cardColorMap: Record<string, { 
-  borderHover: string; 
-  shadowHover: string; 
-  iconBg: string; 
-  iconText: string; 
-  orbBg: string;
-  gradFrom: string;
-}> = {
-  emerald: {
-    borderHover: "hover:border-emerald-500/40",
-    shadowHover: "hover:shadow-emerald-500/10",
-    iconBg: "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-500/20",
-    iconText: "text-emerald-600 group-hover:text-emerald-750",
-    orbBg: "bg-emerald-500/5",
-    gradFrom: "from-emerald-50/30",
-  },
-  blue: {
-    borderHover: "hover:border-blue-500/40",
-    shadowHover: "hover:shadow-blue-500/10",
-    iconBg: "bg-blue-50 text-blue-600 group-hover:bg-blue-500/20",
-    iconText: "text-blue-600 group-hover:text-blue-700",
-    orbBg: "bg-blue-500/5",
-    gradFrom: "from-blue-50/30",
-  },
-  red: {
-    borderHover: "hover:border-rose-500/40",
-    shadowHover: "hover:shadow-rose-500/10",
-    iconBg: "bg-rose-50 text-rose-600 group-hover:bg-rose-500/20",
-    iconText: "text-rose-600 group-hover:text-rose-700",
-    orbBg: "bg-rose-500/5",
-    gradFrom: "from-rose-50/30",
-  },
-  amber: {
-    borderHover: "hover:border-amber-500/40",
-    shadowHover: "hover:shadow-amber-500/10",
-    iconBg: "bg-amber-50 text-amber-600 group-hover:bg-amber-500/20",
-    iconText: "text-amber-600 group-hover:text-amber-700",
-    orbBg: "bg-amber-500/5",
-    gradFrom: "from-amber-50/30",
-  },
-};
-
-const timeline = [
-  { year: "2024", badge: "01", title: "Latar Belakang", desc: "Sengketa waris kerap terjadi karena perbedaan sistem hukum (Islam, Adat, Perdata) dan minimnya alat bantu hitung yang mudah diakses masyarakat." },
-  { year: "2025", badge: "02", title: "Inisiasi Proyek", desc: "E-MAWARITS dikembangkan sebagai platform multi-hukum pertama yang mengintegrasikan Faraid, Adat Jawa (Sepikul Segendongan & Kum-kum Kupat), dan Perdata." },
-  { year: "2026", badge: "03", title: "Peluncuran Sistem", desc: "Sistem berjalan penuh dengan 3 engine kalkulasi, arsip digital, dan kalkulator instan yang mendukung seluruh kebutuhan pembagian waris di Indonesia." },
-];
-
-
-
 export default function TentangPage() {
-  const timelineRef = useRef<HTMLDivElement>(null);
-
-  const staggerContainer = {
-    initial: {},
-    whileInView: {
-      transition: {
-        staggerChildren: 0.1
-      }
-    },
-    viewport: { once: false, amount: 0.15 }
-  };
-
-  const staggerChild = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }
-    }
-  };
-  
-  // Track scroll position in timeline section for the active bar
-  const { scrollYProgress } = useScroll({
-    target: timelineRef,
-    offset: ["start center", "end center"]
-  });
-
-  const scaleY = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
   return (
-    <div className="bg-slate-50 overflow-x-hidden text-slate-900 relative">
+    <div className="pb-5">
       
-      {/* Decorative Background Orbs */}
-      <div className="absolute top-0 left-0 w-full h-[700px] overflow-hidden pointer-events-none z-0 opacity-40">
-        <div className="absolute top-[-20%] left-[-15%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-emerald-400/20 to-teal-400/20 blur-[130px]" />
-        <div className="absolute top-[20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-bl from-blue-300/10 to-emerald-500/15 blur-[120px]" />
-      </div>
-      <div className="absolute inset-0 bg-dot-grid opacity-75 pointer-events-none z-0" />
-
-      {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-16 px-6 lg:px-8 border-b border-slate-200/50 max-w-7xl mx-auto">
-        <div className="relative w-full">
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }} 
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.15 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest mb-6">
-              Tentang E-MAWARITS
+      {/* 1. HERO HEADER */}
+      <section className="wp-hero-banner py-5">
+        <div className="container py-3">
+          <div className="row align-items-center g-4">
+            <div className="col-lg-8">
+              <span className="badge bg-warning text-dark font-monospace px-3 py-2 mb-3 shadow-sm">
+                <i className="bi bi-info-circle-fill me-1"></i> TENTANG SI-WARIS
+              </span>
+              <h1 className="display-4 font-serif fw-bold text-white mb-3">
+                Pelopor Sistem Informasi Waris Multi-Hukum Indonesia
+              </h1>
+              <p className="lead text-light opacity-90 mb-4 leading-relaxed">
+                SI-WARIS hadir sebagai solusi digital terpadu untuk membantu masyarakat Indonesia menghitung, memetakan, dan menyelesaikan pembagian harta waris secara adil, transparan, serta berkepastian hukum.
+              </p>
+              <div className="d-flex flex-wrap gap-3">
+                <Link href="/kalkulator" className="btn btn-warning text-dark btn-lg fw-bold px-4 shadow">
+                  <i className="bi bi-calculator-fill me-2"></i> Coba Kalkulator Waris
+                </Link>
+                <Link href="/syariah" className="btn btn-outline-light btn-lg px-4">
+                  <i className="bi bi-book-half me-2"></i> Baca Panduan Hukum
+                </Link>
+              </div>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight mb-6">
-              Membangun Sistem Waris yang <span className="text-emerald-600">Bermartabat.</span>
-            </h1>
-            <p className="text-base text-slate-550 font-medium leading-relaxed max-w-2xl">
-              E-MAWARITS lahir dari keprihatinan terhadap banyaknya sengketa waris di Indonesia — baik dalam keluarga Muslim, penganut adat, maupun hukum perdata — yang sebenarnya bisa dicegah dengan panduan distribusi yang benar, adil, dan transparan.
-            </p>
-
-            {/* 3 hukum badges */}
-            <div className="flex flex-wrap gap-2 mt-6">
-              <span className="px-3.5 py-1.5 bg-emerald-50 border border-emerald-100/50 text-emerald-700 rounded-full text-[9px] font-black uppercase tracking-wider">☪ Hukum Islam (Faraid)</span>
-              <span className="px-3.5 py-1.5 bg-amber-50 border border-amber-100/50 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-wider">🏛 Hukum Adat Jawa</span>
-              <span className="px-3.5 py-1.5 bg-blue-50 border border-blue-100/50 text-blue-700 rounded-full text-[9px] font-black uppercase tracking-wider">⚖ Hukum Perdata (BW)</span>
+            <div className="col-lg-4 text-center d-none d-lg-block">
+              <div className="card wp-card p-4 bg-white text-dark shadow-lg border-0">
+                <div className="display-3 text-success mb-2"><i className="bi bi-shield-check"></i></div>
+                <h5 className="font-serif fw-bold text-dark mb-2">Resmi & Terverifikasi</h5>
+                <p className="small text-secondary m-0">
+                  "Menjaga kerukunan keluarga Indonesia melalui prinsip syariat yang adil dan transparan."
+                </p>
+              </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Values Section */}
-      <section className="relative z-10 py-20 px-6 lg:px-8 border-y border-slate-200/50 max-w-7xl mx-auto">
-        <div className="absolute inset-0 bg-dot-grid opacity-[0.4] pointer-events-none" />
-        <div className="relative w-full">
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.15 }}
-            className="text-center mb-12"
-          >
-            <p className="text-emerald-600 font-black uppercase tracking-[0.2em] text-[9px] mb-2">Nilai yang Kami Pegang</p>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Empat Pilar Utama</h2>
-          </motion.div>
-          <motion.div 
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: false, amount: 0.15 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {values.map((v, i) => {
-              const colors = cardColorMap[v.color] || cardColorMap.emerald;
-              return (
-                <motion.div 
-                  key={i} 
-                  variants={staggerChild}
-                  whileHover={{ y: -8, scale: 1.03 }}
-                  className={`bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-3xl p-6 transition-all duration-300 shadow-sm cursor-pointer group ${colors.borderHover} ${colors.shadowHover} relative overflow-hidden`}
-                >
-                  {/* Floating glow orb */}
-                  <div className={`absolute top-0 right-0 w-24 h-24 ${colors.orbBg} rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
-                  
-                  {/* Gradient background on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradFrom} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
-
-                  <div className={`relative z-10 w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 ${colors.iconBg}`}>
-                    <v.icon size={20} />
-                  </div>
-                  <h3 className="relative z-10 font-extrabold text-slate-900 text-base mb-2 group-hover:text-slate-950 transition-colors duration-300">{v.title}</h3>
-                  <p className="relative z-10 text-slate-500 font-semibold text-xs leading-relaxed group-hover:text-slate-700 transition-colors duration-300">{v.desc}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Timeline Section */}
-      <section className="relative z-10 py-20 px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="w-full flex flex-col items-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.15 }}
-            className="text-center mb-16"
-          >
-            <p className="text-emerald-700 font-black uppercase tracking-[0.2em] text-[9px] mb-2">Perjalanan Proyek</p>
-            <h2 className="text-3xl font-black text-slate-955 tracking-tight">Dari Ide ke Realita</h2>
-          </motion.div>
-          
-          <div ref={timelineRef} className="relative space-y-8 pb-4 max-w-3xl w-full">
-            {/* Background Grey line */}
-            <div className="absolute left-6 top-2 bottom-2 w-0.5 bg-slate-200/60" />
-
-            {/* Foreground Scroll-Animated Green line */}
-            <motion.div 
-              style={{ scaleY }}
-              className="absolute left-6 top-2 bottom-2 w-0.5 bg-emerald-500 origin-top z-10"
-            />
-
-            {timeline.map((t, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: false, amount: 0.25 }}
-                transition={{ delay: i * 0.05, duration: 0.5 }}
-                className="flex gap-6 items-start relative"
-              >
-                {/* Timeline badge */}
-                <div className="w-12 h-12 bg-slate-950 text-white rounded-2xl flex flex-col items-center justify-center font-black flex-shrink-0 z-20 shadow-md text-xs relative overflow-hidden group">
-                  <span className="text-[7px] text-slate-400 leading-none mb-0.5">{t.year}</span>
-                  <span className="leading-none text-emerald-450">{t.badge}</span>
-                </div>
-
-                {/* Timeline Content */}
-                <div className="flex-1 bg-white/80 backdrop-blur-md border border-slate-200/60 p-6 rounded-3xl shadow-sm hover:border-emerald-500/30 hover:bg-white transition-all duration-300 hover:shadow-lg">
-                  <h3 className="font-extrabold text-slate-900 text-base mb-2">{t.title}</h3>
-                  <p className="text-slate-505 font-semibold text-xs leading-relaxed">{t.desc}</p>
-                </div>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="relative z-10 py-24 px-6 lg:px-8 max-w-7xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.15 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-5xl mx-auto bg-slate-900 rounded-[2.5rem] p-8 sm:p-16 text-center relative overflow-hidden shadow-2xl border border-slate-800"
-        >
-          {/* Glowing background */}
-          <div className="absolute inset-0 bg-dot-grid opacity-10 pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none" />
-          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-blue-500/10 blur-[100px] pointer-events-none" />
+      {/* 2. 4 PILAR UTAMA SI-WARIS */}
+      <section className="py-5 bg-white">
+        <div className="container py-3">
           
-          <div className="relative z-10 flex flex-col items-center">
-            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4 max-w-2xl leading-tight">
-              Siap Menghitung Waris Sekarang?
-            </h2>
-            <p className="text-slate-400 mb-10 max-w-lg mx-auto font-medium text-sm leading-relaxed">
-              Gunakan E-MAWARITS untuk menghitung pembagian secara cepat, transparan, dan sesuai aturan hukum yang berlaku.
+          <div className="text-center max-w-2xl mx-auto mb-5">
+            <span className="wp-badge-emerald badge px-3 py-2 mb-2 uppercase">Fondasi Platform</span>
+            <h2 className="font-serif fw-bold text-dark">4 Pilar Utama SI-WARIS</h2>
+            <p className="text-secondary small">
+              Komitmen kami dalam menyajikan platform kalkulasi waris tepercaya di Indonesia.
             </p>
-            <div className="flex justify-center">
-              <Link href="/kalkulator" className="inline-flex px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-full font-black text-xs transition-all items-center gap-2 shadow-lg shadow-emerald-500/15">
-                Buka Kalkulator Waris <ArrowRight size={14} />
+          </div>
+
+          <div className="row g-4">
+            
+            <div className="col-md-3 col-sm-6">
+              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
+                <div className="bg-success-subtle text-success rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
+                  <i className="bi bi-moon-stars fs-3"></i>
+                </div>
+                <h5 className="font-serif fw-bold text-dark mb-2">Syariat Otentik</h5>
+                <p className="small text-secondary leading-relaxed">
+                  Berdasarkan Surah An-Nisa (11, 12, 176), Hadits Shahih, dan Kompilasi Hukum Islam (KHI).
+                </p>
+              </div>
+            </div>
+
+            <div className="col-md-3 col-sm-6">
+              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
+                <div className="bg-warning-subtle text-warning-emphasis rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
+                  <i className="bi bi-calculator fs-3"></i>
+                </div>
+                <h5 className="font-serif fw-bold text-dark mb-2">Presisi Algoritma</h5>
+                <p className="small text-secondary leading-relaxed">
+                  Penyelesaian matematis otomatis untuk kasus kompleks Aul, Radd, dan Gharrawain.
+                </p>
+              </div>
+            </div>
+
+            <div className="col-md-3 col-sm-6">
+              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
+                <div className="bg-primary-subtle text-primary rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
+                  <i className="bi bi-bank fs-3"></i>
+                </div>
+                <h5 className="font-serif fw-bold text-dark mb-2">Multidisiplin Hukum</h5>
+                <p className="small text-secondary leading-relaxed">
+                  Mendukung 3 rujukan hukum resmi: Islam (Faraid), Adat Jawa, dan Perdata (BW).
+                </p>
+              </div>
+            </div>
+
+            <div className="col-md-3 col-sm-6">
+              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
+                <div className="bg-info-subtle text-info-emphasis rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
+                  <i className="bi bi-file-earmark-pdf fs-3"></i>
+                </div>
+                <h5 className="font-serif fw-bold text-dark mb-2">Cetak PDF Resmi</h5>
+                <p className="small text-secondary leading-relaxed">
+                  Laporan pembagian waris dapat langsung diunduh dalam bentuk PDF resmi.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. VISI & MISI */}
+      <section className="py-5 bg-light">
+        <div className="container py-3">
+          <div className="row align-items-center g-5">
+            <div className="col-lg-6">
+              <span className="badge bg-success font-monospace px-3 py-2 mb-2">VISI & MISI</span>
+              <h2 className="font-serif fw-bold text-dark mb-3">Mencegah Sengketa Waris Melalui Transparansi Digital</h2>
+              <p className="small text-secondary leading-relaxed mb-3">
+                Sengketa harta waris kerap menjadi pemicu keretakan hubungan keluarga di Indonesia karena minimnya pemahaman hukum serta ketidakjelasan porsi pembagian.
+              </p>
+              <p className="small text-secondary leading-relaxed mb-4">
+                SI-WARIS hadir sebagai alat bantu independen yang memberikan kepastian angka dan dalil secara terbuka, sehingga seluruh ahli waris dapat bermusyawarah dalam iklim yang damai dan berkeadilan.
+              </p>
+              <Link href="/kalkulator" className="btn btn-success fw-bold px-4">
+                Coba Simulasi Waris <i className="bi bi-arrow-right ms-1"></i>
               </Link>
             </div>
+            <div className="col-lg-6">
+              <div className="card wp-card p-4 bg-dark text-white border-0 shadow">
+                <h4 className="font-serif fw-bold text-warning mb-3">
+                  <i className="bi bi-envelope-open-fill me-2"></i> Hubungi Tim Pengelola
+                </h4>
+                <p className="small text-secondary mb-3">
+                  Untuk pertanyaan seputar kerjasama, integrasi lembaga, atau konsultasi hukum syariat:
+                </p>
+                <ul className="list-unstyled small text-secondary space-y-2 mb-4">
+                  <li><i className="bi bi-envelope text-warning me-2"></i> kontak@siwaris.id</li>
+                  <li><i className="bi bi-telephone text-warning me-2"></i> +62 812-3456-7890</li>
+                  <li><i className="bi bi-geo-alt text-warning me-2"></i> Jakarta & Yogyakarta, Indonesia</li>
+                </ul>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </section>
+
     </div>
   );
 }
