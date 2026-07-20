@@ -8,6 +8,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router = useRouter();
   const [navbarOpen, setNavbarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleHukumSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
@@ -17,26 +18,37 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
+    <div className="d-flex flex-column min-vh-100 bg-light overflow-x-hidden">
       
-      {/* Topbar Syariat Announcement & Ticker */}
-      <div className="wp-topbar py-2 px-3">
-        <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
-          <div className="d-flex align-items-center gap-3">
+      {/* Topbar Syariat Announcement & Smooth Ticker Marquee */}
+      <div className="wp-topbar py-1.5 px-3">
+        <div className="container d-flex align-items-center justify-content-between gap-2">
+          
+          <div className="d-flex align-items-center gap-2 shrink-0">
             <span className="wp-ticker-label">
               <i className="bi bi-moon-stars-fill me-1"></i> PORTAL SYARIAT
             </span>
-            <span className="text-truncate small" style={{ maxWidth: "600px" }}>
-              <i className="bi bi-quote me-1 text-warning"></i> Surah An-Nisa: 11 — <em>"Allah mensyariatkan bagimu tentang (pembagian pusaka untuk) anak-anakmu..."</em>
-            </span>
           </div>
-          <div className="d-flex align-items-center gap-3 small">
-            <span className="d-none d-lg-inline text-light"><i className="bi bi-calendar-check me-1 text-warning"></i> 20 Muharram 1448 H</span>
-            <span className="text-secondary opacity-50 d-none d-lg-inline">|</span>
+
+          {/* Smooth Marquee Running Quote Text */}
+          <div className="wp-ticker-container flex-fill mx-2">
+            <div className="wp-ticker-track text-light small">
+              <i className="bi bi-quote text-warning me-1"></i> 
+              Surah An-Nisa: 11 — <em>"Allah mensyariatkan bagimu tentang (pembagian pusaka untuk) anak-anakmu, yaitu bagian seorang anak laki-laki sama dengan bagian dua anak perempuan..."</em>
+              <span className="mx-4 text-warning">•</span>
+              <i className="bi bi-quote text-warning me-1"></i> 
+              Surah An-Nisa: 12 — <em>"Dan bagimu (suami-suami) seperdua dari harta yang ditinggalkan oleh istri-istrimu, jika mereka tidak mempunyai anak..."</em>
+            </div>
+          </div>
+
+          <div className="d-none d-lg-flex align-items-center gap-3 small shrink-0">
+            <span className="text-light"><i className="bi bi-calendar-check me-1 text-warning"></i> 20 Muharram 1448 H</span>
+            <span className="text-secondary opacity-50">|</span>
             <Link href="/admin/dashboard" className="btn btn-sm btn-outline-warning py-0 px-2.5 fs-7 fw-bold">
               <i className="bi bi-speedometer2 me-1"></i> Portal Admin
             </Link>
           </div>
+
         </div>
       </div>
 
@@ -54,16 +66,16 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
           {/* Toggler Mobile */}
           <button 
-            className="navbar-toggler border-0 shadow-none" 
+            className="navbar-toggler border-0 shadow-none p-1" 
             type="button" 
             onClick={() => setNavbarOpen(!navbarOpen)}
             aria-label="Toggle navigation"
           >
-            <span className="navbar-toggler-icon"></span>
+            <i className="bi bi-list fs-3 text-dark"></i>
           </button>
 
           {/* Navigation Links */}
-          <div className={`collapse navbar-collapse ${navbarOpen ? "show" : ""}`}>
+          <div className={`collapse navbar-collapse ${navbarOpen ? "show py-3" : ""}`}>
             <ul className="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
               
               {/* Beranda */}
@@ -73,43 +85,57 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 </Link>
               </li>
 
-              {/* SINGLE HOVER DROPDOWN HUKUM */}
-              <li className="nav-item dropdown">
+              {/* CLEAN MINIMAL DROPDOWN HUKUM */}
+              <li 
+                className="nav-item dropdown position-relative"
+                onMouseEnter={() => setDropdownOpen(true)}
+                onMouseLeave={() => setDropdownOpen(false)}
+              >
                 <button 
                   type="button"
                   className={`nav-link wp-nav-link dropdown-toggle border-0 bg-transparent ${["/syariah", "/adat-jawa", "/perdata"].includes(pathname) ? "active" : ""}`}
-                  data-bs-toggle="dropdown" 
-                  aria-expanded="false"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  aria-expanded={dropdownOpen}
                 >
                   <i className="bi bi-balance-scale me-1"></i> Rujukan Hukum
                 </button>
-                <ul className="dropdown-menu shadow-lg border-0 rounded-3 p-2" style={{ minWidth: "250px" }}>
-                  <li>
-                    <span className="dropdown-header text-uppercase font-monospace fs-8 text-muted">Pilih Landasan Hukum</span>
-                  </li>
-                  <li>
-                    <Link href="/syariah" className={`dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between ${pathname === "/syariah" ? "bg-success text-white fw-bold" : ""}`}>
-                      <span><i className="bi bi-moon-stars text-success me-2"></i> Hukum Islam (Faraid KHI)</span>
-                      <span className="badge bg-success-subtle text-success fs-8">KHI</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/adat-jawa" className={`dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between ${pathname === "/adat-jawa" ? "bg-warning text-dark fw-bold" : ""}`}>
-                      <span><i className="bi bi-bank text-warning me-2"></i> Hukum Adat Jawa</span>
-                      <span className="badge bg-warning-subtle text-warning-emphasis fs-8">2:1 / 1:1</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/perdata" className={`dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between ${pathname === "/perdata" ? "bg-primary text-white fw-bold" : ""}`}>
-                      <span><i className="bi bi-book-half text-primary me-2"></i> Hukum Perdata (BW)</span>
-                      <span className="badge bg-primary-subtle text-primary fs-8">BW</span>
-                    </Link>
-                  </li>
-                </ul>
+
+                {dropdownOpen && (
+                  <div className="position-absolute top-100 start-0 pt-1 z-3">
+                    <ul className="dropdown-menu show shadow border-0 rounded-3 p-1.5 m-0" style={{ minWidth: "220px" }}>
+                      <li>
+                        <Link 
+                          href="/syariah" 
+                          onClick={() => { setDropdownOpen(false); setNavbarOpen(false); }}
+                          className={`dropdown-item rounded-2 py-2 fw-bold small ${pathname === "/syariah" ? "bg-success text-white" : "text-dark"}`}
+                        >
+                          <i className="bi bi-moon-stars me-2 text-success"></i> Hukum Islam (Faraid)
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href="/adat-jawa" 
+                          onClick={() => { setDropdownOpen(false); setNavbarOpen(false); }}
+                          className={`dropdown-item rounded-2 py-2 fw-bold small ${pathname === "/adat-jawa" ? "bg-warning text-dark" : "text-dark"}`}
+                        >
+                          <i className="bi bi-bank me-2 text-warning"></i> Hukum Adat Jawa
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href="/perdata" 
+                          onClick={() => { setDropdownOpen(false); setNavbarOpen(false); }}
+                          className={`dropdown-item rounded-2 py-2 fw-bold small ${pathname === "/perdata" ? "bg-primary text-white" : "text-dark"}`}
+                        >
+                          <i className="bi bi-book-half me-2 text-primary"></i> Hukum Perdata (BW)
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </li>
 
-              {/* Quick Select Option Fallback for mobile / direct navigation */}
+              {/* Quick Select Option Fallback for mobile */}
               <li className="nav-item d-lg-none my-2">
                 <select 
                   className="form-select form-select-sm fw-bold border-success text-success" 
@@ -140,8 +166,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </ul>
 
             {/* Header Right Action CTA */}
-            <div className="d-flex align-items-center gap-2">
-              <Link href="/kalkulator" className="btn btn-success fw-bold px-4 py-2 shadow-sm">
+            <div className="d-flex align-items-center gap-2 mt-2 mt-lg-0">
+              <Link href="/kalkulator" className="btn btn-success fw-bold px-4 py-2 shadow-sm w-100 w-lg-auto text-center" onClick={() => setNavbarOpen(false)}>
                 <i className="bi bi-calculator-fill me-1"></i> Hitung Waris
               </Link>
             </div>
