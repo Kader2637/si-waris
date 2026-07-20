@@ -86,7 +86,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <i className="bi bi-list fs-3 text-dark"></i>
           </button>
 
-          {/* Navigation Links */}
+          {/* Navigation Links & Mobile Drawer */}
           <div className={`collapse navbar-collapse ${navbarOpen ? "show py-3" : ""}`}>
             <ul className="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
               
@@ -177,8 +177,19 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
             </ul>
 
-            {/* Header Right Action CTA (Responsive Text -> Icon Only on Tiny Screen) */}
-            <div className="d-flex align-items-center gap-2 mt-2 mt-lg-0">
+            {/* Header Right Action CTA + Mobile Admin Login Button */}
+            <div className="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 mt-3 mt-lg-0">
+              
+              {/* Mobile Only: Admin Login Button */}
+              <Link 
+                href="/admin/dashboard" 
+                className="btn btn-outline-dark fw-bold px-3 py-1.5 d-lg-none text-center"
+                onClick={() => setNavbarOpen(false)}
+              >
+                <i className="bi bi-speedometer2 me-1"></i> Masuk Admin Portal
+              </Link>
+
+              {/* Hitung Waris Button */}
               <Link 
                 href="/kalkulator" 
                 className="btn btn-success fw-bold px-3 py-1.5 shadow-sm d-flex align-items-center justify-content-center gap-1.5" 
@@ -189,6 +200,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <span className="d-none d-sm-inline">Hitung Waris</span>
               </Link>
             </div>
+
           </div>
 
         </div>

@@ -119,28 +119,44 @@ export default function KalkulatorPage() {
           <p className="text-secondary small">Hitung porsi pembagian waris keluarga berdasarkan Faraid Islam & Adat Jawa secara presisi.</p>
         </div>
 
-        {/* Wizard Steps Nav Pills */}
-        <div className="card wp-card p-3 mb-4">
-          <ul className="nav nav-pills nav-justified small fw-bold">
-            <li className="nav-item">
-              <span className={`nav-link ${currentStep === 1 ? "active bg-success text-white" : currentStep > 1 ? "text-success" : "text-muted"}`}>
+        {/* Wizard Steps Nav Pills (Horizontal Scroll & Text-Nowrap on Mobile) */}
+        <div className="card wp-card p-2 p-md-3 mb-4 overflow-x-auto">
+          <ul className="nav nav-pills flex-nowrap small fw-bold text-nowrap">
+            <li className="nav-item shrink-0">
+              <button 
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 1 ? "active bg-success text-white" : currentStep > 1 ? "text-success bg-success-subtle" : "text-muted"}`}
+              >
                 1. Hukum & Pewaris
-              </span>
+              </button>
             </li>
-            <li className="nav-item">
-              <span className={`nav-link ${currentStep === 2 ? "active bg-success text-white" : currentStep > 2 ? "text-success" : "text-muted"}`}>
+            <li className="nav-item shrink-0 ms-1 ms-md-2">
+              <button 
+                type="button"
+                onClick={() => currentStep > 1 && setCurrentStep(2)}
+                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 2 ? "active bg-success text-white" : currentStep > 2 ? "text-success bg-success-subtle" : "text-muted"}`}
+              >
                 2. Harta & Utang
-              </span>
+              </button>
             </li>
-            <li className="nav-item">
-              <span className={`nav-link ${currentStep === 3 ? "active bg-success text-white" : currentStep > 3 ? "text-success" : "text-muted"}`}>
+            <li className="nav-item shrink-0 ms-1 ms-md-2">
+              <button 
+                type="button"
+                onClick={() => currentStep > 2 && setCurrentStep(3)}
+                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 3 ? "active bg-success text-white" : currentStep > 3 ? "text-success bg-success-subtle" : "text-muted"}`}
+              >
                 3. Ahli Waris
-              </span>
+              </button>
             </li>
-            <li className="nav-item">
-              <span className={`nav-link ${currentStep === 4 ? "active bg-success text-white" : "text-muted"}`}>
+            <li className="nav-item shrink-0 ms-1 ms-md-2">
+              <button 
+                type="button"
+                onClick={() => currentStep > 3 && setCurrentStep(4)}
+                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 4 ? "active bg-success text-white" : "text-muted"}`}
+              >
                 4. Hasil Distribusi
-              </span>
+              </button>
             </li>
           </ul>
         </div>
@@ -316,27 +332,29 @@ export default function KalkulatorPage() {
         {/* STEP 3: AHLI WARIS */}
         {currentStep === 3 && (
           <div className="card wp-card p-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
               <h5 className="wp-widget-header m-0">
                 <i className="bi bi-people-fill text-success"></i> Langkah 3: Daftar Silsilah Ahli Waris
               </h5>
-              <button className="btn btn-sm btn-outline-success fw-bold" onClick={() => addHeir()}>
+              <button className="btn btn-sm btn-outline-success fw-bold align-self-start align-self-md-auto" onClick={() => addHeir()}>
                 <i className="bi bi-plus-circle me-1"></i> Tambah Ahli Waris
               </button>
             </div>
 
             {/* Quick Presets */}
             <div className="mb-3">
-              <span className="small font-monospace text-muted me-2">Pintasan Cepat:</span>
-              {["Istri", "Suami", "Anak Laki-laki", "Anak Perempuan", "Ayah", "Ibu"].map((h) => (
-                <button
-                  key={h}
-                  className="btn btn-sm btn-light border me-1 mb-1 font-weight-bold"
-                  onClick={() => addHeir(h)}
-                >
-                  + {h}
-                </button>
-              ))}
+              <span className="small font-monospace text-muted d-block d-md-inline mb-2 mb-md-0 me-2">Pintasan Cepat:</span>
+              <div className="d-flex flex-wrap gap-1">
+                {["Istri", "Suami", "Anak Laki-laki", "Anak Perempuan", "Ayah", "Ibu"].map((h) => (
+                  <button
+                    key={h}
+                    className="btn btn-sm btn-light border font-weight-bold"
+                    onClick={() => addHeir(h)}
+                  >
+                    + {h}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Dynamic List */}
@@ -411,12 +429,12 @@ export default function KalkulatorPage() {
         {/* STEP 4: HASIL DISTRIBUSI */}
         {currentStep === 4 && hasil && (
           <div className="card wp-card p-4">
-            <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4 pb-3 border-bottom">
               <div>
                 <span className="badge bg-success font-monospace mb-1">KASUS: {hasil.statusAulRadd}</span>
                 <h4 className="font-serif fw-bold text-dark m-0">Laporan Hasil Perhitungan Waris</h4>
               </div>
-              <button className="btn btn-danger btn-sm fw-bold" onClick={downloadPDF}>
+              <button className="btn btn-danger btn-sm fw-bold align-self-start align-self-md-auto" onClick={downloadPDF}>
                 <i className="bi bi-file-earmark-pdf-fill me-1"></i> Unduh PDF Laporan
               </button>
             </div>
