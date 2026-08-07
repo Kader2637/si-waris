@@ -2,13 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  Grid,
+  Users,
+  FolderSymlink,
+  BarChart3,
+  Calculator,
+  BookOpen,
+  Settings,
+  Scale,
+  Sparkles,
+  Moon,
+  Sun,
+} from "lucide-react";
 
-const MENU_ITEMS = [
-  { href: "/admin/dashboard", label: "Dashboard Overview", icon: "bi-grid-1x2" },
-  { href: "/admin/keluarga", label: "Data Keluarga", icon: "bi-people" },
-  { href: "/admin/arsip", label: "Arsip Digital", icon: "bi-folder" },
-  { href: "/admin/laporan", label: "Laporan & Rekap", icon: "bi-file-bar-graph" },
-  { href: "/admin/kalkulator", label: "Kalkulator Cepat", icon: "bi-calculator" },
+const NAV_MENU = [
+  { href: "/admin/dashboard", label: "Overview", icon: Grid },
+  { href: "/admin/keluarga", label: "Data Keluarga", icon: Users },
+  { href: "/admin/arsip", label: "Arsip Digital", icon: FolderSymlink, badge: "PDF" },
+  { href: "/admin/laporan", label: "Laporan & Analytics", icon: BarChart3 },
+];
+
+const NAV_TOOLS = [
+  { href: "/admin/kalkulator", label: "Kalkulator Cepat", icon: Calculator },
+  { href: "/admin/panduan", label: "Panduan Hukum", icon: BookOpen },
+  { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];
 
 interface SidebarProps {
@@ -18,74 +37,151 @@ interface SidebarProps {
 
 export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark" || document.documentElement.classList.contains("dark")) {
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <>
       {/* Mobile Backdrop */}
       {mobileOpen && (
-        <div 
-          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 z-4 d-lg-none"
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden"
           onClick={onCloseMobile}
-        ></div>
+        />
       )}
 
-      <aside className={`saas-sidebar d-flex flex-column shrink-0 ${mobileOpen ? "d-flex position-fixed top-0 start-0 z-5 h-100 shadow-lg" : "d-none d-lg-flex"}`}>
-        
-        {/* Top SaaS Brand Header (Indigo Icon + SI-WARIS Text) */}
-        <div className="p-4 d-flex align-items-center justify-content-between">
-          <Link href="/admin/dashboard" className="d-flex align-items-center gap-3 text-decoration-none">
-            <div className="saas-brand-icon">
-              <i className="bi bi-diagram-3-fill"></i>
-            </div>
-            <div>
-              <div className="fw-bold text-dark font-serif tracking-wider fs-5 leading-none">SI-WARIS</div>
-              <div className="text-secondary fs-8 font-monospace">Admin Portal</div>
-            </div>
+      {/* FIXED PINNED SIDEBAR (STAYS PINNED ON SCROLL) */}
+      <aside
+        className={`w-64 min-w-64 bg-white text-slate-700 border-r border-slate-200/80 flex flex-col shrink-0 h-screen sticky top-0 left-0 transition-all duration-300 z-50 overflow-y-auto ${
+          mobileOpen ? "fixed inset-y-0 left-0 shadow-2xl flex" : "hidden lg:flex"
+        }`}
+      >
+        {/* Brand Logo Header */}
+        <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 shrink-0 sticky top-0 bg-white dark:bg-[#111726] z-10">
+          <Link href="/admin/dashboard" className="flex items-center gap-3 no-underline">
+            <span className="grid size-9 place-items-center rounded-xl bg-[#0b6245] text-white shadow-sm">
+              <Scale className="size-5" />
+            </span>
+            <span className="leading-none">
+              <span className="block text-lg font-extrabold tracking-tight text-slate-900 font-sans">
+                SI-<span className="text-[#ca9a28]">WARIS</span>
+              </span>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748b] font-mono">
+                ADMIN PORTAL
+              </span>
+            </span>
           </Link>
-
-          {onCloseMobile && (
-            <button className="btn btn-sm text-secondary d-lg-none p-0 border-0" onClick={onCloseMobile}>
-              <i className="bi bi-x-lg fs-5"></i>
-            </button>
-          )}
         </div>
 
-        {/* Navigation Menu */}
-        <div className="py-2 flex-fill overflow-y-auto px-3">
-          <div className="px-3 pb-2 text-muted fs-8 font-monospace text-uppercase tracking-wider">
-            Menu Utama
+        {/* Navigation Links */}
+        <div className="py-6 flex-1 px-4 space-y-6">
+          
+          {/* MENU Group */}
+          <div>
+            <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400">
+              MENU
+            </p>
+            <nav className="space-y-1">
+              {NAV_MENU.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onCloseMobile}
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all no-underline ${
+                      isActive
+                        ? "bg-[#e6f4ee] text-[#0b6245] dark:bg-[#0b6245]/20 dark:text-emerald-400 font-bold"
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <Icon className={`size-4 ${isActive ? "text-[#0b6245] dark:text-emerald-400" : "text-slate-400"}`} />
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge && (
+                      <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-rose-500 text-white rounded-md uppercase">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          <nav className="nav flex-column gap-1">
-            {MENU_ITEMS.map((item) => {
-              const isActive = pathname === item.href || (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onCloseMobile}
-                  className={`nav-link ${isActive ? "active" : ""}`}
-                >
-                  <i className={`bi ${item.icon} fs-5`}></i>
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          {/* SUPPORT Group (Renamed from PERKAKAS) */}
+          <div>
+            <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400">
+              SUPPORT
+            </p>
+            <nav className="space-y-1">
+              {NAV_TOOLS.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onCloseMobile}
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all no-underline ${
+                      isActive
+                        ? "bg-[#e6f4ee] text-[#0b6245] dark:bg-[#0b6245]/20 dark:text-emerald-400 font-bold"
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <Icon className={`size-4 ${isActive ? "text-[#0b6245] dark:text-emerald-400" : "text-slate-400"}`} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
         </div>
 
-        {/* Bottom SaaS Promo Widget Pill */}
-        <div className="p-3 mt-auto">
-          <div className="bg-light p-3 rounded-4 border text-center">
-            <div className="bg-indigo-subtle text-indigo rounded-circle p-2.5 mx-auto mb-2 d-inline-flex">
-              <i className="bi bi-shield-check fs-4 text-primary"></i>
+        {/* Bottom Functional Dark Mode Toggle Widget */}
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-3 shrink-0">
+          <button
+            type="button"
+            onClick={toggleDarkMode}
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition-colors border border-slate-200/60 dark:border-slate-700"
+          >
+            <span className="flex items-center gap-2">
+              {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500" />}
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </span>
+            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isDark ? "bg-[#0b6245]" : "bg-slate-300"}`}>
+              <div className={`w-3 h-3 rounded-full bg-white shadow-xs transition-transform ${isDark ? "translate-x-4" : "translate-x-0"}`} />
             </div>
-            <div className="fw-bold text-dark fs-8 mb-1">Portal Waris Multi-Hukum</div>
-            <div className="text-secondary fs-8 mb-3">Islam, Adat & Perdata</div>
-            <Link href="/" className="btn btn-sm btn-primary w-100 fw-bold rounded-pill" style={{ fontSize: "0.78rem" }}>
-              Buka Portal Publik
-            </Link>
-          </div>
+          </button>
+
+          <Link
+            href="/"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl shadow-xs transition-all no-underline"
+          >
+            <Sparkles className="size-3.5 text-[#ca9a28]" /> Web Utama
+          </Link>
         </div>
 
       </aside>

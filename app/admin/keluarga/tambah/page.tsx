@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createKeluarga } from "@/app/actions/waris";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/ConfirmModal";
+import { ArrowLeft, UserPlus, Users, Wallet, Plus, Trash2 } from "lucide-react";
 
 export default function TambahKeluargaPage() {
   const router = useRouter();
@@ -110,7 +111,7 @@ export default function TambahKeluargaPage() {
   };
 
   return (
-    <div>
+    <div className="space-y-6 text-[#0f172a] font-sans">
       <ConfirmModal 
         isOpen={removeIndex !== null}
         onClose={() => setRemoveIndex(null)}
@@ -120,250 +121,262 @@ export default function TambahKeluargaPage() {
       />
 
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif fw-bold text-dark m-0">Form Tambah Keluarga Baru</h2>
-          <p className="text-secondary small m-0">Input identitas pewaris, parameter harta, dan silsilah keluarga.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Form Tambah Kasus Waris Baru</h1>
+          <p className="text-slate-500 text-xs mt-1">Input identitas pewaris, parameter harta, dan silsilah keluarga.</p>
         </div>
-        <Link href="/admin/keluarga" className="btn btn-outline-secondary btn-sm fw-bold">
-          <i className="bi bi-arrow-left me-1"></i> Kembali ke Tabel
+        <Link 
+          href="/admin/keluarga" 
+          className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all no-underline"
+        >
+          <ArrowLeft className="size-4" /> Kembali ke Tabel
         </Link>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="row g-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div className="lg:col-span-8 space-y-6">
           
-          <div className="col-lg-8">
-            
-            {/* Card 1: Identitas Pewaris */}
-            <div className="card wp-card p-4 mb-4">
-              <h5 className="wp-widget-header mb-3">
-                <i className="bi bi-person-fill text-success"></i> Identitas Almarhum / Pewaris
-              </h5>
+          {/* Card 1: Identitas Pewaris */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+              <UserPlus className="size-5 text-[#0b6245]" /> Identitas Almarhum / Pewaris
+            </div>
 
-              <div className="mb-3">
-                <label className="form-label small fw-bold text-muted">Sistem Hukum Pembagian</label>
-                <div className="btn-group w-100" role="group">
-                  {["Islam", "Jawa", "Perdata"].map((h) => (
-                    <button
-                      key={h}
-                      type="button"
-                      className={`btn btn-sm ${hukum === h ? "btn-success fw-bold" : "btn-outline-secondary"}`}
-                      onClick={() => setHukum(h)}
-                    >
-                      {h === "Islam" ? "Hukum Islam (Faraid)" : h === "Jawa" ? "Hukum Adat Jawa" : "Perdata"}
-                    </button>
-                  ))}
-                </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-600">Sistem Hukum Pembagian</label>
+              <div className="grid grid-cols-3 gap-2">
+                {["Islam", "Jawa", "Perdata"].map((h) => (
+                  <button
+                    key={h}
+                    type="button"
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === h
+                        ? "bg-[#0b6245] text-white border-[#0b6245] shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
+                    onClick={() => setHukum(h)}
+                  >
+                    {h === "Islam" ? "Faraid Islam" : h === "Jawa" ? "Adat Jawa" : "Perdata"}
+                  </button>
+                ))}
               </div>
+            </div>
 
-              {hukum === "Jawa" && (
-                <div className="alert alert-warning mb-3">
-                  <label className="form-label small fw-bold">Metode Adat Jawa</label>
+            {hukum === "Jawa" && (
+              <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-amber-900">Metode Adat Jawa</label>
                   <select 
-                    className="form-select form-select-sm mb-2"
+                    className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
                     value={metodeAdat}
                     onChange={(e) => setMetodeAdat(e.target.value)}
                   >
                     <option value="SEPIKUL_SEGENDONGAN">Sepikul Segendongan (2:1)</option>
                     <option value="KUM_KUM_KUPAT">Dum-Duman (1:1 Sama Rata)</option>
                   </select>
-                  <div className="form-check form-switch">
-                    <input 
-                      className="form-check-input" 
-                      type="checkbox" 
-                      id="gonoSwitch"
-                      checked={potongGonoGini}
-                      onChange={(e) => setPotongGonoGini(e.target.checked)}
-                    />
-                    <label className="form-check-label small fw-bold" htmlFor="gonoSwitch">
-                      Potong Harta Gono-Gini 50% untuk Pasangan
-                    </label>
-                  </div>
                 </div>
-              )}
-
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <label className="form-label small fw-bold text-muted">Nama Lengkap *</label>
+                <label className="flex items-center gap-2 text-xs font-medium text-amber-900 cursor-pointer">
                   <input 
-                    type="text" 
-                    className="form-control"
-                    placeholder="Nama almarhum..."
-                    value={jenazah.nama}
-                    onChange={(e) => setJenazah({...jenazah, nama: e.target.value})}
-                    required
+                    type="checkbox" 
+                    className="rounded text-[#0b6245]"
+                    checked={potongGonoGini}
+                    onChange={(e) => setPotongGonoGini(e.target.checked)}
                   />
-                </div>
+                  Potong Harta Gono-Gini 50% untuk Pasangan
+                </label>
+              </div>
+            )}
 
-                <div className="col-md-6">
-                  <label className="form-label small fw-bold text-muted">NIK (16 Digit)</label>
-                  <input 
-                    type="text" 
-                    className="form-control"
-                    placeholder="3171..."
-                    value={jenazah.nik}
-                    onChange={(e) => setJenazah({...jenazah, nik: e.target.value})}
-                  />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600">Nama Lengkap Pewaris *</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 focus:border-[#0b6245]"
+                  placeholder="Nama almarhum..."
+                  value={jenazah.nama}
+                  onChange={(e) => setJenazah({...jenazah, nama: e.target.value})}
+                  required
+                />
+              </div>
 
-                <div className="col-md-6">
-                  <label className="form-label small fw-bold text-muted">Jenis Kelamin</label>
-                  <select 
-                    className="form-select"
-                    value={jenazah.gender}
-                    onChange={(e) => setJenazah({...jenazah, gender: e.target.value})}
-                  >
-                    <option value="Laki-laki">Laki-laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                  </select>
-                </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600">NIK (16 Digit)</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 focus:border-[#0b6245]"
+                  placeholder="3171..."
+                  value={jenazah.nik}
+                  onChange={(e) => setJenazah({...jenazah, nik: e.target.value})}
+                />
+              </div>
 
-                <div className="col-md-6">
-                  <label className="form-label small fw-bold text-muted">Tanggal Wafat</label>
-                  <input 
-                    type="date" 
-                    className="form-control"
-                    value={jenazah.tanggalWafat}
-                    onChange={(e) => setJenazah({...jenazah, tanggalWafat: e.target.value})}
-                  />
-                </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600">Jenis Kelamin</label>
+                <select 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
+                  value={jenazah.gender}
+                  onChange={(e) => setJenazah({...jenazah, gender: e.target.value})}
+                >
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-600">Tanggal Wafat</label>
+                <input 
+                  type="date" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
+                  value={jenazah.tanggalWafat}
+                  onChange={(e) => setJenazah({...jenazah, tanggalWafat: e.target.value})}
+                />
               </div>
             </div>
-
-            {/* Card 2: Ahli Waris */}
-            <div className="card wp-card p-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="wp-widget-header m-0">
-                  <i className="bi bi-people-fill text-success"></i> Silsilah Ahli Waris ({ahliWaris.length})
-                </h5>
-                <button type="button" className="btn btn-sm btn-outline-success fw-bold" onClick={handleAddAhliWaris}>
-                  <i className="bi bi-plus-circle me-1"></i> Tambah Anggota
-                </button>
-              </div>
-
-              <div className="table-responsive">
-                <table className="table table-bordered align-middle small">
-                  <thead className="table-light">
-                    <tr>
-                      <th style={{ width: "40px" }}>No</th>
-                      <th>Nama Ahli Waris</th>
-                      <th>Hubungan Keluarga</th>
-                      <th>Status</th>
-                      <th style={{ width: "60px" }}>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ahliWaris.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="text-center text-muted py-3">
-                          Belum ada anggota keluarga. Klik Tambah Anggota.
-                        </td>
-                      </tr>
-                    ) : (
-                      ahliWaris.map((heir, idx) => (
-                        <tr key={heir.id}>
-                          <td className="text-center font-monospace">{idx + 1}</td>
-                          <td>
-                            <input 
-                              type="text" 
-                              className="form-control form-control-sm"
-                              placeholder="Nama..."
-                              value={heir.nama}
-                              onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <select 
-                              className="form-select form-select-sm"
-                              value={heir.hubungan}
-                              onChange={(e) => updateAhliWaris(idx, "hubungan", e.target.value)}
-                            >
-                              <option value="Suami">Suami</option>
-                              <option value="Istri">Istri</option>
-                              <option value="Anak Laki-laki">Anak Laki-laki</option>
-                              <option value="Anak Perempuan">Anak Perempuan</option>
-                              <option value="Ayah">Ayah</option>
-                              <option value="Ibu">Ibu</option>
-                              <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
-                            </select>
-                          </td>
-                          <td>
-                            <select 
-                              className="form-select form-select-sm"
-                              value={heir.statusHidup ? "Hidup" : "Meninggal"}
-                              onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
-                            >
-                              <option value="Hidup">Masih Hidup</option>
-                              <option value="Meninggal">Meninggal</option>
-                            </select>
-                          </td>
-                          <td className="text-center">
-                            <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => setRemoveIndex(idx)}>
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
           </div>
 
-          {/* Right Sidebar Parameter Harta */}
-          <div className="col-lg-4">
-            <div className="card wp-card p-4">
-              <h5 className="wp-widget-header mb-3">
-                <i className="bi bi-wallet2 text-success"></i> Rincian Aset
-              </h5>
-
-              <div className="mb-3">
-                <label className="form-label small fw-bold text-muted">Total Harta Kotor (Rp)</label>
-                <input 
-                  type="text" 
-                  className="form-control fw-bold"
-                  placeholder="0"
-                  value={harta}
-                  onChange={(e) => setHarta(formatIDR(e.target.value))}
-                />
+          {/* Card 2: Ahli Waris Table */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+                <Users className="size-5 text-[#0b6245]" /> Silsilah Ahli Waris ({ahliWaris.length})
               </div>
-
-              <div className="mb-3">
-                <label className="form-label small fw-bold text-muted">Total Utang & Tajhiz (Rp)</label>
-                <input 
-                  type="text" 
-                  className="form-control"
-                  placeholder="0"
-                  value={utang}
-                  onChange={(e) => setUtang(formatIDR(e.target.value))}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="form-label small fw-bold text-muted">Wasiat (Rp)</label>
-                <input 
-                  type="text" 
-                  className="form-control"
-                  placeholder="0"
-                  value={wasiat}
-                  onChange={(e) => setWasiat(formatIDR(e.target.value))}
-                />
-              </div>
-
               <button 
-                type="submit" 
-                className="btn btn-success w-100 font-weight-bold py-2 shadow"
-                disabled={loading || ahliWaris.length === 0}
+                type="button" 
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f4ee] text-[#0b6245] text-xs font-semibold rounded-xl hover:bg-[#0b6245] hover:text-white transition-colors cursor-pointer"
+                onClick={handleAddAhliWaris}
               >
-                {loading ? "Menyimpan..." : "Simpan & Kalkulasi Waris"}
+                <Plus className="size-3.5" /> Tambah Anggota
               </button>
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border border-slate-100">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-500 font-semibold text-[11px]">
+                  <tr>
+                    <th className="px-3 py-3 text-center">No</th>
+                    <th className="px-3 py-3">Nama Ahli Waris</th>
+                    <th className="px-3 py-3">Hubungan Keluarga</th>
+                    <th className="px-3 py-3">Status</th>
+                    <th className="px-3 py-3 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {ahliWaris.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                        Belum ada anggota keluarga. Klik Tambah Anggota.
+                      </td>
+                    </tr>
+                  ) : (
+                    ahliWaris.map((heir, idx) => (
+                      <tr key={heir.id}>
+                        <td className="px-3 py-3 text-center font-mono font-semibold text-slate-400">{idx + 1}</td>
+                        <td className="px-3 py-3">
+                          <input 
+                            type="text" 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                            placeholder="Nama..."
+                            value={heir.nama}
+                            onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
+                          />
+                        </td>
+                        <td className="px-3 py-3">
+                          <select 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                            value={heir.hubungan}
+                            onChange={(e) => updateAhliWaris(idx, "hubungan", e.target.value)}
+                          >
+                            <option value="Suami">Suami</option>
+                            <option value="Istri">Istri</option>
+                            <option value="Anak Laki-laki">Anak Laki-laki</option>
+                            <option value="Anak Perempuan">Anak Perempuan</option>
+                            <option value="Ayah">Ayah</option>
+                            <option value="Ibu">Ibu</option>
+                            <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
+                          </select>
+                        </td>
+                        <td className="px-3 py-3">
+                          <select 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                            value={heir.statusHidup ? "Hidup" : "Meninggal"}
+                            onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
+                          >
+                            <option value="Hidup">Masih Hidup</option>
+                            <option value="Meninggal">Meninggal</option>
+                          </select>
+                        </td>
+                        <td className="px-3 py-3 text-center">
+                          <button 
+                            type="button" 
+                            className="size-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center transition-colors mx-auto cursor-pointer"
+                            onClick={() => setRemoveIndex(idx)}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
 
         </div>
+
+        {/* Right Sidebar Parameter Harta */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+              <Wallet className="size-5 text-[#0b6245]" /> Rincian Aset
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-600">Total Harta Kotor (Rp)</label>
+              <input 
+                type="text" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-[#0b6245] placeholder-slate-400 focus:outline-none"
+                placeholder="0"
+                value={harta}
+                onChange={(e) => setHarta(formatIDR(e.target.value))}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-600">Total Utang & Tajhiz (Rp)</label>
+              <input 
+                type="text" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+                placeholder="0"
+                value={utang}
+                onChange={(e) => setUtang(formatIDR(e.target.value))}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-600">Wasiat (Rp)</label>
+              <input 
+                type="text" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+                placeholder="0"
+                value={wasiat}
+                onChange={(e) => setWasiat(formatIDR(e.target.value))}
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full py-3 px-4 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
+              disabled={loading || ahliWaris.length === 0}
+            >
+              {loading ? "Menyimpan..." : "Simpan & Kalkulasi Waris"}
+            </button>
+          </div>
+        </div>
+
       </form>
     </div>
   );

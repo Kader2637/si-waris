@@ -1,148 +1,132 @@
 "use client";
 
 import Link from "next/link";
+import ScrollReveal from "@/components/ScrollReveal";
+import AudioExplanation from "@/components/AudioExplanation";
+import { BookOpen, HeartHandshake, Lock, Scale, Target, Users } from "lucide-react";
+
+const NILAI = [
+  { icon: Scale, judul: "Adil", desc: "Perhitungan mengikuti kaidah hukum yang berlaku tanpa memihak pihak manapun." },
+  { icon: Target, judul: "Akurat", desc: "Algoritma memperhatikan hijab mahjub, 'aul, radd, dan batas legitieme portie." },
+  { icon: Lock, judul: "Privat", desc: "Seluruh perhitungan diproses di perangkat Anda dan tidak dikirim ke server." },
+  { icon: HeartHandshake, judul: "Damai", desc: "Mendorong musyawarah keluarga agar pembagian warisan tidak menimbulkan sengketa." },
+];
+
+const DASAR = [
+  "Al-Qur'an Surat An-Nisa ayat 7, 11, 12, dan 176",
+  "Kompilasi Hukum Islam (KHI) Buku II tentang Hukum Kewarisan",
+  "Kitab Undang-Undang Hukum Perdata (BW) Buku II tentang Pewarisan",
+  "Yurisprudensi Mahkamah Agung terkait hukum waris adat",
+  "Hukum Adat Jawa: asas sepikul segendongan dan kepatutan",
+];
 
 export default function TentangPage() {
   return (
-    <div className="pb-5">
+    <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
       
-      {/* 1. HERO HEADER */}
-      <section className="wp-hero-banner py-5">
-        <div className="container py-3">
-          <div className="row align-items-center g-4">
-            <div className="col-lg-8">
-              <span className="badge bg-warning text-dark font-monospace px-3 py-2 mb-3 shadow-sm">
-                <i className="bi bi-info-circle-fill me-1"></i> TENTANG SI-WARIS
-              </span>
-              <h1 className="display-4 font-serif fw-bold text-white mb-3">
-                Pelopor Sistem Informasi Waris Multi-Hukum Indonesia
-              </h1>
-              <p className="lead text-light opacity-90 mb-4 leading-relaxed">
-                SI-WARIS hadir sebagai solusi digital terpadu untuk membantu masyarakat Indonesia menghitung, memetakan, dan menyelesaikan pembagian harta waris secara adil, transparan, serta berkepastian hukum.
-              </p>
-              <div className="d-flex flex-wrap gap-3">
-                <Link href="/kalkulator" className="btn btn-warning text-dark btn-lg fw-bold px-4 shadow">
-                  <i className="bi bi-calculator-fill me-2"></i> Coba Kalkulator Waris
-                </Link>
-                <Link href="/syariah" className="btn btn-outline-light btn-lg px-4">
-                  <i className="bi bi-book-half me-2"></i> Baca Panduan Hukum
-                </Link>
-              </div>
-            </div>
-            <div className="col-lg-4 text-center d-none d-lg-block">
-              <div className="card wp-card p-4 bg-white text-dark shadow-lg border-0">
-                <div className="display-3 text-success mb-2"><i className="bi bi-shield-check"></i></div>
-                <h5 className="font-serif fw-bold text-dark mb-2">Resmi & Terverifikasi</h5>
-                <p className="small text-secondary m-0">
-                  "Menjaga kerukunan keluarga Indonesia melalui prinsip syariat yang adil dan transparan."
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. 4 PILAR UTAMA SI-WARIS */}
-      <section className="py-5 bg-white">
-        <div className="container py-3">
-          
-          <div className="text-center max-w-2xl mx-auto mb-5">
-            <span className="wp-badge-emerald badge px-3 py-2 mb-2 uppercase">Fondasi Platform</span>
-            <h2 className="font-serif fw-bold text-dark">4 Pilar Utama SI-WARIS</h2>
-            <p className="text-secondary small">
-              Komitmen kami dalam menyajikan platform kalkulasi waris tepercaya di Indonesia.
+      {/* PAGE HERO */}
+      <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
+          <ScrollReveal className="max-w-3xl space-y-3">
+            <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
+              Tentang Kami
+            </span>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Menghadirkan Kepastian dalam Pembagian Warisan</h1>
+            <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
+              SI-WARIS lahir dari kebutuhan masyarakat akan alat bantu yang transparan untuk memahami hak waris setiap anggota keluarga sebelum melangkah ke proses hukum formal.
             </p>
-          </div>
-
-          <div className="row g-4">
-            
-            <div className="col-md-3 col-sm-6">
-              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
-                <div className="bg-success-subtle text-success rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
-                  <i className="bi bi-moon-stars fs-3"></i>
-                </div>
-                <h5 className="font-serif fw-bold text-dark mb-2">Syariat Otentik</h5>
-                <p className="small text-secondary leading-relaxed">
-                  Berdasarkan Surah An-Nisa (11, 12, 176), Hadits Shahih, dan Kompilasi Hukum Islam (KHI).
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-3 col-sm-6">
-              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
-                <div className="bg-warning-subtle text-warning-emphasis rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
-                  <i className="bi bi-calculator fs-3"></i>
-                </div>
-                <h5 className="font-serif fw-bold text-dark mb-2">Presisi Algoritma</h5>
-                <p className="small text-secondary leading-relaxed">
-                  Penyelesaian matematis otomatis untuk kasus kompleks Aul, Radd, dan Gharrawain.
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-3 col-sm-6">
-              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
-                <div className="bg-primary-subtle text-primary rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
-                  <i className="bi bi-bank fs-3"></i>
-                </div>
-                <h5 className="font-serif fw-bold text-dark mb-2">Multidisiplin Hukum</h5>
-                <p className="small text-secondary leading-relaxed">
-                  Mendukung 3 rujukan hukum resmi: Islam (Faraid), Adat Jawa, dan Perdata (BW).
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-3 col-sm-6">
-              <div className="card wp-card p-4 h-100 border-0 shadow-sm text-center">
-                <div className="bg-info-subtle text-info-emphasis rounded-circle p-3 mx-auto mb-3" style={{ width: "60px", height: "60px" }}>
-                  <i className="bi bi-file-earmark-pdf fs-3"></i>
-                </div>
-                <h5 className="font-serif fw-bold text-dark mb-2">Cetak PDF Resmi</h5>
-                <p className="small text-secondary leading-relaxed">
-                  Laporan pembagian waris dapat langsung diunduh dalam bentuk PDF resmi.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* 3. VISI & MISI */}
-      <section className="py-5 bg-light">
-        <div className="container py-3">
-          <div className="row align-items-center g-5">
-            <div className="col-lg-6">
-              <span className="badge bg-success font-monospace px-3 py-2 mb-2">VISI & MISI</span>
-              <h2 className="font-serif fw-bold text-dark mb-3">Mencegah Sengketa Waris Melalui Transparansi Digital</h2>
-              <p className="small text-secondary leading-relaxed mb-3">
-                Sengketa harta waris kerap menjadi pemicu keretakan hubungan keluarga di Indonesia karena minimnya pemahaman hukum serta ketidakjelasan porsi pembagian.
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 space-y-12">
+        
+        {/* AUDIO EXPLANATION */}
+        <ScrollReveal>
+          <AudioExplanation
+            title="Tentang Platform SI-WARIS Indonesia"
+            badge="Voice Assistant SI-WARIS"
+            text="SI-WARIS adalah platform sistem informasi dan kalkulator pembagian warisan terpadu di Indonesia. Misi kami adalah menghadirkan edukasi yang transparan, akurat, dan netral untuk membantu keluarga merencanakan pembagian harta waris secara damai dan adil."
+          />
+        </ScrollReveal>
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          <ScrollReveal>
+            <div className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-8 space-y-3 shadow-2xs h-full">
+              <span className="grid size-11 place-items-center rounded-2xl bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]">
+                <BookOpen className="size-5" />
+              </span>
+              <h2 className="text-2xl font-extrabold text-slate-900">Misi Kami</h2>
+              <p className="leading-relaxed text-[oklch(0.53_0.03_255)] text-sm sm:text-base">
+                Menyediakan edukasi dan simulasi waris yang mudah diakses oleh siapa saja, sehingga keluarga
+                dapat merencanakan pembagian harta dengan pengetahuan yang benar, mengurangi potensi sengketa,
+                dan menjaga kerukunan antar ahli waris.
               </p>
-              <p className="small text-secondary leading-relaxed mb-4">
-                SI-WARIS hadir sebagai alat bantu independen yang memberikan kepastian angka dan dalil secara terbuka, sehingga seluruh ahli waris dapat bermusyawarah dalam iklim yang damai dan berkeadilan.
-              </p>
-              <Link href="/kalkulator" className="btn btn-success fw-bold px-4">
-                Coba Simulasi Waris <i className="bi bi-arrow-right ms-1"></i>
-              </Link>
             </div>
-            <div className="col-lg-6">
-              <div className="card wp-card p-4 bg-dark text-white border-0 shadow">
-                <h4 className="font-serif fw-bold text-warning mb-3">
-                  <i className="bi bi-envelope-open-fill me-2"></i> Hubungi Tim Pengelola
-                </h4>
-                <p className="small text-secondary mb-3">
-                  Untuk pertanyaan seputar kerjasama, integrasi lembaga, atau konsultasi hukum syariat:
-                </p>
-                <ul className="list-unstyled small text-secondary space-y-2 mb-4">
-                  <li><i className="bi bi-envelope text-warning me-2"></i> kontak@siwaris.id</li>
-                  <li><i className="bi bi-telephone text-warning me-2"></i> +62 812-3456-7890</li>
-                  <li><i className="bi bi-geo-alt text-warning me-2"></i> Jakarta & Yogyakarta, Indonesia</li>
-                </ul>
-              </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={100}>
+            <div className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-8 space-y-3 shadow-2xs h-full">
+              <span className="grid size-11 place-items-center rounded-2xl bg-[oklch(0.76_0.12_87/0.15)] text-[oklch(0.76_0.12_87)]">
+                <Users className="size-5" />
+              </span>
+              <h2 className="text-2xl font-extrabold text-slate-900">Untuk Siapa?</h2>
+              <ul className="space-y-2 text-[oklch(0.53_0.03_255)] text-sm sm:text-base">
+                {[
+                  "Keluarga yang sedang merencanakan pembagian warisan",
+                  "Mahasiswa dan pengajar hukum keluarga & faraidh",
+                  "Penyuluh agama, notaris, dan praktisi hukum",
+                  "Lembaga bantuan hukum dan penyuluhan masyarakat",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2">
+                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[oklch(0.4_0.093_158)]" /> {t}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
+
+        <ScrollReveal>
+          <h2 className="text-2xl font-extrabold text-slate-900">Nilai yang Kami Pegang</h2>
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {NILAI.map((n, idx) => {
+              const Icon = n.icon;
+              return (
+                <div key={n.judul} className="lift rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 shadow-2xs h-full">
+                  <Icon className="size-6 text-[oklch(0.4_0.093_158)]" />
+                  <h3 className="mt-4 font-bold text-slate-900">{n.judul}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[oklch(0.53_0.03_255)]">{n.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-8 shadow-2xs space-y-4">
+          <h2 className="text-2xl font-extrabold text-slate-900">Dasar Hukum & Rujukan</h2>
+          <ul className="grid gap-3 text-[oklch(0.53_0.03_255)] sm:grid-cols-2">
+            {DASAR.map((d) => (
+              <li key={d} className="flex gap-2 text-sm">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[oklch(0.76_0.12_87)]" /> {d}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 rounded-2xl border border-[oklch(0.76_0.12_87/0.3)] bg-[oklch(0.76_0.12_87/0.1)] p-4 text-sm text-[oklch(0.25_0.05_80)]">
+            <strong>Disclaimer:</strong> hasil perhitungan SI-WARIS bersifat simulasi edukatif dan bukan
+            merupakan penetapan hukum. Untuk kekuatan hukum tetap, ajukan penetapan waris di Pengadilan Agama
+            atau Pengadilan Negeri, atau buat akta pembagian waris di hadapan notaris.
+          </p>
+        </ScrollReveal>
+
+        <ScrollReveal className="pt-4 text-center">
+          <Link
+            href="/kalkulator"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-sm font-semibold rounded-full shadow-lg transition-all no-underline"
+          >
+            Mulai Simulasi Waris
+          </Link>
+        </ScrollReveal>
       </section>
 
     </div>

@@ -1,202 +1,184 @@
-@import "bootstrap/dist/css/bootstrap.min.css";
-@import "bootstrap-icons/font/bootstrap-icons.css";
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
 
-/* ======================================================
-   SI-WARIS Responsive Typography & Ticker Marquee Styles
-   ====================================================== */
+* {
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+}
 
 :root {
-  --wp-emerald-dark: #062617;
-  --wp-emerald-main: #0f5132;
-  --wp-emerald-accent: #198754;
-  --wp-emerald-light: #e8f5e9;
-  --wp-gold-main: #d97706;
-  --wp-dark: #0f172a;
-  --wp-slate: #334155;
-  --wp-gray-bg: #f8fafc;
-  --saas-primary: #4f46e5;
-  --saas-primary-dark: #3730a3;
-  --saas-primary-light: #e0e7ff;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --background: oklch(0.985 0.004 247);
+  --foreground: oklch(0.21 0.03 258);
+  --primary: #0b6245;
+  --gold: #ca9a28;
 }
 
 body {
-  font-family: 'Open Sans', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #f1f5f9;
-  color: #1e293b;
-  font-size: 0.92rem;
-  line-height: 1.6;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: hidden;
 }
 
-/* --- Heading Typography --- */
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6,
-.font-serif, .wp-brand-title {
-  font-family: 'Poppins', 'Montserrat', sans-serif !important;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  letter-spacing: -0.025em;
 }
 
-h1, .h1 { font-size: clamp(1.4rem, 2vw, 2.15rem) !important; font-weight: 800 !important; line-height: 1.3 !important; }
-h2, .h2 { font-size: clamp(1.2rem, 1.6vw, 1.7rem) !important; font-weight: 800 !important; line-height: 1.35 !important; }
-h3, .h3 { font-size: clamp(1.05rem, 1.3vw, 1.35rem) !important; font-weight: 700 !important; }
-h4, .h4 { font-size: 1.15rem !important; font-weight: 700 !important; }
-h5, .h5 { font-size: 1.02rem !important; font-weight: 700 !important; }
-
-p { font-size: 0.92rem !important; line-height: 1.65 !important; color: #475569; }
-
-/* Responsive Buttons */
-.btn {
-  font-size: clamp(0.72rem, 1vw, 0.92rem) !important;
-  white-space: nowrap !important;
+.hero-aurora {
+  background-image: 
+    radial-gradient(1000px 500px at 15% -10%, rgba(11, 98, 69, 0.14), transparent),
+    radial-gradient(800px 420px at 90% 0%, rgba(202, 154, 40, 0.14), transparent);
 }
 
-/* --- Public Header & Topbar --- */
-.wp-topbar {
-  background-color: var(--wp-dark);
-  color: #cbd5e1;
-  font-size: 0.82rem;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  border-bottom: 3px solid var(--wp-gold-main);
-  overflow: hidden;
-  white-space: nowrap !important;
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -15px rgba(15, 23, 42, 0.08);
 }
 
-.wp-topbar *, 
-.wp-topbar a, 
-.wp-topbar span, 
-.wp-topbar div, 
-.wp-ticker-label {
-  white-space: nowrap !important;
-  line-height: 1.2 !important;
+.lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
 }
 
-.wp-topbar a { color: #e2e8f0; text-decoration: none; }
-.wp-topbar a:hover { color: var(--wp-gold-main); }
-
-.wp-ticker-label {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 800;
-  color: var(--wp-gold-main);
-  font-size: 0.78rem;
-  letter-spacing: 0.5px;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap !important;
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px -20px rgba(11, 98, 69, 0.25);
 }
 
-.wp-ticker-container {
-  overflow: hidden;
-  white-space: nowrap !important;
-  position: relative;
-  width: 100%;
-}
+/* ==========================================================================
+   SCROLL ENTRANCE & EXIT ANIMATIONS ACROSS ALL MENUS
+   ========================================================================== */
 
-.wp-ticker-track {
-  display: inline-block;
-  white-space: nowrap !important;
-}
-
-/* MARQUEE ANIMATION ONLY FOR MOBILE (< 992px) */
-@media (max-width: 991px) {
-  .wp-ticker-track {
-    animation: marqueeTicker 55s linear infinite;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* DESKTOP STATIC (NO SCROLLING) */
-@media (min-width: 992px) {
-  .wp-ticker-track {
-    animation: none !important;
-    transform: none !important;
+.animate-rise {
+  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes scrollEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes marqueeTicker {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+.scroll-reveal {
+  animation: scrollEntrance ease-out both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 25%;
 }
 
-/* MAIN NAVBAR MENU STYLING */
-.wp-navbar {
-  background-color: #ffffff !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  transition: all 0.2s ease-in-out;
+/* ==========================================================================
+   DARK MODE SYSTEM & OVERRIDES (FULL COMPATIBILITY)
+   ========================================================================== */
+
+.dark {
+  color-scheme: dark;
 }
 
-.wp-brand-title {
-  font-family: 'Poppins', sans-serif !important;
-  font-weight: 900 !important;
-  color: var(--wp-emerald-dark);
-  letter-spacing: 1px;
-  font-size: clamp(1.3rem, 1.5vw, 1.65rem);
-  line-height: 1;
+.dark body {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
 }
 
-.wp-brand-tagline {
-  font-family: 'Open Sans', sans-serif;
-  font-size: clamp(0.6rem, 0.65vw, 0.68rem);
-  font-weight: 700;
-  color: var(--wp-gold-main);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-top: 2px;
+.dark [class*="bg-[#f8fafc]"],
+.dark .bg-slate-100\/60,
+.dark .bg-slate-100\/70 {
+  background-color: #0b0f19 !important;
 }
 
-.wp-nav-link {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  color: var(--wp-slate) !important;
-  font-size: 0.92rem !important;
-  padding: 0.5rem 1rem !important;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+.dark .bg-white {
+  background-color: #151c2c !important;
+  border-color: #26334d !important;
+  color: #f1f5f9 !important;
 }
 
-.wp-nav-link:hover, .wp-nav-link.active {
-  color: var(--wp-emerald-accent) !important;
-  background-color: rgba(25, 135, 84, 0.08);
+.dark .bg-slate-50 {
+  background-color: #1a2336 !important;
+  border-color: #2a3854 !important;
+  color: #cbd5e1 !important;
 }
 
-.wp-hero-banner {
-  background: linear-gradient(135deg, #061a10 0%, #0f5132 50%, #198754 100%);
-  color: #ffffff;
-  position: relative;
-  overflow: hidden;
+.dark header {
+  background-color: rgba(21, 28, 44, 0.9) !important;
+  border-color: #26334d !important;
 }
 
-.wp-card {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.dark aside {
+  background-color: #111726 !important;
+  border-color: #222d42 !important;
+  color: #e2e8f0 !important;
 }
 
-.wp-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark [class*="text-[#0f172a]"] {
+  color: #f8fafc !important;
 }
 
-.wp-footer {
-  background-color: #04120b;
-  color: #94a3b8;
-  border-top: 4px solid var(--wp-gold-main);
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark [class*="text-[#475569]"] {
+  color: #cbd5e1 !important;
 }
 
-.wp-footer a { color: #cbd5e1; text-decoration: none; }
-.wp-footer a:hover { color: var(--wp-gold-main); }
+.dark .text-slate-500,
+.dark [class*="text-[#64748b]"] {
+  color: #94a3b8 !important;
+}
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #f8fafc; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #198754; }
+.dark .border-slate-200,
+.dark .border-slate-200\/80,
+.dark .border-slate-200\/70,
+.dark .border-slate-100 {
+  border-color: #26334d !important;
+}
+
+.dark table thead {
+  background-color: #1a2336 !important;
+  color: #94a3b8 !important;
+}
+
+.dark table tbody tr:hover {
+  background-color: #1e293b !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1a2336 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark .glass {
+  background: rgba(21, 28, 44, 0.85);
+  border-color: rgba(51, 65, 85, 0.8);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}

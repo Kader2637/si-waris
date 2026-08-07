@@ -1,250 +1,449 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import ScrollReveal from "@/components/ScrollReveal";
+import AudioExplanation from "@/components/AudioExplanation";
+import { ArrowLeft, ArrowRight, Download, RotateCcw } from "lucide-react";
+import { calculateAdatJawa } from "@/lib/jawaLogic";
+
+const METODE = [
+  {
+    value: "SEPIKUL_SEGENDONGAN" as const,
+    judul: "Sepikul Segendongan (2:1)",
+    desc: "Anak laki-laki memikul dua bagian, anak perempuan menggendong satu bagian.",
+  },
+  {
+    value: "KUM_KUM_KUPAT" as const,
+    judul: "Musyawarah Mufakat (Sama Rata)",
+    desc: "Seluruh anak menerima bagian sama besar sesuai kesepakatan keluarga.",
+  },
+];
+
+const HUBUNGAN_OPTIONS = [
+  "Suami", "Istri",
+  "Anak Laki-laki", "Anak Perempuan",
+];
+
+const formatIDR = (val: number) => {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
+};
 
 export default function AdatJawaPage() {
-  const [totalHarta, setTotalHarta] = useState<number>(1000000000); // 1 Miliar
-  const [potongGonoGini, setPotongGonoGini] = useState<boolean>(true);
-  const [metodeAdat, setMetodeAdat] = useState<"SEPIKUL" | "DUMDUMAN">("SEPIKUL");
+  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [namaPewaris, setNamaPewaris] = useState("");
+  const [totalHarta, setTotalHarta] = useState("");
+  const [hutang, setHutang] = useState("");
+  const [wasiat, setWasiat] = useState("");
+  const [metodeAdat, setMetodeAdat] = useState<"SEPIKUL_SEGENDONGAN" | "KUM_KUM_KUPAT">("SEPIKUL_SEGENDONGAN");
+  const [potongGonoGini, setPotongGonoGini] = useState(true);
 
-  // Calculation logic for Adat Jawa
-  const gonoGiniAmount = potongGonoGini ? totalHarta * 0.5 : 0;
-  const sisaWaris = totalHarta - gonoGiniAmount;
+  const [ahliWaris, setAhliWaris] = useState<{ nama: string; hubungan: string }[]>([]);
 
-  let porsiLaki = 0;
-  let porsiPerempuan = 0;
+  const parseNum = (val: string) => parseInt(val.replace(/\D/g, "")) || 0;
 
-  if (metodeAdat === "SEPIKUL") {
-    // 2 : 1
-    porsiLaki = sisaWaris * (2 / 3);
-    porsiPerempuan = sisaWaris * (1 / 3);
-  } else {
-    // 1 : 1
-    porsiLaki = sisaWaris * 0.5;
-    porsiPerempuan = sisaWaris * 0.5;
-  }
+  const addHeir = () => setAhliWaris([...ahliWaris, { nama: "", hubungan: "Anak Laki-laki" }]);
+  const removeHeir = (idx: number) => setAhliWaris(ahliWaris.filter((_, i) => i !== idx));
+  const updateHeir = (idx: number, field: string, value: string) => {
+    const arr = [...ahliWaris];
+    arr[idx] = { ...arr[idx], [field]: value };
+    setAhliWaris(arr);
+  };
 
-  const formatIDR = (num: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0
-    }).format(num);
+  const hartaKotorVal = parseNum(totalHarta);
+  const hutangVal = parseNum(hutang);
+  const wasiatVal = parseNum(wasiat);
+
+  const hasil = useMemo(() => {
+    const jenazah = { hartaKotor: hartaKotorVal, utang: hutangVal, wasiat: wasiatVal, potongGonoGini };
+    const list = ahliWaris.map((h, i) => ({ id: `h_${i}`, nama: h.nama || h.hubungan, hubungan: h.hubungan, statusHidup: true }));
+    const res = calculateAdatJawa(jenazah, list, metodeAdat);
+    const net = Math.max(0, hartaKotorVal - hutangVal - wasiatVal);
+    return {
+      hartaBersih: net,
+      statusAulRadd: metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan (2:1)" : "Kum-Kum Kupat (Musyawarah)",
+      ahliWarisGetted: ((res as any).results || res).map((r: any) => ({
+        ahliWarisId: r.ahliWarisId,
+        nama: r.nama,
+        hubungan: r.hubungan,
+        status: r.status,
+        alasan: r.alasan,
+        jatahPersen: r.jatahPersen,
+        jatahNominal: r.jatahNominal,
+      })),
+    };
+  }, [hartaKotorVal, hutangVal, wasiatVal, potongGonoGini, metodeAdat, ahliWaris]);
+
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    const dateStr = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
+
+    doc.setFontSize(18);
+    doc.text("LAPORAN PEMBAGIAN WARIS ADAT JAWA", 105, 20, { align: "center" });
+    doc.setFontSize(10);
+    doc.text(`Platform SI-WARIS — ${dateStr}`, 105, 26, { align: "center" });
+    doc.line(20, 30, 190, 30);
+
+    doc.setFontSize(11);
+    doc.text(`Nama Pewaris: ${namaPewaris || "Almarhum / Almarhumah"}`, 20, 40);
+    doc.text(`Metode Adat: ${metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan (2:1)" : "Kum-Kum Kupat"}`, 20, 46);
+    doc.text(`Harta Bersih: ${formatIDR(hasil.hartaBersih)}`, 120, 40);
+
+    const activeList = hasil.ahliWarisGetted.filter((h: any) => h.status === "Mewarisi");
+
+    autoTable(doc, {
+      startY: 55,
+      head: [['NO', 'AHLI WARIS', 'STATUS', 'PORSI', 'NOMINAL (IDR)', 'ALASAN HUKUM']],
+      body: activeList.map((h: any, i: number) => [
+        i + 1,
+        `${h.nama || "-"}\n(${h.hubungan})`,
+        h.status,
+        h.jatahPersen,
+        formatIDR(h.jatahNominal),
+        h.alasan
+      ]),
+      headStyles: { fillColor: [217, 119, 6], textColor: [255, 255, 255] },
+      styles: { fontSize: 8 }
+    });
+
+    doc.save(`laporan-waris-adat-jawa-${namaPewaris || "simulasi"}.pdf`);
   };
 
   return (
-    <div className="pb-5">
+    <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
       
-      {/* 1. ELEGANT HERO HEADER (Dark Slate Theme with Gold Accent) */}
-      <section className="wp-hero-banner py-5">
-        <div className="container py-3">
-          <div className="row align-items-center g-4">
-            <div className="col-lg-8">
-              <span className="badge bg-warning text-dark font-monospace px-3 py-2 mb-3 shadow-sm">
-                <i className="bi bi-bank me-1"></i> RUJUKAN HUKUM ADAT NUSANTARA
-              </span>
-              <h1 className="display-4 font-serif fw-bold text-white mb-3">
-                Hukum Adat Jawa (Sepikul Segendongan & Dum-Duman)
-              </h1>
-              <p className="lead text-light opacity-90 mb-4 leading-relaxed">
-                Sistem pembagian harta waris tradisional masyarakat Jawa yang mengedepankan asas <strong>Gono-Gini (50% Harta Bersama)</strong>, kerukunan persaudaraan, serta keseimbangan peran kewajiban sosial antar keturunan.
-              </p>
-              <div className="d-flex flex-wrap gap-3">
-                <Link href="/kalkulator" className="btn btn-warning text-dark btn-lg fw-bold px-4 shadow">
-                  <i className="bi bi-calculator-fill me-2"></i> Hitung Adat Jawa
-                </Link>
-                <a href="#simulator-adat" className="btn btn-outline-light btn-lg px-4">
-                  <i className="bi bi-sliders me-2"></i> Simulasi Timbangan Adat
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-4 text-center d-none d-lg-block">
-              <div className="card wp-card p-4 bg-white text-dark shadow-lg border-0">
-                <div className="display-3 text-warning mb-2"><i className="bi bi-bank"></i></div>
-                <h5 className="font-serif fw-bold text-dark mb-2">Asas Kerukunan Jawa</h5>
-                <p className="small text-secondary m-0">
-                  "Mangan Ora Mangan Kumpul — Warisan diderum berdasarkan musyawarah mufakat tanpa memutus tali silaturahmi."
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* PAGE HERO WITH EXACT WARIS-WISE STYLE */}
+      <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
+          <ScrollReveal className="max-w-3xl space-y-3">
+            <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
+              Hukum Adat Jawa
+            </span>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Kalkulator Waris Adat Jawa</h1>
+            <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
+              Hukum adat Jawa mengedepankan asas kepatutan, kerukunan, dan musyawarah keluarga. Pembagian dapat mengikuti prinsip sepikul segendongan maupun kesepakatan bersama.
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* 2. INTERACTIVE ADAT SIMULATOR */}
-      <section className="py-5 bg-white" id="simulator-adat">
-        <div className="container py-3">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 space-y-8">
+        
+        {/* AUDIO EXPLANATION WIDGET */}
+        <ScrollReveal>
+          <AudioExplanation
+            title="Sistem Pembagian Waris Adat Jawa (Sepikul Segendongan & Gono-Gini)"
+            badge="Voice Assistant Adat Jawa"
+            text="Hukum Waris Adat Jawa mengutamakan musyawarah mufakat dan kerukunan keluarga. Sebelum warisan dibagikan, dilakukan pemotongan harta bersama atau gono-gini sebesar 50 persen untuk pasangan. Pembagian kepada anak dapat menggunakan rasio Sepikul Segendongan yaitu 2 berbanding 1 atau dibagi sama rata secara damai."
+          />
+        </ScrollReveal>
+
+        {/* PRINSIP GRID */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <ScrollReveal>
+            <div className="lift rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-7 shadow-2xs space-y-2 h-full">
+              <h2 className="text-xl font-bold text-slate-900 font-sans">Prinsip "Sepikul Segendongan"</h2>
+              <p className="text-sm leading-relaxed text-[oklch(0.53_0.03_255)]">
+                Istilah ini berasal dari kebiasaan memikul (sepikul) dua keranjang oleh laki-laki dan
+                menggendong (segendongan) satu keranjang oleh perempuan. Karena itu perbandingan bagian anak
+                laki-laki dan anak perempuan adalah 2:1.
+              </p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <div className="lift rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-7 shadow-2xs space-y-2 h-full">
+              <h2 className="text-xl font-bold text-slate-900 font-sans">Asas Kepatutan & Musyawarah</h2>
+              <p className="text-sm leading-relaxed text-[oklch(0.53_0.03_255)]">
+                Pembagian waris adat diutamakan melalui musyawarah keluarga demi menjaga kerukunan. Janda atau
+                duda berhak atas pemisahan harta bersama (gono-gini) terlebih dahulu.
+              </p>
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* WIZARD CONTAINER */}
+        <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 sm:p-8 shadow-2xs space-y-8">
           
-          <div className="text-center max-w-2xl mx-auto mb-5">
-            <span className="badge bg-warning text-dark font-monospace px-3 py-2 mb-2 uppercase">Kalkulasi Timbangan</span>
-            <h2 className="font-serif fw-bold text-dark">Simulasi Timbangan Pembagian Adat Jawa</h2>
-            <p className="text-secondary small">
-              Tentukan nilai harta dan pilih metode adat untuk melihat pemotongan Harta Gono-Gini dan porsi keturunan.
-            </p>
-          </div>
-
-          <div className="row g-4">
-            
-            {/* Control Column */}
-            <div className="col-lg-5">
-              <div className="card wp-card p-4 border border-light shadow-sm">
-                <h5 className="wp-widget-header text-dark">
-                  <i className="bi bi-sliders text-warning"></i> Parameter Adat Jawa
-                </h5>
-
-                {/* Harta Input */}
-                <div className="mb-4">
-                  <label className="form-label small fw-bold text-muted">Total Harta Waris Kotor (Rp)</label>
-                  <div className="input-group">
-                    <span className="input-group-text bg-light fw-bold">Rp</span>
-                    <input 
-                      type="number" 
-                      className="form-control fw-bold"
-                      value={totalHarta}
-                      onChange={(e) => setTotalHarta(Number(e.target.value))}
-                    />
-                  </div>
-                </div>
-
-                {/* Switch Gono Gini */}
-                <div className="form-check form-switch mb-4 bg-light p-3 rounded border">
-                  <input 
-                    className="form-check-input ms-0 me-2" 
-                    type="checkbox" 
-                    role="switch" 
-                    id="switchGonoGiniPage"
-                    checked={potongGonoGini}
-                    onChange={(e) => setPotongGonoGini(e.target.checked)}
-                  />
-                  <label className="form-check-label small fw-bold text-dark" htmlFor="switchGonoGiniPage">
-                    Potong 50% Harta Gono-Gini untuk Pasangan Hidup
-                  </label>
-                </div>
-
-                {/* Method selector */}
-                <div className="mb-3">
-                  <label className="form-label small fw-bold text-muted">Pilih Metode Pembagian Adat</label>
-                  <div className="d-flex flex-column gap-2">
-                    <button 
-                      type="button" 
-                      className={`btn p-3 text-start ${metodeAdat === "SEPIKUL" ? "btn-warning fw-bold text-dark" : "btn-outline-secondary"}`}
-                      onClick={() => setMetodeAdat("SEPIKUL")}
-                    >
-                      <div className="fw-bold">Sepikul Segendongan (2 : 1)</div>
-                      <div className="small opacity-75">Anak laki-laki 2 porsi, anak perempuan 1 porsi (proporsional beban).</div>
-                    </button>
-
-                    <button 
-                      type="button" 
-                      className={`btn p-3 text-start ${metodeAdat === "DUMDUMAN" ? "btn-warning fw-bold text-dark" : "btn-outline-secondary"}`}
-                      onClick={() => setMetodeAdat("DUMDUMAN")}
-                    >
-                      <div className="fw-bold">Dum-Duman Kerukunan (1 : 1)</div>
-                      <div className="small opacity-75">Sama rata antara anak laki-laki dan perempuan demi menjaga kerukunan.</div>
-                    </button>
-                  </div>
-                </div>
-
-              </div>
+          <div className="flex items-center justify-between border-b border-slate-100 pb-6">
+            <div className="flex items-center gap-2">
+              {[
+                { idx: 0, label: "1. Data Harta" },
+                { idx: 1, label: "2. Ahli Waris & Metode" },
+                { idx: 2, label: "3. Hasil Simulasi" },
+              ].map((s) => (
+                <span
+                  key={s.idx}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
+                    step === s.idx
+                      ? "bg-[oklch(0.4_0.093_158)] text-white"
+                      : step > s.idx
+                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
+                      : "bg-slate-100 text-slate-400"
+                  }`}
+                >
+                  {s.label}
+                </span>
+              ))}
             </div>
 
-            {/* Display Column */}
-            <div className="col-lg-7">
-              <div className="card wp-card p-4 h-100 border-0 bg-light shadow-sm">
-                
-                <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                  <h5 className="font-serif fw-bold text-dark m-0">
-                    <i className="bi bi-pie-chart-fill text-warning me-2"></i>Rincian Alokasi Timbangan
-                  </h5>
-                  <span className="badge bg-dark text-warning font-monospace fs-7">
-                    Total: {formatIDR(totalHarta)}
-                  </span>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
+              onClick={() => {
+                setTotalHarta("");
+                setHutang("");
+                setWasiat("");
+                setNamaPewaris("");
+                setAhliWaris([]);
+                setStep(0);
+              }}
+            >
+              <RotateCcw className="size-3.5" /> Reset
+            </button>
+          </div>
+
+          {/* STEP 0 */}
+          {step === 0 && (
+            <div className="space-y-6">
+              <div>
+                <label className="text-xs font-medium text-slate-800 block mb-1.5">Nama Pewaris / Almarhum</label>
+                <input
+                  type="text"
+                  className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-medium focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                  placeholder="Contoh: Bpk. Mangkunegara"
+                  value={namaPewaris}
+                  onChange={(e) => setNamaPewaris(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Total Harta Peninggalan</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Rp 0"
+                    value={totalHarta ? Number(totalHarta.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setTotalHarta(e.target.value)}
+                  />
                 </div>
 
-                {potongGonoGini && (
-                  <div className="alert alert-warning mb-4">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong className="d-block text-dark">Hak Pasangan (Harta Gono-Gini 50%):</strong>
-                        <span className="small text-secondary">Dipisahkan otomatis sebelum pembagian ke anak.</span>
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Hutang Pewaris</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Rp 0"
+                    value={hutang ? Number(hutang.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setHutang(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Wasiat</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Rp 0"
+                    value={wasiat ? Number(wasiat.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setWasiat(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-[oklch(0.4_0.093_158/0.1)] border border-[oklch(0.4_0.093_158/0.2)] p-5">
+                <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Harta Bersih Siap Dibagi</p>
+                <p className="text-2xl font-extrabold text-[oklch(0.4_0.093_158)] font-mono mt-1">
+                  {formatIDR(Math.max(0, hartaKotorVal - hutangVal - wasiatVal))}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 1 */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[oklch(0.53_0.03_255)]">
+                  Metode Pembagian
+                </h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {METODE.map((m) => (
+                    <label
+                      key={m.value}
+                      onClick={() => setMetodeAdat(m.value)}
+                      className={`flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 transition-all shadow-2xs ${
+                        metodeAdat === m.value
+                          ? "border-[oklch(0.4_0.093_158)] bg-[oklch(0.4_0.093_158/0.05)] ring-2 ring-[oklch(0.4_0.093_158/0.2)]"
+                          : "border-slate-200 bg-white hover:border-emerald-300"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <input 
+                          type="radio" 
+                          name="metode" 
+                          checked={metodeAdat === m.value} 
+                          onChange={() => setMetodeAdat(m.value)} 
+                          className="accent-[oklch(0.4_0.093_158)]"
+                        />
+                        <span className="text-sm font-bold text-slate-900">{m.judul}</span>
+                      </span>
+                      <span className="text-xs leading-relaxed text-[oklch(0.53_0.03_255)]">
+                        {m.desc}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2.5 p-4 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={potongGonoGini} 
+                    onChange={(e) => setPotongGonoGini(e.target.checked)} 
+                    className="rounded text-[oklch(0.4_0.093_158)] focus:ring-[oklch(0.4_0.093_158)] cursor-pointer"
+                  />
+                  <span>Potong Gono-Gini (50% untuk Suami/Istri sebelum sisa harta dibagi kepada anak)</span>
+                </label>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-slate-900">Pilih Ahli Waris</h3>
+                  <button
+                    type="button"
+                    onClick={addHeir}
+                    className="px-4 py-2 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer"
+                  >
+                    + Tambah Ahli Waris
+                  </button>
+                </div>
+
+                {ahliWaris.length === 0 ? (
+                  <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
+                    Belum ada ahli waris ditambahkan.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {ahliWaris.map((h, i) => (
+                      <div key={i} className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50">
+                        <div className="flex-1 min-w-[180px]">
+                          <input
+                            type="text"
+                            className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                            placeholder="Nama Ahli Waris (Opsional)"
+                            value={h.nama}
+                            onChange={(e) => updateHeir(i, "nama", e.target.value)}
+                          />
+                        </div>
+
+                        <div className="w-64">
+                          <select
+                            className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                            value={h.hubungan}
+                            onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
+                          >
+                            {HUBUNGAN_OPTIONS.map((opt) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => removeHeir(i)}
+                          className="px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl border border-rose-200 cursor-pointer"
+                        >
+                          Hapus
+                        </button>
                       </div>
-                      <span className="fs-5 fw-bold text-dark">{formatIDR(gonoGiniAmount)}</span>
-                    </div>
+                    ))}
                   </div>
                 )}
+              </div>
+            </div>
+          )}
 
-                <div className="space-y-3 mb-4">
-                  <div className="p-3 bg-white rounded border">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <span className="fw-bold text-dark">Anak Laki-Laki ({metodeAdat === "SEPIKUL" ? "Sepikul - 2 Bagian" : "1 Bagian"}):</span>
-                      <strong className="text-success fs-5">{formatIDR(porsiLaki)}</strong>
-                    </div>
-                    <div className="progress" style={{ height: "8px" }}>
-                      <div className="progress-bar bg-warning" style={{ width: `${(porsiLaki / totalHarta) * 100}%` }}></div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-white rounded border">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <span className="fw-bold text-dark">Anak Perempuan ({metodeAdat === "SEPIKUL" ? "Segendongan - 1 Bagian" : "1 Bagian"}):</span>
-                      <strong className="text-success fs-5">{formatIDR(porsiPerempuan)}</strong>
-                    </div>
-                    <div className="progress" style={{ height: "8px" }}>
-                      <div className="progress-bar bg-warning" style={{ width: `${(porsiPerempuan / totalHarta) * 100}%` }}></div>
-                    </div>
-                  </div>
+          {/* STEP 2 */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="p-4 rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white">
+                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Dasar Hukum</p>
+                  <p className="text-lg font-extrabold text-slate-900 mt-1">Hukum Adat Jawa</p>
                 </div>
-
-                <div className="mt-auto pt-3 border-top text-end">
-                  <Link href="/kalkulator" className="btn btn-warning text-dark fw-bold">
-                    Lanjut ke Kalkulator Lengkap <i className="bi bi-arrow-right ms-1"></i>
-                  </Link>
+                <div className="p-4 rounded-2xl border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)]">
+                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Harta Bersih</p>
+                  <p className="text-lg font-extrabold text-[oklch(0.4_0.093_158)] font-mono mt-1">{formatIDR(hasil.hartaBersih)}</p>
                 </div>
-
               </div>
-            </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* 3. FILOSOFI PRINSIP ADAT */}
-      <section className="py-5 bg-light">
-        <div className="container py-3">
-          
-          <div className="text-center max-w-2xl mx-auto mb-5">
-            <h2 className="font-serif fw-bold text-dark">Filosofi Utama Hukum Adat Jawa</h2>
-            <p className="text-secondary small">
-              Prinsip-prinsip sosial budaya yang melandasi pembagian harta waris di tanah Jawa.
-            </p>
-          </div>
-
-          <div className="row g-4">
-            
-            <div className="col-md-6">
-              <div className="card wp-card p-4 h-100 border-top border-4 border-warning">
-                <span className="badge bg-warning text-dark font-monospace mb-2 align-self-start">PRINSIP 1</span>
-                <h4 className="font-serif fw-bold text-dark mb-2">Sepikul Segendongan (Rasio 2 : 1)</h4>
-                <p className="small text-secondary leading-relaxed">
-                  Laki-laki memikul beban tanggung jawab ekonomi keluarga (memikul tempat tidur/kebutuhan rumah tangga), sedangkan perempuan menggendong bakul belanjaan. Rasio 2:1 mencerminkan keseimbangan beban sosial yang harus dipikul anak laki-laki.
-                </p>
+              <div className="overflow-hidden rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white shadow-2xs">
+                <table className="w-full text-left text-sm text-slate-600">
+                  <thead className="bg-slate-50 text-[oklch(0.53_0.03_255)] font-semibold uppercase text-xs border-b border-slate-200">
+                    <tr>
+                      <th className="px-4 py-3">Ahli Waris</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3">Porsi</th>
+                      <th className="px-4 py-3 text-right">Nominal Rupiah</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {hasil.ahliWarisGetted.map((b: any, i: number) => (
+                      <tr key={i} className="hover:bg-slate-50">
+                        <td className="px-4 py-3.5">
+                          <strong className="text-slate-900 block font-semibold">{b.nama}</strong>
+                          <span className="text-xs text-[oklch(0.53_0.03_255)] block">{b.alasan}</span>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${b.status === "Mewarisi" ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]" : "bg-amber-100 text-amber-800"}`}>
+                            {b.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 font-mono font-bold text-[oklch(0.4_0.093_158)]">{b.jatahPersen}</td>
+                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900">{formatIDR(b.jatahNominal)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
 
-            <div className="col-md-6">
-              <div className="card wp-card p-4 h-100 border-top border-4 border-warning">
-                <span className="badge bg-warning text-dark font-monospace mb-2 align-self-start">PRINSIP 2</span>
-                <h4 className="font-serif fw-bold text-dark mb-2">Dum-Duman Kerukunan (Rasio 1 : 1)</h4>
-                <p className="small text-secondary leading-relaxed">
-                  Pemerataan harta secara sama rata tanpa membedakan gender anak, yang disepakati melalui musyawarah mufakat keluarga. Ditujukan khusus untuk mencegah bibit perselisihan dan menjaga tali silaturahmi saudara kandung.
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={exportPDF}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[oklch(0.76_0.12_87)] hover:bg-[oklch(0.7_0.12_87)] text-slate-950 text-sm font-semibold rounded-full shadow-md transition-all cursor-pointer"
+              >
+                <Download className="size-4" /> Unduh Laporan PDF
+              </button>
             </div>
+          )}
 
+          {/* ACTION NAVIGATION */}
+          <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+            <button
+              type="button"
+              disabled={step === 0}
+              onClick={() => setStep((s) => (s - 1) as any)}
+              className="px-4 py-2 text-xs font-semibold border border-slate-200 hover:bg-slate-100 rounded-lg disabled:opacity-40 flex items-center gap-1.5 cursor-pointer"
+            >
+              <ArrowLeft className="size-4" /> Sebelumnya
+            </button>
+
+            {step < 2 && (
+              <button
+                type="button"
+                onClick={() => setStep((s) => (s + 1) as any)}
+                className="px-6 py-3 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-md cursor-pointer"
+              >
+                Lanjut <ArrowRight className="size-4" />
+              </button>
+            )}
           </div>
 
-        </div>
+        </ScrollReveal>
+
       </section>
 
     </div>

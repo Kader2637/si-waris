@@ -5,6 +5,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { calculateFaraid } from "@/lib/faraidLogic";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
+import { calculatePerdata } from "@/lib/perdataLogic";
+import { Calculator, Edit3, Plus, Trash2, FileDown, Sliders, Users, PieChart } from "lucide-react";
 
 const HUBUNGAN_OPTIONS = [
   "Suami", "Istri",
@@ -55,6 +57,14 @@ export default function AdminKalkulatorPage() {
         kpk: null,
         statusAulRadd: metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan" : "Kum-Kum Kupat"
       });
+    } else if (hukum === "Perdata") {
+      const result = calculatePerdata(jenazah, warisList);
+      setHasil({
+        ...result,
+        ahliWarisGetted: result.ahliWarisGetted,
+        kpk: null,
+        statusAulRadd: "KUHPerdata (BW)"
+      });
     } else {
       setHasil(calculateFaraid(jenazah as any, warisList as any));
     }
@@ -63,18 +73,17 @@ export default function AdminKalkulatorPage() {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-    const date = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
 
     doc.setFontSize(20);
     doc.text("LAPORAN PEMBAGIAN WARIS ADMIN", 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text("SI-WARIS WP-Admin Simulation Engine", 105, 27, { align: "center" });
+    doc.text("SI-WARIS Engine Simulation", 105, 27, { align: "center" });
     doc.line(20, 32, 190, 32);
 
     doc.setFontSize(11);
     doc.text(`Nama Pewaris: ${namaJenazah || "-"}`, 20, 42);
     doc.text(`Jenis Kelamin: ${gender}`, 20, 48);
-    doc.text(`Dasar Hukum: ${hukum === "Islam" ? "Syariat Islam (Faraid)" : "Adat Jawa"}`, 20, 54);
+    doc.text(`Dasar Hukum: ${hukum === "Islam" ? "Syariat Islam (Faraid)" : hukum === "Perdata" ? "Hukum Perdata (BW)" : "Adat Jawa"}`, 20, 54);
 
     doc.text(`Harta Bersih: Rp ${hasil.hartaBersih.toLocaleString("id-ID")}`, 120, 42);
 
@@ -89,7 +98,7 @@ export default function AdminKalkulatorPage() {
         `Rp ${h.jatahNominal.toLocaleString("id-ID")}`,
         h.alasan
       ]),
-      headStyles: { fillColor: [15, 81, 50], textColor: [255, 255, 255] },
+      headStyles: { fillColor: [11, 98, 69], textColor: [255, 255, 255] },
       styles: { fontSize: 8 }
     });
 
@@ -99,159 +108,209 @@ export default function AdminKalkulatorPage() {
   const hartaBersih = parseNum(harta) - parseNum(utang) - parseNum(wasiat);
 
   return (
-    <div>
+    <div className="space-y-6 text-[#0f172a] font-sans">
       
       {/* Header Title */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 border-bottom pb-3">
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif fw-bold text-dark m-0">Kalkulator Cepat Admin</h2>
-          <p className="text-secondary small m-0">Pengujian kalkulasi waris cepat tanpa perlu menyimpan data ke database.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Kalkulator Cepat Admin</h1>
+          <p className="text-slate-500 text-xs mt-1">Pengujian kalkulasi waris cepat tanpa perlu menyimpan data ke database.</p>
         </div>
         {step === 2 && (
-          <button className="btn btn-outline-secondary btn-sm fw-bold" onClick={() => setStep(1)}>
-            <i className="bi bi-pencil-square me-1"></i> Edit Parameter
+          <button 
+            className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all cursor-pointer"
+            onClick={() => setStep(1)}
+          >
+            <Edit3 className="size-4" /> Edit Parameter
           </button>
         )}
       </div>
 
       {step === 1 ? (
-        <div className="row g-4">
-          <div className="col-lg-8">
-            <div className="card wp-card p-4 mb-4">
-              <h5 className="wp-widget-header mb-3">
-                <i className="bi bi-sliders text-success"></i> Parameter Perhitungan Cepat
-              </h5>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-6">
+            
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+                <Sliders className="size-5 text-[#0b6245]" /> Parameter Perhitungan Cepat
+              </div>
 
-              <div className="mb-3">
-                <label className="form-label small fw-bold text-muted">Pilih Sistem Hukum</label>
-                <div className="btn-group w-100">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-600">Pilih Sistem Hukum</label>
+                <div className="grid grid-cols-3 gap-2">
                   <button 
-                    className={`btn btn-sm ${hukum === "Islam" ? "btn-success fw-bold" : "btn-outline-secondary"}`}
+                    type="button"
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === "Islam" ? "bg-[#0b6245] text-white border-[#0b6245]" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
                     onClick={() => setHukum("Islam")}
                   >
-                    Hukum Islam (Faraid)
+                    Faraid Islam
                   </button>
                   <button 
-                    className={`btn btn-sm ${hukum === "Jawa" ? "btn-warning text-dark fw-bold" : "btn-outline-secondary"}`}
+                    type="button"
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === "Jawa" ? "bg-[#ca9a28] text-white border-[#ca9a28]" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
                     onClick={() => setHukum("Jawa")}
                   >
                     Hukum Adat Jawa
+                  </button>
+                  <button 
+                    type="button"
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === "Perdata" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
+                    onClick={() => setHukum("Perdata")}
+                  >
+                    Hukum Perdata (BW)
                   </button>
                 </div>
               </div>
 
               {hukum === "Jawa" && (
-                <div className="alert alert-warning mb-3">
-                  <label className="form-label small fw-bold">Metode Adat Jawa</label>
-                  <select 
-                    className="form-select form-select-sm mb-2"
-                    value={metodeAdat}
-                    onChange={(e) => setMetodeAdat(e.target.value as any)}
-                  >
-                    <option value="SEPIKUL_SEGENDONGAN">Sepikul Segendongan (2:1)</option>
-                    <option value="KUM_KUM_KUPAT">Dum-Duman (1:1 Sama Rata)</option>
-                  </select>
-                  <div className="form-check form-switch">
+                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-amber-900">Metode Adat Jawa</label>
+                    <select 
+                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
+                      value={metodeAdat}
+                      onChange={(e) => setMetodeAdat(e.target.value as any)}
+                    >
+                      <option value="SEPIKUL_SEGENDONGAN">Sepikul Segendongan (2:1)</option>
+                      <option value="KUM_KUM_KUPAT">Dum-Duman (1:1 Sama Rata)</option>
+                    </select>
+                  </div>
+                  <label className="flex items-center gap-2 text-xs font-medium text-amber-900 cursor-pointer">
                     <input 
-                      className="form-check-input" 
                       type="checkbox" 
-                      id="gonoSwitchAdmin"
+                      className="rounded text-[#0b6245]"
                       checked={potongGonoGini}
                       onChange={(e) => setPotongGonoGini(e.target.checked)}
                     />
-                    <label className="form-check-label small fw-bold" htmlFor="gonoSwitchAdmin">
-                      Potong Gono-Gini 50% untuk Pasangan
-                    </label>
-                  </div>
+                    Potong Gono-Gini 50% untuk Pasangan
+                  </label>
                 </div>
               )}
 
-              <div className="row g-3 mb-3">
-                <div className="col-md-6">
-                  <label className="form-label small fw-bold text-muted">Nama Pewaris (Opsional)</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600">Nama Pewaris (Opsional)</label>
                   <input 
                     type="text" 
-                    className="form-control"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
                     placeholder="Contoh: Almarhum Budi"
                     value={namaJenazah}
                     onChange={(e) => setNamaJenazah(e.target.value)}
                   />
                 </div>
-                <div className="col-md-6">
-                  <label className="form-label small fw-bold text-muted">Jenis Kelamin</label>
-                  <select className="form-select" value={gender} onChange={(e) => setGender(e.target.value)}>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600">Jenis Kelamin</label>
+                  <select 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
+                    value={gender} 
+                    onChange={(e) => setGender(e.target.value)}
+                  >
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
                   </select>
                 </div>
               </div>
 
-              <div className="row g-3">
-                <div className="col-md-4">
-                  <label className="form-label small fw-bold text-muted">Harta Kotor (Rp)</label>
-                  <input type="text" className="form-control fw-bold" value={harta} onChange={(e) => setHarta(formatIDR(e.target.value))} placeholder="0" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600">Harta Kotor (Rp)</label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-[#0b6245] placeholder-slate-400 focus:outline-none" 
+                    value={harta} 
+                    onChange={(e) => setHarta(formatIDR(e.target.value))} 
+                    placeholder="0" 
+                  />
                 </div>
-                <div className="col-md-4">
-                  <label className="form-label small fw-bold text-muted">Utang (Rp)</label>
-                  <input type="text" className="form-control" value={utang} onChange={(e) => setUtang(formatIDR(e.target.value))} placeholder="0" />
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600">Utang (Rp)</label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none" 
+                    value={utang} 
+                    onChange={(e) => setUtang(formatIDR(e.target.value))} 
+                    placeholder="0" 
+                  />
                 </div>
-                <div className="col-md-4">
-                  <label className="form-label small fw-bold text-muted">Wasiat (Rp)</label>
-                  <input type="text" className="form-control" value={wasiat} onChange={(e) => setWasiat(formatIDR(e.target.value))} placeholder="0" />
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600">Wasiat (Rp)</label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none" 
+                    value={wasiat} 
+                    onChange={(e) => setWasiat(formatIDR(e.target.value))} 
+                    placeholder="0" 
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="card wp-card p-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="wp-widget-header m-0">
-                  <i className="bi bi-people-fill text-success"></i> Silsilah Ahli Waris ({ahliWaris.length})
-                </h5>
-                <button className="btn btn-sm btn-outline-success fw-bold" onClick={addHeir}>
-                  <i className="bi bi-plus-circle me-1"></i> Tambah Ahli Waris
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+                  <Users className="size-5 text-[#0b6245]" /> Silsilah Ahli Waris ({ahliWaris.length})
+                </div>
+                <button 
+                  type="button"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f4ee] text-[#0b6245] text-xs font-semibold rounded-xl hover:bg-[#0b6245] hover:text-white transition-colors cursor-pointer"
+                  onClick={addHeir}
+                >
+                  <Plus className="size-3.5" /> Tambah Ahli Waris
                 </button>
               </div>
 
-              <div className="table-responsive">
-                <table className="table table-bordered align-middle small">
-                  <thead className="table-light">
+              <div className="overflow-x-auto rounded-xl border border-slate-100">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-semibold text-[11px]">
                     <tr>
-                      <th style={{ width: "40px" }}>No</th>
-                      <th>Nama</th>
-                      <th>Hubungan Keluarga</th>
-                      <th style={{ width: "60px" }}>Hapus</th>
+                      <th className="px-3 py-3 text-center">No</th>
+                      <th className="px-3 py-3">Nama</th>
+                      <th className="px-3 py-3">Hubungan Keluarga</th>
+                      <th className="px-3 py-3 text-center">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-slate-100">
                     {ahliWaris.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="text-center text-muted py-3">Belum ada ahli waris. Klik Tambah Ahli Waris.</td>
+                        <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
+                          Belum ada ahli waris. Klik Tambah Ahli Waris.
+                        </td>
                       </tr>
                     ) : (
                       ahliWaris.map((h, i) => (
                         <tr key={i}>
-                          <td className="text-center fw-bold">{i + 1}</td>
-                          <td>
+                          <td className="px-3 py-3 text-center font-mono font-semibold text-slate-400">{i + 1}</td>
+                          <td className="px-3 py-3">
                             <input 
                               type="text" 
-                              className="form-control form-control-sm"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
                               placeholder="Nama..."
                               value={h.nama}
                               onChange={(e) => updateHeir(i, "nama", e.target.value)}
                             />
                           </td>
-                          <td>
+                          <td className="px-3 py-3">
                             <select 
-                              className="form-select form-select-sm"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
                               value={h.hubungan}
                               onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
                             >
                               {HUBUNGAN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
                           </td>
-                          <td className="text-center">
-                            <button className="btn btn-sm btn-outline-danger" onClick={() => removeHeir(i)}>
-                              <i className="bi bi-trash"></i>
+                          <td className="px-3 py-3 text-center">
+                            <button 
+                              type="button" 
+                              className="size-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center transition-colors mx-auto cursor-pointer"
+                              onClick={() => removeHeir(i)}
+                            >
+                              <Trash2 className="size-3.5" />
                             </button>
                           </td>
                         </tr>
@@ -263,60 +322,81 @@ export default function AdminKalkulatorPage() {
             </div>
           </div>
 
-          <div className="col-lg-4">
-            <div className="card wp-card p-4">
-              <h5 className="wp-widget-header text-success mb-3">
-                <i className="bi bi-pie-chart"></i> Ringkasan Parameter
-              </h5>
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+                <PieChart className="size-5 text-[#0b6245]" /> Ringkasan Parameter
+              </div>
 
-              <div className="alert alert-success small mb-3">
-                <div className="text-muted">Estimasi Harta Bersih:</div>
-                <strong className="fs-5 text-success">Rp {Math.max(0, hartaBersih).toLocaleString("id-ID")}</strong>
+              <div className="p-4 bg-[#e6f4ee] rounded-xl border border-emerald-200/60 space-y-1">
+                <div className="text-xs text-slate-500 font-medium">Estimasi Harta Bersih:</div>
+                <strong className="text-xl font-extrabold text-[#0b6245]">
+                  Rp {Math.max(0, hartaBersih).toLocaleString("id-ID")}
+                </strong>
               </div>
 
               <button 
-                className="btn btn-success w-100 font-weight-bold py-2 shadow"
+                type="button"
+                className="w-full py-3 px-4 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50 inline-flex items-center justify-center gap-2"
                 disabled={!harta || ahliWaris.length === 0}
                 onClick={handleHitung}
               >
-                <i className="bi bi-calculator-fill me-1"></i> Hitung Hasil Now
+                <Calculator className="size-4" /> Hitung Hasil Now
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="card wp-card p-4">
-          <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <span className="badge bg-success font-monospace mb-1">STATUS: {hasil.statusAulRadd}</span>
-              <h4 className="font-serif fw-bold text-dark m-0">Hasil Kalkulasi Cepat</h4>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6f4ee] text-[#0b6245]">
+                STATUS: {hasil.statusAulRadd}
+              </span>
+              <h2 className="text-xl font-bold text-slate-900 mt-1">Hasil Kalkulasi Cepat</h2>
             </div>
-            <button className="btn btn-danger btn-sm fw-bold" onClick={downloadPDF}>
-              <i className="bi bi-file-earmark-pdf-fill me-1"></i> Cetak PDF
+            <button 
+              type="button" 
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
+              onClick={downloadPDF}
+            >
+              <FileDown className="size-4" /> Cetak PDF
             </button>
           </div>
 
-          <div className="table-responsive">
-            <table className="table table-hover align-middle small">
-              <thead className="table-dark">
+          <div className="overflow-x-auto rounded-xl border border-slate-100">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-500 font-semibold text-[11px]">
                 <tr>
-                  <th>No</th>
-                  <th>Ahli Waris</th>
-                  <th>Status</th>
-                  <th>Porsi</th>
-                  <th>Nominal Rupiah</th>
-                  <th>Alasan Hukum / KHI</th>
+                  <th className="px-4 py-3">No</th>
+                  <th className="px-4 py-3">Ahli Waris</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Porsi</th>
+                  <th className="px-4 py-3">Nominal Rupiah</th>
+                  <th className="px-4 py-3">Alasan Hukum / KHI</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {hasil.ahliWarisGetted.map((h: any, i: number) => (
-                  <tr key={i} className={h.status === "Terhijab" ? "table-danger opacity-75" : ""}>
-                    <td className="fw-bold">{i + 1}</td>
-                    <td><strong className="text-dark">{h.nama || "-"}</strong> ({h.hubungan})</td>
-                    <td><span className={`badge ${h.status === "Mewarisi" ? "bg-success" : "bg-danger"}`}>{h.status}</span></td>
-                    <td><span className="badge bg-secondary">{h.jatahPersen}</span></td>
-                    <td className="fw-bold text-success">Rp {h.jatahNominal.toLocaleString("id-ID")}</td>
-                    <td className="text-secondary">{h.alasan}</td>
+                  <tr key={i} className={h.status === "Terhijab" ? "bg-rose-50/40 text-slate-500" : "hover:bg-slate-50/80"}>
+                    <td className="px-4 py-3.5 font-bold">{i + 1}</td>
+                    <td className="px-4 py-3.5 font-semibold text-slate-900">{h.nama || "-"} ({h.hubungan})</td>
+                    <td className="px-4 py-3.5">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                        h.status === "Mewarisi" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                      }`}>
+                        {h.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="px-2 py-0.5 rounded-md border border-slate-200 bg-white font-mono text-[11px] font-bold">
+                        {h.jatahPersen}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 font-bold text-[#0b6245]">
+                      Rp {h.jatahNominal.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-4 py-3.5 text-slate-500">{h.alasan}</td>
                   </tr>
                 ))}
               </tbody>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getKeluargaList, deleteKeluarga } from "@/app/actions/waris";
 import ConfirmModal from "@/components/ConfirmModal";
 import toast from "react-hot-toast";
+import { Search, Plus, Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function KeluargaPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,7 +46,7 @@ export default function KeluargaPage() {
   };
 
   return (
-    <div>
+    <div className="space-y-6 text-[#0f172a] font-sans">
       <ConfirmModal 
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
@@ -54,99 +55,118 @@ export default function KeluargaPage() {
         message="Tindakan ini tidak dapat dibatalkan. Data identitas dan hasil kalkulasi waris akan dihapus permanen."
       />
 
-      {/* Header Title */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 border-bottom pb-3">
+      {/* Header */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif fw-bold text-dark m-0">Kelola Data Keluarga</h2>
-          <p className="text-secondary small m-0">Manajemen data pewaris, silsilah keluarga, & laporan waris.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Kelola Data Keluarga & Waris</h1>
+          <p className="text-slate-500 text-xs mt-1">Manajemen data pewaris, silsilah keluarga, & laporan hasil kalkulasi.</p>
         </div>
-        <Link href="/admin/keluarga/tambah" className="btn btn-success fw-bold">
-          <i className="bi bi-plus-lg me-1"></i> Tambah Keluarga Baru
+        <Link 
+          href="/admin/keluarga/tambah" 
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl shadow-xs transition-all no-underline"
+        >
+          <Plus className="size-4" /> Tambah Kasus Baru
         </Link>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="card wp-card p-3 mb-4">
-        <div className="row g-2 align-items-center">
-          <div className="col-lg-6">
-            <div className="input-group">
-              <span className="input-group-text bg-white"><i className="bi bi-search"></i></span>
-              <input 
-                type="text" 
-                className="form-control"
-                placeholder="Cari nama keluarga atau NIK..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full md:w-80 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 focus-within:ring-2 focus-within:ring-[#0b6245]/20 focus-within:border-[#0b6245] transition-all">
+          <Search className="size-4 text-slate-400 me-2.5 shrink-0" />
+          <input 
+            type="text" 
+            className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+            placeholder="Cari nama keluarga atau NIK..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-          <div className="col-lg-6 d-flex justify-content-lg-end">
-            <div className="btn-group w-100 w-lg-auto" role="group">
-              {["Semua", "Islam", "Jawa", "Perdata"].map((h) => (
-                <button
-                  key={h}
-                  className={`btn btn-sm ${hukumFilter === h ? "btn-dark fw-bold" : "btn-outline-secondary"}`}
-                  onClick={() => setHukumFilter(h)}
-                >
-                  {h === "Semua" ? "Semua Hukum" : h}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="flex items-center gap-1 bg-slate-50 p-1 border border-slate-200 rounded-xl w-full md:w-auto overflow-x-auto">
+          {["Semua", "Islam", "Jawa", "Perdata"].map((h) => (
+            <button
+              key={h}
+              className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap ${
+                hukumFilter === h 
+                  ? "bg-[#0b6245] text-white shadow-xs font-semibold" 
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white"
+              }`}
+              onClick={() => setHukumFilter(h)}
+            >
+              {h === "Semua" ? "Semua Hukum" : h}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* WP-Admin Data Table */}
-      <div className="card wp-card p-0 overflow-hidden mb-4">
-        <div className="table-responsive">
-          <table className="table table-hover align-middle m-0 small">
-            <thead className="table-dark">
+      {/* Data Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-600">
+            <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[11px] tracking-wider">
               <tr>
-                <th>Nama Pewaris</th>
-                <th>NIK</th>
-                <th>Sistem Hukum</th>
-                <th>Status Kalkulasi</th>
-                <th>Total Aset Kotor</th>
-                <th className="text-end">Aksi</th>
+                <th className="px-5 py-4 whitespace-nowrap">Nama Pewaris</th>
+                <th className="px-5 py-4 whitespace-nowrap">NIK</th>
+                <th className="px-5 py-4 whitespace-nowrap">Sistem Hukum</th>
+                <th className="px-5 py-4 whitespace-nowrap">Status Kalkulasi</th>
+                <th className="px-5 py-4 whitespace-nowrap">Total Harta Kotor</th>
+                <th className="px-5 py-4 text-right whitespace-nowrap">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-4">
-                    <div className="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-400 text-xs">
+                    <span className="inline-block w-5 h-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2"></span>
                     Memuat data keluarga...
                   </td>
                 </tr>
               ) : families.length > 0 ? (
                 families.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <strong className="text-dark d-block">{item.nama}</strong>
-                      <span className="text-muted fs-8">Jenis Kelamin: {item.gender}</span>
+                  <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <strong className="text-slate-900 block font-semibold text-sm">{item.nama}</strong>
+                      <span className="text-slate-400 text-[11px]">Jenis Kelamin: {item.gender}</span>
                     </td>
-                    <td className="font-monospace text-secondary">{item.nik || "-"}</td>
-                    <td>
-                      <span className={`badge ${item.hukum === "Jawa" ? "bg-warning text-dark" : item.hukum === "Perdata" ? "bg-primary" : "bg-success"}`}>
+                    <td className="px-5 py-4 font-mono text-slate-500 whitespace-nowrap">{item.nik || "-"}</td>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                        item.hukum === "Jawa" 
+                          ? "bg-amber-100 text-amber-800" 
+                          : item.hukum === "Perdata" 
+                          ? "bg-blue-100 text-blue-800" 
+                          : "bg-emerald-100 text-emerald-800"
+                      }`}>
                         {item.hukum === "Jawa" ? "Adat Jawa" : item.hukum === "Perdata" ? "Perdata" : "Faraid Islam"}
                       </span>
                     </td>
-                    <td>
-                      <span className={`badge ${item.hasilWaris?.length > 0 ? "bg-success" : "bg-secondary"}`}>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                        item.hasilWaris?.length > 0 
+                          ? "bg-blue-50 text-blue-700 border border-blue-200" 
+                          : "bg-slate-100 text-slate-600 border border-slate-200"
+                      }`}>
                         {item.hasilWaris?.length > 0 ? "Sudah Dihitung" : "Draft Input"}
                       </span>
                     </td>
-                    <td className="fw-bold text-success">
+                    <td className="px-5 py-4 font-semibold text-[#0b6245] whitespace-nowrap">
                       Rp {item.hartaKotor.toLocaleString('id-ID')}
                     </td>
-                    <td className="text-end">
-                      <div className="btn-group">
-                        <Link href={`/admin/keluarga/${item.id}`} className="btn btn-sm btn-outline-success">
-                          <i className="bi bi-eye-fill"></i>
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
+                      <div className="inline-flex gap-2">
+                        <Link 
+                          href={`/admin/keluarga/${item.id}`} 
+                          className="size-8 rounded-lg bg-emerald-50 hover:bg-[#0b6245] text-[#0b6245] hover:text-white flex items-center justify-center transition-all no-underline shadow-2xs"
+                          title="Lihat Detail"
+                        >
+                          <Eye className="size-4" />
                         </Link>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => setDeleteId(item.id)}>
-                          <i className="bi bi-trash-fill"></i>
+                        <button 
+                          className="size-8 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center transition-all border-0 cursor-pointer shadow-2xs"
+                          onClick={() => setDeleteId(item.id)}
+                          title="Hapus"
+                        >
+                          <Trash2 className="size-4" />
                         </button>
                       </div>
                     </td>
@@ -154,7 +174,7 @@ export default function KeluargaPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center py-4 text-muted">
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
                     Tidak ada data keluarga yang ditemukan.
                   </td>
                 </tr>
@@ -166,22 +186,22 @@ export default function KeluargaPage() {
 
       {/* Pagination */}
       {!loading && totalPages > 1 && (
-        <div className="d-flex justify-content-between align-items-center small">
-          <span className="text-muted">Halaman {page} dari {totalPages}</span>
-          <div className="btn-group">
+        <div className="flex items-center justify-between text-xs text-slate-500 pt-2">
+          <span>Halaman {page} dari {totalPages}</span>
+          <div className="flex gap-2">
             <button 
-              className="btn btn-sm btn-outline-secondary" 
+              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1" 
               disabled={page === 1}
               onClick={() => setPage(p => Math.max(1, p - 1))}
             >
-              <i className="bi bi-chevron-left me-1"></i> Sebelumnya
+              <ChevronLeft className="size-4" /> Sebelumnya
             </button>
             <button 
-              className="btn btn-sm btn-outline-secondary" 
+              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1" 
               disabled={page === totalPages}
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             >
-              Berikutnya <i className="bi bi-chevron-right ms-1"></i>
+              Berikutnya <ChevronRight className="size-4" />
             </button>
           </div>
         </div>

@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { calculateFaraid } from "@/lib/faraidLogic";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
+import { calculatePerdata } from "@/lib/perdataLogic";
 import { put } from "@vercel/blob";
-
 
 export async function getKeluargaList(search?: string, hukum?: string, page: number = 1, limit: number = 6) {
   const where: any = {};
@@ -148,6 +148,9 @@ export async function createKeluarga(formData: FormData) {
       timeout: 30000,
     });
 
+    // Otomatis jalankan kalkulasi dan simpan ke database untuk ketiga sistem hukum (Islam, Jawa, Perdata)
+    await processFaraid(result.id);
+
     revalidatePath("/admin/keluarga");
     return { success: true, id: result.id };
   } catch (error: any) {
@@ -169,6 +172,8 @@ export async function processFaraid(jenazahId: string) {
 
   const results = jenazah.hukum === "Jawa" 
     ? calculateAdatJawa(jenazah, jenazah.ahliWaris, jenazah.logKalkulasi?.metodeAdat as any)
+    : jenazah.hukum === "Perdata"
+    ? calculatePerdata(jenazah, jenazah.ahliWaris)
     : calculateFaraid(jenazah, jenazah.ahliWaris);
 
   await prisma.$transaction(async (tx) => {
@@ -182,7 +187,7 @@ export async function processFaraid(jenazahId: string) {
       await tx.hasilWaris.create({
         data: {
           jenazahId: jenazah.id,
-          ahliWarisId: res.ahliWarisId,
+          ahliWarisId: res.ahliWarisId || res.id,
           status: res.status,
           alasan: res.alasan,
           jatahPersen: res.jatahPersen,
@@ -195,14 +200,14 @@ export async function processFaraid(jenazahId: string) {
       where: { jenazahId: jenazah.id },
       update: {
         kpk: (results as any).kpk || null,
-        statusAulRadd: (results as any).statusAulRadd || "Normal",
+        statusAulRadd: (results as any).statusAulRadd || (jenazah.hukum === "Perdata" ? "KUHPerdata (BW)" : "Normal"),
         totalHartaBersih: results.hartaBersih,
         hartaGonoGini: (results as any).hartaGonoGini || 0,
       },
       create: {
         jenazahId: jenazah.id,
         kpk: (results as any).kpk || null,
-        statusAulRadd: (results as any).statusAulRadd || "Normal",
+        statusAulRadd: (results as any).statusAulRadd || (jenazah.hukum === "Perdata" ? "KUHPerdata (BW)" : "Normal"),
         totalHartaBersih: results.hartaBersih,
         hartaGonoGini: (results as any).hartaGonoGini || 0,
       }
@@ -229,6 +234,7 @@ export async function getArsipList() {
     },
     include: {
       logKalkulasi: true,
+      ahliWaris: true,
     },
     orderBy: { createdAt: 'desc' }
   });

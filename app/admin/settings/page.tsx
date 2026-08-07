@@ -1,49 +1,67 @@
+import { Shield, Database, Sliders } from "lucide-react";
+
 export default function SettingsPage() {
   return (
-    <div>
+    <div className="space-y-6 text-[#0f172a] font-sans">
       
-      {/* Header Title */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 border-bottom pb-3">
-        <div>
-          <h2 className="font-serif fw-bold text-dark m-0">Pengaturan WP-Admin</h2>
-          <p className="text-secondary small m-0">Konfigurasi sistem, keamanan database, dan preferensi portal.</p>
-        </div>
+      {/* Header */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs">
+        <h1 className="text-2xl font-bold text-slate-900">Pengaturan Sistem Portal</h1>
+        <p className="text-slate-500 text-xs mt-1">Konfigurasi sistem, keamanan database, dan preferensi portal.</p>
       </div>
 
       {/* Settings Sections */}
-      <div className="row g-4">
+      <div className="scroll-reveal grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <div className="col-md-4">
-          <div className="card wp-card p-4">
-            <div className="d-flex align-items-center gap-3 mb-3">
-              <div className="bg-success text-white rounded p-2"><i className="bi bi-shield-lock fs-4"></i></div>
-              <h5 className="font-serif fw-bold m-0 text-dark">Profil & Keamanan</h5>
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="size-10 bg-[#e6f4ee] text-[#0b6245] rounded-xl flex items-center justify-center font-bold">
+                <Shield className="size-5" />
+              </div>
+              <h2 className="text-base font-bold text-slate-900">Profil & Keamanan</h2>
             </div>
-            <p className="small text-secondary mb-3">Kelola kredensial administrator & sesi masuk WP-Admin.</p>
-            <button className="btn btn-outline-success btn-sm w-100 fw-bold">Kelola Akun</button>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Kelola kredensial administrator & sesi masuk portal SI-WARIS.
+            </p>
           </div>
+          <button className="w-full py-2.5 px-4 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer">
+            Kelola Akun
+          </button>
         </div>
 
-        <div className="col-md-4">
-          <div className="card wp-card p-4">
-            <div className="d-flex align-items-center gap-3 mb-3">
-              <div className="bg-primary text-white rounded p-2"><i className="bi bi-database-gear fs-4"></i></div>
-              <h5 className="font-serif fw-bold m-0 text-dark">Database Prisma</h5>
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="size-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">
+                <Database className="size-5" />
+              </div>
+              <h2 className="text-base font-bold text-slate-900">Database Prisma</h2>
             </div>
-            <p className="small text-secondary mb-3">Status koneksi PostgreSQL & migrasi skema waris.</p>
-            <button className="btn btn-outline-primary btn-sm w-100 fw-bold">Status DB</button>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Status koneksi PostgreSQL & migrasi skema waris.
+            </p>
           </div>
+          <button className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer">
+            Status DB
+          </button>
         </div>
 
-        <div className="col-md-4">
-          <div className="card wp-card p-4">
-            <div className="d-flex align-items-center gap-3 mb-3">
-              <div className="bg-warning text-dark rounded p-2"><i className="bi bi-sliders fs-4"></i></div>
-              <h5 className="font-serif fw-bold m-0 text-dark">Preferensi Portal</h5>
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="size-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center font-bold">
+                <Sliders className="size-5" />
+              </div>
+              <h2 className="text-base font-bold text-slate-900">Preferensi Portal</h2>
             </div>
-            <p className="small text-secondary mb-3">Pengaturan judul website, versi syariat, & banner topbar.</p>
-            <button className="btn btn-outline-warning btn-sm text-dark w-100 fw-bold">Pengaturan General</button>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Pengaturan judul website, versi syariat, & banner topbar.
+            </p>
           </div>
+          <button className="w-full py-2.5 px-4 bg-[#ca9a28] hover:bg-[#a87e1c] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer">
+            Pengaturan General
+          </button>
         </div>
 
       </div>

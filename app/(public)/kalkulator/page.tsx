@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import ScrollReveal from "@/components/ScrollReveal";
+import AudioExplanation from "@/components/AudioExplanation";
+import { ArrowLeft, ArrowRight, Download, RotateCcw } from "lucide-react";
 import { calculateFaraid } from "@/lib/faraidLogic";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
-import Link from "next/link";
+import { calculatePerdata } from "@/lib/perdataLogic";
 
 const HUBUNGAN_OPTIONS = [
   "Suami", "Istri",
@@ -16,492 +19,373 @@ const HUBUNGAN_OPTIONS = [
   "Saudara Laki-laki Seibu", "Saudara Perempuan Seibu",
 ];
 
-const formatIDR = (val: string) => {
-  const n = val.replace(/\D/g, "");
-  return n ? new Intl.NumberFormat("id-ID").format(parseInt(n)) : "";
+const formatIDR = (val: number) => {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
 };
 
-const parseNum = (v: string) => parseInt(v.replace(/\D/g, "")) || 0;
-
-export default function KalkulatorPage() {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
-  const [namaJenazah, setNamaJenazah] = useState("");
-  const [harta, setHarta] = useState("");
-  const [utang, setUtang] = useState("");
-  const [wasiat, setWasiat] = useState("");
+export default function PublicKalkulatorPage() {
+  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [namaPewaris, setNamaPewaris] = useState("");
   const [gender, setGender] = useState("Laki-laki");
+  const [totalHarta, setTotalHarta] = useState("");
+  const [hutang, setHutang] = useState("");
+  const [wasiat, setWasiat] = useState("");
+
   const [ahliWaris, setAhliWaris] = useState<{ nama: string; hubungan: string }[]>([]);
-  const [hasil, setHasil] = useState<any>(null);
-  const [selectedHeir, setSelectedHeir] = useState<any>(null);
-  const [hukum, setHukum] = useState<string>("Islam");
-  const [metodeAdat, setMetodeAdat] = useState<"SEPIKUL_SEGENDONGAN" | "KUM_KUM_KUPAT">("SEPIKUL_SEGENDONGAN");
-  const [potongGonoGini, setPotongGonoGini] = useState(false);
 
-  const addHeir = (hubungan: string = "Anak Laki-laki") => {
-    setAhliWaris([...ahliWaris, { nama: "", hubungan }]);
-  };
+  const parseNum = (val: string) => parseInt(val.replace(/\D/g, "")) || 0;
 
-  const removeHeir = (i: number) => setAhliWaris(ahliWaris.filter((_, idx) => idx !== i));
-
-  const updateHeir = (i: number, field: string, value: string) => {
+  const addHeir = () => setAhliWaris([...ahliWaris, { nama: "", hubungan: "Anak Laki-laki" }]);
+  const removeHeir = (idx: number) => setAhliWaris(ahliWaris.filter((_, i) => i !== idx));
+  const updateHeir = (idx: number, field: string, value: string) => {
     const arr = [...ahliWaris];
-    arr[i] = { ...arr[i], [field]: value };
+    arr[idx] = { ...arr[idx], [field]: value };
     setAhliWaris(arr);
   };
 
-  const handleHitung = () => {
-    const jenazah = { id: "temp", gender, hartaKotor: parseNum(harta), utang: parseNum(utang), wasiat: parseNum(wasiat), potongGonoGini };
-    const warisList = ahliWaris.map((h, i) => ({ id: `heir-${i}`, nama: h.nama || h.hubungan, hubungan: h.hubungan, statusHidup: true }));
+  const hartaKotorVal = parseNum(totalHarta);
+  const hutangVal = parseNum(hutang);
+  const wasiatVal = parseNum(wasiat);
 
-    if (hukum === "Jawa") {
-      const result = calculateAdatJawa(jenazah, warisList, metodeAdat);
-      setHasil({
-        ...result,
-        ahliWarisGetted: result.results,
-        kpk: null,
-        statusAulRadd: metodeAdat === "SEPIKUL_SEGENDONGAN" ? "Sepikul Segendongan" : "Kum-Kum Kupat"
-      });
-    } else {
-      setHasil(calculateFaraid(jenazah as any, warisList as any));
-    }
-    setCurrentStep(4);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const syariahResult = useMemo(() => {
+    const jenazah = { id: "temp", gender, hartaKotor: hartaKotorVal, utang: hutangVal, wasiat: wasiatVal };
+    const list = ahliWaris.map((h, i) => ({ id: `h_${i}`, nama: h.nama || h.hubungan, hubungan: h.hubungan, statusHidup: true }));
+    return calculateFaraid(jenazah as any, list as any);
+  }, [hartaKotorVal, hutangVal, wasiatVal, gender, ahliWaris]);
 
-  const downloadPDF = () => {
+  const perdataResult = useMemo(() => {
+    const jenazah = { hartaKotor: hartaKotorVal, utang: hutangVal, wasiat: wasiatVal };
+    const list = ahliWaris.map((h, i) => ({ id: `h_${i}`, nama: h.nama || h.hubungan, hubungan: h.hubungan, statusHidup: true }));
+    return calculatePerdata(jenazah, list);
+  }, [hartaKotorVal, hutangVal, wasiatVal, ahliWaris]);
+
+  const adatResult = useMemo(() => {
+    const jenazah = { hartaKotor: hartaKotorVal, utang: hutangVal, wasiat: wasiatVal, potongGonoGini: true };
+    const list = ahliWaris.map((h, i) => ({ id: `h_${i}`, nama: h.nama || h.hubungan, hubungan: h.hubungan, statusHidup: true }));
+    const res = calculateAdatJawa(jenazah, list, "SEPIKUL_SEGENDONGAN");
+    const net = Math.max(0, hartaKotorVal - hutangVal - wasiatVal);
+    return {
+      hartaBersih: net,
+      statusAulRadd: "Adat Jawa (Sepikul Segendongan)",
+      ahliWarisGetted: ((res as any).results || res).map((r: any) => ({
+        ahliWarisId: r.ahliWarisId,
+        nama: r.nama,
+        hubungan: r.hubungan,
+        status: r.status,
+        alasan: r.alasan,
+        jatahPersen: r.jatahPersen,
+        jatahNominal: r.jatahNominal,
+      })),
+    };
+  }, [hartaKotorVal, hutangVal, wasiatVal, ahliWaris]);
+
+  const exportPDF = (sistem: string, resData: any) => {
     const doc = new jsPDF();
-    const date = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
+    const dateStr = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
 
-    doc.setFontSize(20);
-    doc.text("LAPORAN PEMBAGIAN WARIS SI-WARIS", 105, 20, { align: "center" });
+    doc.setFontSize(18);
+    doc.text(`LAPORAN PEMBAGIAN WARIS — ${sistem.toUpperCase()}`, 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text("SI-WARIS | Sistem Informasi & Kalkulator Waris Multi-Hukum", 105, 27, { align: "center" });
-    doc.line(20, 32, 190, 32);
+    doc.text(`Platform SI-WARIS — ${dateStr}`, 105, 26, { align: "center" });
+    doc.line(20, 30, 190, 30);
 
     doc.setFontSize(11);
-    doc.text(`Nama Pewaris: ${namaJenazah || "-"}`, 20, 42);
-    doc.text(`Jenis Kelamin: ${gender}`, 20, 48);
-    doc.text(`Dasar Hukum: ${hukum === "Islam" ? "Syariat Islam (Faraid KHI)" : "Adat Jawa"}`, 20, 54);
-    doc.text(`Tanggal Cetak: ${date}`, 20, 60);
+    doc.text(`Nama Pewaris: ${namaPewaris || "Almarhum / Almarhumah"}`, 20, 40);
+    doc.text(`Harta Bersih: ${formatIDR(resData.hartaBersih)}`, 120, 40);
 
-    doc.text(`Harta Kotor: Rp ${parseNum(harta).toLocaleString("id-ID")}`, 120, 42);
-    doc.text(`Utang & Wasiat: Rp ${(parseNum(utang) + parseNum(wasiat)).toLocaleString("id-ID")}`, 120, 48);
-    doc.text(`Harta Bersih (Mirkah): Rp ${hasil.hartaBersih.toLocaleString("id-ID")}`, 120, 54);
+    const activeList = resData.ahliWarisGetted.filter((h: any) => h.status === "Mewarisi");
 
     autoTable(doc, {
-      startY: 68,
+      startY: 55,
       head: [['NO', 'AHLI WARIS', 'STATUS', 'PORSI', 'NOMINAL (IDR)', 'KETERANGAN HUKUM']],
-      body: hasil.ahliWarisGetted.map((h: any, i: number) => [
+      body: activeList.map((h: any, i: number) => [
         i + 1,
         `${h.nama || "-"}\n(${h.hubungan})`,
         h.status,
         h.jatahPersen,
-        `Rp ${h.jatahNominal.toLocaleString("id-ID")}`,
+        formatIDR(h.jatahNominal),
         h.alasan
       ]),
       headStyles: { fillColor: [15, 81, 50], textColor: [255, 255, 255] },
       styles: { fontSize: 8 }
     });
 
-    doc.save(`laporan-waris-${namaJenazah || "keluarga"}.pdf`);
+    doc.save(`laporan-waris-${sistem.toLowerCase()}-${namaPewaris || "simulasi"}.pdf`);
   };
 
-  const hartaBersih = parseNum(harta) - parseNum(utang) - parseNum(wasiat);
-
   return (
-    <div className="py-5 bg-light">
-      <div className="container">
-
-        {/* Header Title */}
-        <div className="text-center mb-4">
-          <span className="wp-badge-emerald badge px-3 py-2 mb-2 uppercase">Kalkulator Multi-Hukum</span>
-          <h1 className="font-serif fw-bold text-dark">Kalkulator Waris SI-WARIS</h1>
-          <p className="text-secondary small">Hitung porsi pembagian waris keluarga berdasarkan Faraid Islam & Adat Jawa secara presisi.</p>
+    <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
+      
+      {/* PAGE HERO */}
+      <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
+          <ScrollReveal className="max-w-3xl space-y-3">
+            <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
+              Kalkulator Terpadu
+            </span>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Bandingkan Tiga Sistem Hukum Sekaligus</h1>
+            <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
+              Masukkan data harta dan susunan keluarga satu kali, lalu lihat perbedaan hasil pembagian menurut Hukum Syariah, KUHPerdata, dan Adat Jawa secara bersandingan.
+            </p>
+          </ScrollReveal>
         </div>
+      </section>
 
-        {/* Wizard Steps Nav Pills (Horizontal Scroll & Text-Nowrap on Mobile) */}
-        <div className="card wp-card p-2 p-md-3 mb-4 overflow-x-auto">
-          <ul className="nav nav-pills flex-nowrap small fw-bold text-nowrap">
-            <li className="nav-item shrink-0">
-              <button 
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 1 ? "active bg-success text-white" : currentStep > 1 ? "text-success bg-success-subtle" : "text-muted"}`}
-              >
-                1. Hukum & Pewaris
-              </button>
-            </li>
-            <li className="nav-item shrink-0 ms-1 ms-md-2">
-              <button 
-                type="button"
-                onClick={() => currentStep > 1 && setCurrentStep(2)}
-                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 2 ? "active bg-success text-white" : currentStep > 2 ? "text-success bg-success-subtle" : "text-muted"}`}
-              >
-                2. Harta & Utang
-              </button>
-            </li>
-            <li className="nav-item shrink-0 ms-1 ms-md-2">
-              <button 
-                type="button"
-                onClick={() => currentStep > 2 && setCurrentStep(3)}
-                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 3 ? "active bg-success text-white" : currentStep > 3 ? "text-success bg-success-subtle" : "text-muted"}`}
-              >
-                3. Ahli Waris
-              </button>
-            </li>
-            <li className="nav-item shrink-0 ms-1 ms-md-2">
-              <button 
-                type="button"
-                onClick={() => currentStep > 3 && setCurrentStep(4)}
-                className={`nav-link border-0 text-nowrap py-2 px-3 ${currentStep === 4 ? "active bg-success text-white" : "text-muted"}`}
-              >
-                4. Hasil Distribusi
-              </button>
-            </li>
-          </ul>
-        </div>
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 space-y-8">
+        
+        {/* AUDIO EXPLANATION */}
+        <ScrollReveal>
+          <AudioExplanation
+            title="Kalkulator Terpadu Komparasi 3 Sistem Hukum"
+            badge="Voice Assistant Simulator"
+            text="Fitur Kalkulator Terpadu memungkinkan Anda membandingkan hasil pembagian harta waris secara serentak antara hukum Syariah Faraidh, Kitab Undang-Undang Hukum Perdata, dan Hukum Adat Jawa dalam satu tampilan layar secara obyektif."
+          />
+        </ScrollReveal>
 
-        {/* STEP 1: HUKUM & PEWARIS */}
-        {currentStep === 1 && (
-          <div className="card wp-card p-4">
-            <h5 className="wp-widget-header mb-4">
-              <i className="bi bi-person-badge text-success"></i> Langkah 1: Pilih Hukum & Identitas Pewaris
-            </h5>
-
-            <div className="mb-4">
-              <label className="form-label small fw-bold text-muted">Sistem Hukum Pembagian</label>
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <div
-                    className={`card p-3 cursor-pointer ${hukum === "Islam" ? "border-success bg-success bg-opacity-10" : "border"}`}
-                    onClick={() => setHukum("Islam")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <strong className="text-success"><i className="bi bi-moon-stars me-1"></i> Hukum Islam (Faraid)</strong>
-                      {hukum === "Islam" && <i className="bi bi-check-circle-fill text-success fs-5"></i>}
-                    </div>
-                    <span className="small text-secondary">Pembagian porsi pasti berdasarkan KHI, Al-Qur'an & Hadits.</span>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div
-                    className={`card p-3 cursor-pointer ${hukum === "Jawa" ? "border-warning bg-warning bg-opacity-10" : "border"}`}
-                    onClick={() => setHukum("Jawa")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <strong className="text-warning text-dark"><i className="bi bi-bank me-1"></i> Hukum Adat Jawa</strong>
-                      {hukum === "Jawa" && <i className="bi bi-check-circle-fill text-warning fs-5"></i>}
-                    </div>
-                    <span className="small text-secondary">Sepikul Segendongan (2:1) / Dum-Duman Kerukunan.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="row g-3 mb-4">
-              <div className="col-md-6">
-                <label className="form-label small fw-bold text-muted">Nama Almarhum / Almarhumah</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Contoh: Almarhum Budi"
-                  value={namaJenazah}
-                  onChange={(e) => setNamaJenazah(e.target.value)}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label small fw-bold text-muted">Jenis Kelamin Pewaris</label>
-                <select
-                  className="form-select"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
+        {/* WIZARD CONTAINER */}
+        <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 sm:p-8 shadow-2xs space-y-8">
+          
+          <div className="flex items-center justify-between border-b border-slate-100 pb-6">
+            <div className="flex items-center gap-2">
+              {[
+                { idx: 0, label: "1. Data Harta" },
+                { idx: 1, label: "2. Ahli Waris" },
+                { idx: 2, label: "3. Komparasi 3 Sistem" },
+              ].map((s) => (
+                <span
+                  key={s.idx}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
+                    step === s.idx
+                      ? "bg-[oklch(0.4_0.093_158)] text-white"
+                      : step > s.idx
+                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
+                      : "bg-slate-100 text-slate-400"
+                  }`}
                 >
-                  <option value="Laki-laki">Laki-laki</option>
-                  <option value="Perempuan">Perempuan</option>
-                </select>
-              </div>
+                  {s.label}
+                </span>
+              ))}
             </div>
 
-            <div className="d-flex justify-content-end">
-              <button
-                className="btn btn-success fw-bold px-4 py-2"
-                disabled={!namaJenazah}
-                onClick={() => setCurrentStep(2)}
-              >
-                Lanjut ke Parameter Harta <i className="bi bi-arrow-right ms-1"></i>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
+              onClick={() => {
+                setTotalHarta("");
+                setHutang("");
+                setWasiat("");
+                setNamaPewaris("");
+                setAhliWaris([]);
+                setStep(0);
+              }}
+            >
+              <RotateCcw className="size-3.5" /> Reset
+            </button>
           </div>
-        )}
 
-        {/* STEP 2: HARTA & UTANG */}
-        {currentStep === 2 && (
-          <div className="card wp-card p-4">
-            <h5 className="wp-widget-header mb-4">
-              <i className="bi bi-wallet2 text-success"></i> Langkah 2: Parameter Harta & Utang
-            </h5>
+          {/* STEP 0 */}
+          {step === 0 && (
+            <div className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Nama Pewaris / Almarhum</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-medium focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Contoh: Bpk. H. Ahmad"
+                    value={namaPewaris}
+                    onChange={(e) => setNamaPewaris(e.target.value)}
+                  />
+                </div>
 
-            {hukum === "Jawa" && (
-              <div className="alert alert-warning mb-4">
-                <h6 className="fw-bold"><i className="bi bi-bank me-1"></i> Opsi Adat Jawa</h6>
-                <div className="mb-2">
-                  <label className="form-label small fw-bold">Metode Pembagian Adat</label>
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Jenis Kelamin Pewaris</label>
                   <select
-                    className="form-select form-select-sm"
-                    value={metodeAdat}
-                    onChange={(e) => setMetodeAdat(e.target.value as any)}
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-medium focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
                   >
-                    <option value="SEPIKUL_SEGENDONGAN">Sepikul Segendongan (2:1)</option>
-                    <option value="KUM_KUM_KUPAT">Dum-Duman / Kum-Kum Kupat (1:1 Sama Rata)</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
                   </select>
                 </div>
-                <div className="form-check form-switch">
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Total Harta Peninggalan</label>
                   <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="gonoGiniSwitch"
-                    checked={potongGonoGini}
-                    onChange={(e) => setPotongGonoGini(e.target.checked)}
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Rp 0"
+                    value={totalHarta ? Number(totalHarta.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setTotalHarta(e.target.value)}
                   />
-                  <label className="form-check-label small fw-bold" htmlFor="gonoGiniSwitch">
-                    Potong Harta Gono-Gini (50%) untuk Pasangan Hidup Terlama
-                  </label>
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Hutang Pewaris</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Rp 0"
+                    value={hutang ? Number(hutang.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setHutang(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Wasiat</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    placeholder="Rp 0"
+                    value={wasiat ? Number(wasiat.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setWasiat(e.target.value)}
+                  />
                 </div>
               </div>
-            )}
 
-            <div className="row g-3 mb-4">
-              <div className="col-md-4">
-                <label className="form-label small fw-bold text-muted">Total Harta Kotor (Rp)</label>
-                <input
-                  type="text"
-                  className="form-control fw-bold"
-                  placeholder="0"
-                  value={harta}
-                  onChange={(e) => setHarta(formatIDR(e.target.value))}
-                />
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label small fw-bold text-muted">Total Utang & Tajhiz (Rp)</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="0"
-                  value={utang}
-                  onChange={(e) => setUtang(formatIDR(e.target.value))}
-                />
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label small fw-bold text-muted">Total Wasiat (Rp)</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="0"
-                  value={wasiat}
-                  onChange={(e) => setWasiat(formatIDR(e.target.value))}
-                />
+              <div className="rounded-2xl bg-[oklch(0.4_0.093_158/0.1)] border border-[oklch(0.4_0.093_158/0.2)] p-5">
+                <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Harta Bersih Siap Dibagi</p>
+                <p className="text-2xl font-extrabold text-[oklch(0.4_0.093_158)] font-mono mt-1">
+                  {formatIDR(Math.max(0, hartaKotorVal - hutangVal - wasiatVal))}
+                </p>
               </div>
             </div>
+          )}
 
-            <div className="alert alert-success d-flex justify-content-between align-items-center mb-4">
-              <span><i className="bi bi-info-circle me-1"></i> Estimasi Harta Bersih Terhitung (Mirkah):</span>
-              <strong className="fs-5">Rp {Math.max(0, hartaBersih).toLocaleString("id-ID")}</strong>
+          {/* STEP 1 */}
+          {step === 1 && (
+            <div className="space-y-5">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-slate-900">Pilih & Tambah Ahli Waris</h3>
+                <button
+                  type="button"
+                  onClick={addHeir}
+                  className="px-4 py-2 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer"
+                >
+                  + Tambah Ahli Waris
+                </button>
+              </div>
+
+              {ahliWaris.length === 0 ? (
+                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
+                  Belum ada ahli waris ditambahkan.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {ahliWaris.map((h, i) => (
+                    <div key={i} className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50">
+                      <div className="flex-1 min-w-[180px]">
+                        <input
+                          type="text"
+                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                          placeholder="Nama Ahli Waris (Opsional)"
+                          value={h.nama}
+                          onChange={(e) => updateHeir(i, "nama", e.target.value)}
+                        />
+                      </div>
+
+                      <div className="w-64">
+                        <select
+                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                          value={h.hubungan}
+                          onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
+                        >
+                          {HUBUNGAN_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => removeHeir(i)}
+                        className="px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl border border-rose-200 cursor-pointer"
+                      >
+                        Hapus
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-            <div className="d-flex justify-content-between">
-              <button className="btn btn-outline-secondary fw-bold" onClick={() => setCurrentStep(1)}>
-                <i className="bi bi-arrow-left me-1"></i> Kembali
-              </button>
-              <button
-                className="btn btn-success fw-bold px-4 py-2"
-                disabled={parseNum(harta) <= 0}
-                onClick={() => setCurrentStep(3)}
-              >
-                Lanjut Ahli Waris <i className="bi bi-arrow-right ms-1"></i>
-              </button>
-            </div>
-          </div>
-        )}
+          {/* STEP 2: KOMPARASI 3 SISTEM */}
+          {step === 2 && (
+            <div className="space-y-8">
+              <div className="grid gap-6 lg:grid-cols-3">
+                {[
+                  { title: "1. Hukum Syariah (Faraidh)", color: "emerald", res: syariahResult, sistem: "syariah" },
+                  { title: "2. Hukum Perdata (BW)", color: "blue", res: perdataResult, sistem: "perdata" },
+                  { title: "3. Hukum Adat Jawa", color: "amber", res: adatResult, sistem: "adat-jawa" },
+                ].map((s) => (
+                  <div key={s.sistem} className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div className="space-y-4">
+                      <div className="border-b border-slate-100 pb-3">
+                        <h4 className="text-base font-bold text-slate-900">{s.title}</h4>
+                        <p className="text-xs font-mono font-semibold text-[oklch(0.4_0.093_158)] mt-0.5">
+                          Harta Bersih: {formatIDR(s.res.hartaBersih)}
+                        </p>
+                      </div>
 
-        {/* STEP 3: AHLI WARIS */}
-        {currentStep === 3 && (
-          <div className="card wp-card p-4">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
-              <h5 className="wp-widget-header m-0">
-                <i className="bi bi-people-fill text-success"></i> Langkah 3: Daftar Silsilah Ahli Waris
-              </h5>
-              <button className="btn btn-sm btn-outline-success fw-bold align-self-start align-self-md-auto" onClick={() => addHeir()}>
-                <i className="bi bi-plus-circle me-1"></i> Tambah Ahli Waris
-              </button>
-            </div>
+                      <div className="space-y-3">
+                        {s.res.ahliWarisGetted.map((h: any, idx: number) => (
+                          <div key={idx} className="p-3.5 rounded-2xl border border-slate-100 bg-slate-50 space-y-1">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-slate-900">{h.nama}</span>
+                              <span className="font-mono text-[oklch(0.4_0.093_158)] font-bold">{h.jatahPersen}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
+                              <span>{h.status}</span>
+                              <span className="font-bold text-slate-900">{formatIDR(h.jatahNominal)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-            {/* Quick Presets */}
-            <div className="mb-3">
-              <span className="small font-monospace text-muted d-block d-md-inline mb-2 mb-md-0 me-2">Pintasan Cepat:</span>
-              <div className="d-flex flex-wrap gap-1">
-                {["Istri", "Suami", "Anak Laki-laki", "Anak Perempuan", "Ayah", "Ibu"].map((h) => (
-                  <button
-                    key={h}
-                    className="btn btn-sm btn-light border font-weight-bold"
-                    onClick={() => addHeir(h)}
-                  >
-                    + {h}
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => exportPDF(s.sistem, s.res)}
+                      className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-full flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Download className="size-3.5" /> Unduh Laporan PDF
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
+          )}
 
-            {/* Dynamic List */}
-            <div className="table-responsive mb-4">
-              <table className="table table-bordered align-middle small">
-                <thead className="table-light">
-                  <tr>
-                    <th style={{ width: "50px" }}>No</th>
-                    <th>Nama Ahli Waris</th>
-                    <th>Hubungan Keluarga</th>
-                    <th style={{ width: "80px" }}>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ahliWaris.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="text-center text-muted py-4">
-                        Belum ada ahli waris. Gunakan pintasan cepat di atas atau tombol Tambah.
-                      </td>
-                    </tr>
-                  ) : (
-                    ahliWaris.map((h, idx) => (
-                      <tr key={idx}>
-                        <td className="text-center fw-bold">{idx + 1}</td>
-                        <td>
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="Nama Ahli Waris"
-                            value={h.nama}
-                            onChange={(e) => updateHeir(idx, "nama", e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <select
-                            className="form-select form-select-sm"
-                            value={h.hubungan}
-                            onChange={(e) => updateHeir(idx, "hubungan", e.target.value)}
-                          >
-                            {HUBUNGAN_OPTIONS.map(opt => (
-                              <option key={opt} value={opt}>{opt}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="text-center">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeHeir(idx)}>
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+          {/* ACTION NAVIGATION */}
+          <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+            <button
+              type="button"
+              disabled={step === 0}
+              onClick={() => setStep((s) => (s - 1) as any)}
+              className="px-4 py-2 text-xs font-semibold border border-slate-200 hover:bg-slate-100 rounded-lg disabled:opacity-40 flex items-center gap-1.5 cursor-pointer"
+            >
+              <ArrowLeft className="size-4" /> Sebelumnya
+            </button>
 
-            <div className="d-flex justify-content-between">
-              <button className="btn btn-outline-secondary fw-bold" onClick={() => setCurrentStep(2)}>
-                <i className="bi bi-arrow-left me-1"></i> Kembali
-              </button>
+            {step < 2 && (
               <button
-                className="btn btn-success fw-bold px-4 py-2"
-                disabled={ahliWaris.length === 0}
-                onClick={handleHitung}
+                type="button"
+                onClick={() => setStep((s) => (s + 1) as any)}
+                className="px-6 py-3 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-md cursor-pointer"
               >
-                <i className="bi bi-calculator me-1"></i> Hitung Distribusi Waris
+                Lanjut <ArrowRight className="size-4" />
               </button>
-            </div>
+            )}
           </div>
-        )}
 
-        {/* STEP 4: HASIL DISTRIBUSI */}
-        {currentStep === 4 && hasil && (
-          <div className="card wp-card p-4">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4 pb-3 border-bottom">
-              <div>
-                <span className="badge bg-success font-monospace mb-1">KASUS: {hasil.statusAulRadd}</span>
-                <h4 className="font-serif fw-bold text-dark m-0">Laporan Hasil Perhitungan Waris</h4>
-              </div>
-              <button className="btn btn-danger btn-sm fw-bold align-self-start align-self-md-auto" onClick={downloadPDF}>
-                <i className="bi bi-file-earmark-pdf-fill me-1"></i> Unduh PDF Laporan
-              </button>
-            </div>
+        </ScrollReveal>
 
-            <div className="row g-3 mb-4">
-              <div className="col-md-6">
-                <div className="card bg-light p-3 border">
-                  <div className="small text-muted mb-1">Identitas Pewaris</div>
-                  <div className="fw-bold text-dark">{namaJenazah || "Almarhum"} ({gender})</div>
-                  <div className="small text-secondary">Dasar Hukum: {hukum === "Islam" ? "Syariat Islam (Faraid KHI)" : "Adat Jawa"}</div>
-                </div>
-              </div>
+      </section>
 
-              <div className="col-md-6">
-                <div className="card bg-success text-white p-3 border-0">
-                  <div className="small opacity-75 mb-1">Harta Bersih Dibagikan (Mirkah)</div>
-                  <div className="fs-4 fw-bold">Rp {Math.max(0, hasil.hartaBersih).toLocaleString("id-ID")}</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="table-responsive mb-4">
-              <table className="table table-hover align-middle small">
-                <thead className="table-dark">
-                  <tr>
-                    <th>No</th>
-                    <th>Ahli Waris</th>
-                    <th>Status</th>
-                    <th>Porsi</th>
-                    <th>Nominal Rupiah</th>
-                    <th>Alasan Hukum / KHI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hasil.ahliWarisGetted.map((h: any, idx: number) => (
-                    <tr key={idx} className={h.status === "Terhijab" ? "table-danger opacity-75" : ""}>
-                      <td className="fw-bold">{idx + 1}</td>
-                      <td>
-                        <strong className="d-block text-dark">{h.nama || "-"}</strong>
-                        <span className="text-muted fs-8">{h.hubungan}</span>
-                      </td>
-                      <td>
-                        <span className={`badge ${h.status === "Mewarisi" ? "bg-success" : "bg-danger"}`}>
-                          {h.status}
-                        </span>
-                      </td>
-                      <td><span className="badge bg-secondary">{h.jatahPersen}</span></td>
-                      <td className="fw-bold text-success">Rp {h.jatahNominal.toLocaleString("id-ID")}</td>
-                      <td className="text-secondary">{h.alasan}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="d-flex justify-content-between">
-              <button className="btn btn-outline-secondary fw-bold" onClick={() => setCurrentStep(3)}>
-                <i className="bi bi-pencil-square me-1"></i> Edit Data Ahli Waris
-              </button>
-              <Link href="/" className="btn btn-success fw-bold">
-                Selesai & Kembali ke Beranda <i className="bi bi-house-fill ms-1"></i>
-              </Link>
-            </div>
-          </div>
-        )}
-
-      </div>
     </div>
   );
 }

@@ -6,6 +6,15 @@ import { getKeluargaById, processFaraid } from "@/app/actions/waris";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
+import {
+  ArrowLeft,
+  FileDown,
+  Calculator,
+  User,
+  Wallet,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 export default function DetailKeluargaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -13,7 +22,6 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
   const [loading, setLoading] = useState(true);
   const [calculating, setCalculating] = useState(false);
   const [filterWaris, setFilterWaris] = useState("Semua");
-  const [selectedHeir, setSelectedHeir] = useState<any>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -68,102 +76,133 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
         `Rp ${(h.hasil?.jatahNominal || 0).toLocaleString("id-ID")}`,
         h.hasil?.alasan || "Terhalang (Mahjub)."
       ]),
-      headStyles: { fillColor: [15, 81, 50], textColor: [255, 255, 255] },
+      headStyles: { fillColor: [11, 98, 69], textColor: [255, 255, 255] },
       styles: { fontSize: 8 }
     });
 
     doc.save(`arsip-waris-${data.nama}.pdf`);
   };
 
-  if (loading) return <div className="p-5 text-center text-muted">Memuat detail keluarga...</div>;
-  if (!data) return <div className="p-5 text-center text-danger">Data keluarga tidak ditemukan.</div>;
+  if (loading) {
+    return (
+      <div className="p-12 text-center text-slate-400 text-xs font-mono">
+        <span className="inline-block size-6 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2" />
+        Memuat detail keluarga...
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="p-12 text-center text-rose-500 font-semibold text-sm">
+        Data keluarga tidak ditemukan.
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className="space-y-6 text-[#0f172a] font-sans">
       
       {/* Header */}
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 border-bottom pb-3">
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="d-flex align-items-center gap-2">
-            <h2 className="font-serif fw-bold text-dark m-0">{data.nama}</h2>
-            <span className="badge bg-success">{data.hukum}</span>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-slate-900">{data.nama}</h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#e6f4ee] text-[#0b6245]">
+              {data.hukum}
+            </span>
           </div>
-          <p className="text-secondary small m-0">NIK: {data.nik || "-"} • Ditambahkan {new Date(data.createdAt).toLocaleDateString('id-ID')}</p>
+          <p className="text-slate-500 text-xs mt-1">
+            NIK: {data.nik || "-"} • Ditambahkan {new Date(data.createdAt).toLocaleDateString('id-ID')}
+          </p>
         </div>
 
-        <div className="d-flex gap-2">
-          <Link href="/admin/keluarga" className="btn btn-outline-secondary btn-sm fw-bold">
-            <i className="bi bi-arrow-left me-1"></i> Kembali
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link 
+            href="/admin/keluarga" 
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all no-underline"
+          >
+            <ArrowLeft className="size-4" /> Kembali
           </Link>
-          <button className="btn btn-danger btn-sm fw-bold" onClick={downloadPDF} disabled={!data.logKalkulasi}>
-            <i className="bi bi-file-earmark-pdf-fill me-1"></i> Unduh PDF
+          <button 
+            onClick={downloadPDF} 
+            disabled={!data.logKalkulasi}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-rose-200 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 transition-all cursor-pointer"
+          >
+            <FileDown className="size-4" /> Unduh PDF
           </button>
-          <button className="btn btn-success btn-sm fw-bold" onClick={handleCalculate} disabled={calculating}>
-            <i className="bi bi-calculator-fill me-1"></i> {data.ahliWaris.some((h: any) => h.hasil) ? "Hitung Ulang" : "Mulai Kalkulasi"}
+          <button 
+            onClick={handleCalculate} 
+            disabled={calculating}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#0b6245] hover:bg-[#084b34] shadow-xs transition-all cursor-pointer"
+          >
+            <Calculator className="size-4" /> {data.ahliWaris.some((h: any) => h.hasil) ? "Hitung Ulang" : "Mulai Kalkulasi"}
           </button>
         </div>
       </div>
 
-      <div className="row g-4 mb-4">
+      {/* 3 Summary Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         
-        {/* Info Card 1 */}
-        <div className="col-md-4">
-          <div className="card wp-card p-3">
-            <h6 className="wp-widget-header text-success mb-2">
-              <i className="bi bi-person-fill"></i> Identitas Pewaris
-            </h6>
-            <div className="small mb-1"><strong>Nama:</strong> {data.nama}</div>
-            <div className="small mb-1"><strong>NIK:</strong> {data.nik || "-"}</div>
-            <div className="small mb-1"><strong>Jenis Kelamin:</strong> {data.gender}</div>
-            <div className="small mb-1"><strong>Meninggal Sebagai:</strong> {data.keterangan || "-"}</div>
+        {/* Identitas Card */}
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+          <div className="flex items-center gap-2 text-[#0b6245] font-bold text-xs uppercase tracking-wider">
+            <User className="size-4" /> Identitas Pewaris
+          </div>
+          <div className="text-xs text-slate-600 pt-1 space-y-1">
+            <div><span className="font-semibold text-slate-800">Nama:</span> {data.nama}</div>
+            <div><span className="font-semibold text-slate-800">NIK:</span> {data.nik || "-"}</div>
+            <div><span className="font-semibold text-slate-800">Jenis Kelamin:</span> {data.gender}</div>
+            <div><span className="font-semibold text-slate-800">Meninggal Sebagai:</span> {data.keterangan || "-"}</div>
           </div>
         </div>
 
-        {/* Info Card 2 */}
-        <div className="col-md-4">
-          <div className="card wp-card p-3">
-            <h6 className="wp-widget-header text-warning mb-2">
-              <i className="bi bi-wallet2"></i> Ringkasan Keuangan
-            </h6>
-            <div className="small mb-1"><strong>Harta Kotor:</strong> Rp {data.hartaKotor.toLocaleString('id-ID')}</div>
-            <div className="small mb-1"><strong>Utang:</strong> Rp {data.utang.toLocaleString('id-ID')}</div>
-            <div className="small mb-1"><strong>Wasiat:</strong> Rp {data.wasiat.toLocaleString('id-ID')}</div>
-            <div className="small fw-bold text-success mt-2 pt-2 border-top">
+        {/* Keuangan Card */}
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+          <div className="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider">
+            <Wallet className="size-4" /> Ringkasan Keuangan
+          </div>
+          <div className="text-xs text-slate-600 pt-1 space-y-1">
+            <div><span className="font-semibold text-slate-800">Harta Kotor:</span> Rp {data.hartaKotor.toLocaleString('id-ID')}</div>
+            <div><span className="font-semibold text-slate-800">Utang:</span> Rp {data.utang.toLocaleString('id-ID')}</div>
+            <div><span className="font-semibold text-slate-800">Wasiat:</span> Rp {data.wasiat.toLocaleString('id-ID')}</div>
+            <div className="font-bold text-[#0b6245] pt-2 border-t border-slate-100">
               Harta Bersih: Rp {data.logKalkulasi?.totalHartaBersih ? data.logKalkulasi.totalHartaBersih.toLocaleString('id-ID') : (data.hartaKotor - data.utang - data.wasiat).toLocaleString('id-ID')}
             </div>
           </div>
         </div>
 
-        {/* Info Card 3 */}
-        <div className="col-md-4">
-          <div className="card wp-card p-3 bg-dark text-white border-0">
-            <h6 className="font-serif fw-bold text-warning mb-2">
-              <i className="bi bi-shield-check me-1"></i> Status Kasus
-            </h6>
-            <div className="fs-5 fw-bold text-white mb-1">
-              {data.hukum === "Jawa" 
-                ? (data.logKalkulasi?.metodeAdat?.replace(/_/g, ' ') || "Belum Dihitung") 
-                : (data.logKalkulasi?.statusAulRadd || "Normal")}
-            </div>
-            <p className="small text-secondary m-0">
-              {data.logKalkulasi ? "Kalkulasi berhasil disinkronkan dengan database." : "Tekan Mulai Kalkulasi untuk memproses."}
-            </p>
+        {/* Status Card */}
+        <div className="rounded-2xl p-5 bg-gradient-to-br from-[#0b6245] to-slate-900 text-white shadow-md space-y-2">
+          <div className="flex items-center gap-2 text-emerald-300 font-bold text-xs uppercase tracking-wider">
+            <ShieldCheck className="size-4" /> Status Kasus
           </div>
+          <div className="text-lg font-bold">
+            {data.hukum === "Jawa" 
+              ? (data.logKalkulasi?.metodeAdat?.replace(/_/g, ' ') || "Belum Dihitung") 
+              : (data.logKalkulasi?.statusAulRadd || "Normal")}
+          </div>
+          <p className="text-[11px] text-slate-300">
+            {data.logKalkulasi ? "Kalkulasi berhasil disinkronkan dengan database." : "Tekan Mulai Kalkulasi untuk memproses."}
+          </p>
         </div>
 
       </div>
 
       {/* Tabel Ahli Waris Detail */}
-      <div className="card wp-card p-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="wp-widget-header m-0">
-            <i className="bi bi-people-fill text-success"></i> Silsilah Ahli Waris ({data.ahliWaris.length})
-          </h5>
-          <div className="btn-group">
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+            <Users className="size-5 text-[#0b6245]" /> Silsilah Ahli Waris ({data.ahliWaris.length})
+          </div>
+          
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
             {["Semua", "Mewarisi", "Mahjub"].map(f => (
               <button 
                 key={f}
-                className={`btn btn-sm ${filterWaris === f ? "btn-dark fw-bold" : "btn-outline-secondary"}`}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                  filterWaris === f ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-900"
+                }`}
                 onClick={() => setFilterWaris(f)}
               >
                 {f}
@@ -172,35 +211,47 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        <div className="table-responsive">
-          <table className="table table-hover align-middle small">
-            <thead className="table-dark">
+        <div className="overflow-x-auto rounded-xl border border-slate-100">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 text-slate-500 font-semibold text-[11px]">
               <tr>
-                <th>No</th>
-                <th>Nama Ahli Waris</th>
-                <th>Hubungan</th>
-                <th>Status</th>
-                <th>Porsi</th>
-                <th>Nominal Rupiah</th>
-                <th>Alasan Hukum / KHI</th>
+                <th className="px-4 py-3">No</th>
+                <th className="px-4 py-3">Nama Ahli Waris</th>
+                <th className="px-4 py-3">Hubungan</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Porsi</th>
+                <th className="px-4 py-3">Nominal Rupiah</th>
+                <th className="px-4 py-3">Alasan Hukum / KHI</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {data.ahliWaris
                 .filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"))
                 .map((h: any, idx: number) => (
-                  <tr key={idx} className={h.hasil?.status === "Mahjub" ? "table-danger opacity-75" : ""}>
-                    <td className="fw-bold">{idx + 1}</td>
-                    <td><strong className="text-dark">{h.nama || "-"}</strong></td>
-                    <td><span className="badge bg-secondary">{h.hubungan}</span></td>
-                    <td>
-                      <span className={`badge ${h.hasil?.status === "Mewarisi" ? "bg-success" : "bg-danger"}`}>
+                  <tr key={idx} className={h.hasil?.status === "Mahjub" ? "bg-rose-50/40 text-slate-500" : "hover:bg-slate-50/80"}>
+                    <td className="px-4 py-3.5 font-bold">{idx + 1}</td>
+                    <td className="px-4 py-3.5 font-semibold text-slate-900">{h.nama || "-"}</td>
+                    <td className="px-4 py-3.5">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700">
+                        {h.hubungan}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                        h.hasil?.status === "Mewarisi" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                      }`}>
                         {h.hasil?.status || "Mahjub"}
                       </span>
                     </td>
-                    <td><span className="badge bg-light text-dark border">{h.hasil?.jatahPersen || "0%"}</span></td>
-                    <td className="fw-bold text-success">Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}</td>
-                    <td className="text-secondary">{h.hasil?.alasan || "Terhalang (Mahjub)."}</td>
+                    <td className="px-4 py-3.5">
+                      <span className="px-2 py-0.5 rounded-md border border-slate-200 bg-white font-mono text-[11px] font-bold">
+                        {h.hasil?.jatahPersen || "0%"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 font-bold text-[#0b6245]">
+                      Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-4 py-3.5 text-slate-500">{h.hasil?.alasan || "Terhalang (Mahjub)."}</td>
                   </tr>
                 ))}
             </tbody>
