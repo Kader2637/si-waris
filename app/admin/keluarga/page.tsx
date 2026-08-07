@@ -1,20 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { getKeluargaList, deleteKeluarga } from "@/app/actions/waris";
 import ConfirmModal from "@/components/ConfirmModal";
 import toast from "react-hot-toast";
-import { Search, Plus, Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Eye, Trash2, ChevronLeft, ChevronRight, FolderX, RefreshCw } from "lucide-react";
 
-export default function KeluargaPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+function KeluargaContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const initialSearch = searchParams.get("search") || "";
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [hukumFilter, setHukumFilter] = useState("Semua");
   const [families, setFamilies] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Sync state if URL search query changes
+  useEffect(() => {
+    const q = searchParams.get("search") || "";
+    setSearchTerm(q);
+  }, [searchParams]);
 
   const fetchFamilies = async () => {
     setLoading(true);
@@ -31,6 +42,12 @@ export default function KeluargaPage() {
   useEffect(() => {
     setPage(1);
   }, [searchTerm, hukumFilter]);
+
+  const handleResetSearch = () => {
+    setSearchTerm("");
+    setHukumFilter("Semua");
+    router.push("/admin/keluarga");
+  };
 
   const confirmDelete = async () => {
     if (!deleteId) return;
@@ -59,7 +76,11 @@ export default function KeluargaPage() {
       <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Kelola Data Keluarga & Waris</h1>
-          <p className="text-slate-500 text-xs mt-1">Manajemen data pewaris, silsilah keluarga, & laporan hasil kalkulasi.</p>
+          <p className="text-slate-500 text-xs mt-1">
+            {searchTerm 
+              ? `Hasil pencarian untuk kata kunci "${searchTerm}"` 
+              : "Manajemen data pewaris, silsilah keluarga, & laporan hasil kalkulasi."}
+          </p>
         </div>
         <Link 
           href="/admin/keluarga/tambah" 
@@ -86,7 +107,7 @@ export default function KeluargaPage() {
           {["Semua", "Islam", "Jawa", "Perdata"].map((h) => (
             <button
               key={h}
-              className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap cursor-pointer ${
                 hukumFilter === h 
                   ? "bg-[#0b6245] text-white shadow-xs font-semibold" 
                   : "text-slate-600 hover:text-slate-900 hover:bg-white"
@@ -117,7 +138,7 @@ export default function KeluargaPage() {
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center text-slate-400 text-xs">
-                    <span className="inline-block w-5 h-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2"></span>
+                    <span className="inline-block size-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2"></span>
                     Memuat data keluarga...
                   </td>
                 </tr>
@@ -174,8 +195,29 @@ export default function KeluargaPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
-                    Tidak ada data keluarga yang ditemukan.
+                  <td colSpan={6} className="px-5 py-16 text-center">
+                    <div className="max-w-sm mx-auto space-y-3">
+                      <div className="size-12 rounded-2xl bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
+                        <FolderX className="size-6" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-slate-900">Data Tidak Ditemukan</h4>
+                        <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+                          {searchTerm 
+                            ? `Tidak ada data pewaris atau NIK yang sesuai dengan kata kunci "${searchTerm}".` 
+                            : "Belum ada data keluarga yang tersimpan di sistem."}
+                        </p>
+                      </div>
+                      {searchTerm && (
+                        <button
+                          type="button"
+                          onClick={handleResetSearch}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all cursor-pointer"
+                        >
+                          <RefreshCw className="size-3.5" /> Reset Pencarian
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               )}
@@ -190,14 +232,14 @@ export default function KeluargaPage() {
           <span>Halaman {page} dari {totalPages}</span>
           <div className="flex gap-2">
             <button 
-              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1" 
+              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1 cursor-pointer" 
               disabled={page === 1}
               onClick={() => setPage(p => Math.max(1, p - 1))}
             >
               <ChevronLeft className="size-4" /> Sebelumnya
             </button>
             <button 
-              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1" 
+              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1 cursor-pointer" 
               disabled={page === totalPages}
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             >
@@ -208,5 +250,18 @@ export default function KeluargaPage() {
       )}
 
     </div>
+  );
+}
+
+export default function KeluargaPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-8 text-center text-xs text-slate-400">
+        <span className="inline-block size-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2"></span>
+        Memuat halaman...
+      </div>
+    }>
+      <KeluargaContent />
+    </Suspense>
   );
 }

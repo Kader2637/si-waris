@@ -8,37 +8,47 @@ import { calculatePerdata } from "@/lib/perdataLogic";
 import { put } from "@vercel/blob";
 
 export async function getKeluargaList(search?: string, hukum?: string, page: number = 1, limit: number = 6) {
-  const where: any = {};
-  
-  if (search) {
-    where.OR = [
-      { nama: { contains: search, mode: 'insensitive' } },
-      { nik: { contains: search, mode: 'insensitive' } }
-    ];
-  }
+  const cleanSearch = search?.trim().toLowerCase();
 
-  if (hukum && hukum !== "Semua") {
-    where.hukum = hukum;
-  }
-
-  const skip = (page - 1) * limit;
-
-  const [data, total] = await Promise.all([
-    prisma.jenazah.findMany({
-      where,
+  try {
+    // 1. Fetch data from Prisma
+    let allRecords = await prisma.jenazah.findMany({
       include: {
         ahliWaris: true,
         logKalkulasi: true,
         hasilWaris: { select: { id: true }, take: 1 },
       },
       orderBy: { createdAt: 'desc' },
-      skip,
-      take: limit,
-    }),
-    prisma.jenazah.count({ where })
-  ]);
+    });
 
-  return { data, total, totalPages: Math.ceil(total / limit) };
+    // 2. Filter Hukum if requested
+    if (hukum && hukum !== "Semua") {
+      allRecords = allRecords.filter((item) => 
+        item.hukum?.toLowerCase() === hukum.toLowerCase()
+      );
+    }
+
+    // 3. Filter Search (Case-Insensitive across nama, nik, keterangan, hukum)
+    if (cleanSearch) {
+      allRecords = allRecords.filter((item) => {
+        const namaMatch = item.nama?.toLowerCase().includes(cleanSearch);
+        const nikMatch = item.nik?.toLowerCase().includes(cleanSearch);
+        const ketMatch = item.keterangan?.toLowerCase().includes(cleanSearch);
+        const hukumMatch = item.hukum?.toLowerCase().includes(cleanSearch);
+        return namaMatch || nikMatch || ketMatch || hukumMatch;
+      });
+    }
+
+    const total = allRecords.length;
+    const totalPages = Math.ceil(total / limit) || 1;
+    const skip = (page - 1) * limit;
+    const paginatedData = allRecords.slice(skip, skip + limit);
+
+    return { data: paginatedData, total, totalPages };
+  } catch (err) {
+    console.error("Error fetching getKeluargaList:", err);
+    return { data: [], total: 0, totalPages: 1 };
+  }
 }
 
 export async function getKeluargaById(id: string) {
@@ -69,7 +79,6 @@ export async function createKeluarga(formData: FormData) {
   const ahliWarisRaw = formData.get("ahliWarisJson") as string;
   const ahliWarisData = JSON.parse(ahliWarisRaw);
 
-  // 1. Upload semua file KTP terlebih dahulu (di luar transaksi agar tidak timeout)
   const ahliWarisWithFiles = [...ahliWarisData];
   for (let i = 0; i < ahliWarisWithFiles.length; i++) {
     const file = formData.get(`file_${i}`) as File | null;
@@ -102,7 +111,6 @@ export async function createKeluarga(formData: FormData) {
         }
       });
 
-      // Simpan pemetaan ID sementara ke ID database untuk parentId
       const idMap: Record<string, string> = {};
 
       for (let i = 0; i < ahliWarisWithFiles.length; i++) {
@@ -121,7 +129,6 @@ export async function createKeluarga(formData: FormData) {
         idMap[heir.id] = createdHeir.id;
       }
 
-      // Update parentId setelah semua ahli waris dibuat
       for (let i = 0; i < ahliWarisWithFiles.length; i++) {
         const heir = ahliWarisWithFiles[i];
         if (heir.parentId && idMap[heir.parentId]) {
@@ -148,7 +155,6 @@ export async function createKeluarga(formData: FormData) {
       timeout: 30000,
     });
 
-    // Otomatis jalankan kalkulasi dan simpan ke database untuk ketiga sistem hukum (Islam, Jawa, Perdata)
     await processFaraid(result.id);
 
     revalidatePath("/admin/keluarga");
