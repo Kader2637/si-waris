@@ -3,6 +3,8 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { getKeluargaById, processFaraid } from "@/app/actions/waris";
+import InteractiveChart from "@/components/InteractiveChart";
+import AudioExplanation from "@/components/AudioExplanation";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
@@ -14,6 +16,16 @@ import {
   Wallet,
   ShieldCheck,
   Users,
+  Sparkles,
+  PieChart,
+  Scale,
+  Calendar,
+  CreditCard,
+  Building2,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  HelpCircle,
 } from "lucide-react";
 
 export default function DetailKeluargaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -40,7 +52,7 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
     await processFaraid(id);
     await fetchData();
     setCalculating(false);
-    toast.success("Kalkulasi selesai!", { id: "calc" });
+    toast.success("Kalkulasi selesai & berhasil disimpan!", { id: "calc" });
   };
 
   const downloadPDF = () => {
@@ -49,24 +61,24 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
     const doc = new jsPDF();
     const date = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
 
-    doc.setFontSize(20);
+    doc.setFontSize(18);
     doc.text("LAPORAN ARSIP PEMBAGIAN WARIS", 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text(`Keluarga: ${data.nama} | Database ID: ${data.id.substring(0, 8)}`, 105, 27, { align: "center" });
-    doc.line(20, 32, 190, 32);
+    doc.text(`Keluarga: ${data.nama} | ID Registrasi: ${data.id.substring(0, 8)}`, 105, 26, { align: "center" });
+    doc.line(20, 30, 190, 30);
 
     doc.setFontSize(11);
-    doc.text(`Nama Pewaris: ${data.nama}`, 20, 42);
-    doc.text(`NIK: ${data.nik || "-"}`, 20, 48);
-    doc.text(`Jenis Kelamin: ${data.gender}`, 20, 54);
-    doc.text(`Dasar Hukum: ${data.hukum === "Islam" ? "Hukum Islam (Faraid KHI)" : "Adat Jawa"}`, 20, 60);
+    doc.text(`Nama Pewaris: ${data.nama}`, 20, 40);
+    doc.text(`NIK: ${data.nik || "-"}`, 20, 46);
+    doc.text(`Jenis Kelamin: ${data.gender}`, 20, 52);
+    doc.text(`Sistem Hukum: ${data.hukum === "Islam" ? "Hukum Islam (Faraid KHI)" : data.hukum === "Perdata" ? "Hukum Perdata (BW)" : "Adat Jawa"}`, 20, 58);
 
-    doc.text(`Harta Kotor: Rp ${data.hartaKotor.toLocaleString("id-ID")}`, 120, 42);
-    doc.text(`Utang & Wasiat: Rp ${(data.utang + data.wasiat).toLocaleString("id-ID")}`, 120, 48);
-    doc.text(`Harta Bersih: Rp ${data.logKalkulasi.totalHartaBersih.toLocaleString("id-ID")}`, 120, 54);
+    doc.text(`Harta Kotor: Rp ${data.hartaKotor.toLocaleString("id-ID")}`, 120, 40);
+    doc.text(`Utang & Wasiat: Rp ${(data.utang + data.wasiat).toLocaleString("id-ID")}`, 120, 46);
+    doc.text(`Harta Bersih: Rp ${data.logKalkulasi.totalHartaBersih.toLocaleString("id-ID")}`, 120, 52);
 
     autoTable(doc, {
-      startY: 68,
+      startY: 66,
       head: [['NO', 'AHLI WARIS', 'STATUS', 'PORSI', 'NOMINAL (IDR)', 'ALASAN HUKUM']],
       body: data.ahliWaris.map((h: any, i: number) => [
         i + 1,
@@ -85,122 +97,185 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-slate-400 text-xs font-mono">
-        <span className="inline-block size-6 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2" />
-        Memuat detail keluarga...
+      <div className="p-16 text-center text-slate-400 text-xs font-mono space-y-3">
+        <span className="inline-block size-8 border-3 border-[#0b6245] border-t-transparent rounded-full animate-spin" />
+        <p>Memuat detail keluarga & hasil kalkulasi...</p>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="p-12 text-center text-rose-500 font-semibold text-sm">
-        Data keluarga tidak ditemukan.
+      <div className="p-12 text-center text-rose-500 font-semibold text-sm bg-white rounded-2xl border border-rose-200">
+        Data keluarga tidak ditemukan di database.
       </div>
     );
   }
 
+  const hartaBersih = data.logKalkulasi?.totalHartaBersih || Math.max(0, data.hartaKotor - data.utang - data.wasiat);
+
+  const chartData = data.ahliWaris
+    .filter((h: any) => h.hasil?.status === "Mewarisi" && h.hasil?.jatahNominal > 0)
+    .map((h: any) => ({
+      nama: `${h.nama || h.hubungan} (${h.hubungan})`,
+      jatahNominal: h.hasil.jatahNominal,
+      jatahPersen: h.hasil.jatahPersen,
+    }));
+
+  const textVoice = `Ringkasan Pembagian Waris Keluarga ${data.nama}. Total harta kotor sebesar Rp ${data.hartaKotor.toLocaleString('id-ID')}, dikurangi hutang dan wasiat, menghasilkan harta bersih sebesar Rp ${hartaBersih.toLocaleString('id-ID')}. Dasar hukum yang digunakan adalah ${data.hukum === "Islam" ? "Faraidh Islam" : data.hukum === "Perdata" ? "Hukum Perdata KUHPerdata" : "Hukum Adat Jawa"}.`;
+
   return (
-    <div className="space-y-6 text-[#0f172a] font-sans">
+    <div className="space-y-6 text-[#0f172a] font-sans antialiased">
       
-      {/* Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-slate-900">{data.nama}</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#e6f4ee] text-[#0b6245]">
-              {data.hukum}
-            </span>
-          </div>
-          <p className="text-slate-500 text-xs mt-1">
-            NIK: {data.nik || "-"} • Ditambahkan {new Date(data.createdAt).toLocaleDateString('id-ID')}
-          </p>
-        </div>
+      {/* Top Action Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <Link 
+          href="/admin/keluarga" 
+          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all no-underline shadow-2xs"
+        >
+          <ArrowLeft className="size-4" /> Kembali ke Kelola Data
+        </Link>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <Link 
-            href="/admin/keluarga" 
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all no-underline"
-          >
-            <ArrowLeft className="size-4" /> Kembali
-          </Link>
           <button 
             onClick={downloadPDF} 
             disabled={!data.logKalkulasi}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-rose-200 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 border border-rose-200 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 transition-all cursor-pointer shadow-2xs"
           >
-            <FileDown className="size-4" /> Unduh PDF
+            <FileDown className="size-4" /> Unduh Laporan PDF
           </button>
           <button 
             onClick={handleCalculate} 
             disabled={calculating}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#0b6245] hover:bg-[#084b34] shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold text-white bg-[#0b6245] hover:bg-[#084b34] shadow-md transition-all cursor-pointer"
           >
-            <Calculator className="size-4" /> {data.ahliWaris.some((h: any) => h.hasil) ? "Hitung Ulang" : "Mulai Kalkulasi"}
+            <Calculator className="size-4" /> {data.ahliWaris.some((h: any) => h.hasil) ? "Hitung Ulang Now" : "Jalankan Kalkulasi"}
           </button>
         </div>
       </div>
 
-      {/* 3 Summary Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        
-        {/* Identitas Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
-          <div className="flex items-center gap-2 text-[#0b6245] font-bold text-xs uppercase tracking-wider">
-            <User className="size-4" /> Identitas Pewaris
-          </div>
-          <div className="text-xs text-slate-600 pt-1 space-y-1">
-            <div><span className="font-semibold text-slate-800">Nama:</span> {data.nama}</div>
-            <div><span className="font-semibold text-slate-800">NIK:</span> {data.nik || "-"}</div>
-            <div><span className="font-semibold text-slate-800">Jenis Kelamin:</span> {data.gender}</div>
-            <div><span className="font-semibold text-slate-800">Meninggal Sebagai:</span> {data.keterangan || "-"}</div>
-          </div>
+      {/* ULTRA PREMIUM HERO CASE BANNER */}
+      <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-[#0a3a2a] to-[#0b6245] p-6 sm:p-8 text-white shadow-xl relative overflow-hidden space-y-6">
+        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+          <Scale className="size-64 text-white" />
         </div>
 
-        {/* Keuangan Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
-          <div className="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider">
-            <Wallet className="size-4" /> Ringkasan Keuangan
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="size-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center font-extrabold text-2xl shadow-inner shrink-0">
+              {data.nama.charAt(0)}
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">{data.nama}</h1>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold font-mono tracking-wider uppercase ${
+                  data.hukum === "Jawa"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-400/30"
+                    : data.hukum === "Perdata"
+                    ? "bg-blue-500/20 text-blue-300 border border-blue-400/30"
+                    : "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
+                }`}>
+                  {data.hukum === "Jawa" ? "Adat Jawa" : data.hukum === "Perdata" ? "Hukum Perdata (BW)" : "Faraid Islam"}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 flex flex-wrap items-center gap-3">
+                <span className="flex items-center gap-1 font-mono"><CreditCard className="size-3.5" /> NIK: {data.nik || "-"}</span>
+                <span className="flex items-center gap-1"><Calendar className="size-3.5" /> Wafat: {new Date(data.tanggalWafat || data.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <span className="flex items-center gap-1"><User className="size-3.5" /> Kelamin: {data.gender}</span>
+              </p>
+            </div>
           </div>
-          <div className="text-xs text-slate-600 pt-1 space-y-1">
-            <div><span className="font-semibold text-slate-800">Harta Kotor:</span> Rp {data.hartaKotor.toLocaleString('id-ID')}</div>
-            <div><span className="font-semibold text-slate-800">Utang:</span> Rp {data.utang.toLocaleString('id-ID')}</div>
-            <div><span className="font-semibold text-slate-800">Wasiat:</span> Rp {data.wasiat.toLocaleString('id-ID')}</div>
-            <div className="font-bold text-[#0b6245] pt-2 border-t border-slate-100">
-              Harta Bersih: Rp {data.logKalkulasi?.totalHartaBersih ? data.logKalkulasi.totalHartaBersih.toLocaleString('id-ID') : (data.hartaKotor - data.utang - data.wasiat).toLocaleString('id-ID')}
+
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-right space-y-1 shrink-0">
+            <div className="text-[11px] uppercase tracking-widest text-slate-300 font-mono">Harta Bersih (Tirkah)</div>
+            <div className="text-2xl font-extrabold font-mono text-emerald-300">
+              Rp {hartaBersih.toLocaleString('id-ID')}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Status Card */}
-        <div className="rounded-2xl p-5 bg-gradient-to-br from-[#0b6245] to-slate-900 text-white shadow-md space-y-2">
-          <div className="flex items-center gap-2 text-emerald-300 font-bold text-xs uppercase tracking-wider">
-            <ShieldCheck className="size-4" /> Status Kasus
+      {/* AUDIO EXPLANATION ASSISTANT WIDGET */}
+      <AudioExplanation
+        title={`Penjelasan Suara Kasus Pewaris ${data.nama}`}
+        badge="Voice Summary Kasus"
+        text={textVoice}
+      />
+
+      {/* 4 SUMMARY METRIC CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Harta Kotor</span>
+            <Wallet className="size-4 text-[#0b6245]" />
           </div>
-          <div className="text-lg font-bold">
-            {data.hukum === "Jawa" 
-              ? (data.logKalkulasi?.metodeAdat?.replace(/_/g, ' ') || "Belum Dihitung") 
-              : (data.logKalkulasi?.statusAulRadd || "Normal")}
+          <div className="text-xl font-bold text-slate-900 font-mono">
+            Rp {data.hartaKotor.toLocaleString('id-ID')}
           </div>
-          <p className="text-[11px] text-slate-300">
-            {data.logKalkulasi ? "Kalkulasi berhasil disinkronkan dengan database." : "Tekan Mulai Kalkulasi untuk memproses."}
+          <p className="text-[11px] text-slate-400">Total aset kotor peninggalan</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Utang & Wasiat</span>
+            <Building2 className="size-4 text-rose-500" />
+          </div>
+          <div className="text-xl font-bold text-slate-900 font-mono">
+            Rp {(data.utang + data.wasiat).toLocaleString('id-ID')}
+          </div>
+          <p className="text-[11px] text-slate-400">Utang: Rp {data.utang.toLocaleString('id-ID')} | Wasiat: Rp {data.wasiat.toLocaleString('id-ID')}</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Harta Bersih</span>
+            <Sparkles className="size-4 text-[#ca9a28]" />
+          </div>
+          <div className="text-xl font-extrabold text-[#0b6245] font-mono">
+            Rp {hartaBersih.toLocaleString('id-ID')}
+          </div>
+          <p className="text-[11px] text-emerald-600 font-medium">Siap dibagi kepada ahli waris</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Status Kalkulasi</span>
+            <ShieldCheck className="size-4 text-blue-600" />
+          </div>
+          <div className="text-sm font-bold text-slate-900">
+            {data.logKalkulasi?.statusAulRadd || "Normal"}
+          </div>
+          <p className="text-[11px] text-slate-400">
+            {data.logKalkulasi ? "Tersimpan di PostgreSQL DB" : "Draft (Belum dihitung)"}
           </p>
         </div>
 
       </div>
 
-      {/* Tabel Ahli Waris Detail */}
+      {/* VISUAL CHART SECTION */}
+      {chartData.length > 0 && (
+        <InteractiveChart
+          title={`Diagram Porsi Waris — ${data.nama}`}
+          data={chartData}
+        />
+      )}
+
+      {/* TABEL AHLI WARIS DETAIL */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-            <Users className="size-5 text-[#0b6245]" /> Silsilah Ahli Waris ({data.ahliWaris.length})
+          <div>
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
+              <Users className="size-5 text-[#0b6245]" /> Silsilah & Pembagian Ahli Waris ({data.ahliWaris.length})
+            </div>
+            <p className="text-slate-500 text-xs mt-0.5">Rincian status porsi, persentase, nominal rupiah, dan dasar hukum KHI / BW.</p>
           </div>
           
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
             {["Semua", "Mewarisi", "Mahjub"].map(f => (
               <button 
                 key={f}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                   filterWaris === f ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-900"
                 }`}
                 onClick={() => setFilterWaris(f)}
@@ -213,45 +288,49 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
 
         <div className="overflow-x-auto rounded-xl border border-slate-100">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-semibold text-[11px]">
+            <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[11px] tracking-wider">
               <tr>
-                <th className="px-4 py-3">No</th>
-                <th className="px-4 py-3">Nama Ahli Waris</th>
-                <th className="px-4 py-3">Hubungan</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Porsi</th>
-                <th className="px-4 py-3">Nominal Rupiah</th>
-                <th className="px-4 py-3">Alasan Hukum / KHI</th>
+                <th className="px-4 py-3.5">No</th>
+                <th className="px-4 py-3.5">Nama Ahli Waris</th>
+                <th className="px-4 py-3.5">Hubungan</th>
+                <th className="px-4 py-3.5">Status</th>
+                <th className="px-4 py-3.5">Porsi</th>
+                <th className="px-4 py-3.5">Nominal Rupiah</th>
+                <th className="px-4 py-3.5">Alasan Hukum / KHI</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {data.ahliWaris
                 .filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"))
                 .map((h: any, idx: number) => (
-                  <tr key={idx} className={h.hasil?.status === "Mahjub" ? "bg-rose-50/40 text-slate-500" : "hover:bg-slate-50/80"}>
-                    <td className="px-4 py-3.5 font-bold">{idx + 1}</td>
-                    <td className="px-4 py-3.5 font-semibold text-slate-900">{h.nama || "-"}</td>
+                  <tr key={idx} className={h.hasil?.status === "Mahjub" || h.hasil?.status === "Terhijab" ? "bg-rose-50/40 text-slate-500" : "hover:bg-slate-50/80 transition-colors"}>
+                    <td className="px-4 py-3.5 font-bold font-mono text-slate-400">{idx + 1}</td>
                     <td className="px-4 py-3.5">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700">
+                      <strong className="text-slate-900 block font-semibold text-sm">{h.nama || "-"}</strong>
+                      <span className="text-[11px] text-slate-400 font-mono">NIK: {h.nik || "-"}</span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
                         {h.hubungan}
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
                         h.hasil?.status === "Mewarisi" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
                       }`}>
+                        {h.hasil?.status === "Mewarisi" ? <CheckCircle2 className="size-3" /> : <AlertCircle className="size-3" />}
                         {h.hasil?.status || "Mahjub"}
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="px-2 py-0.5 rounded-md border border-slate-200 bg-white font-mono text-[11px] font-bold">
+                      <span className="px-2.5 py-1 rounded-md border border-slate-200 bg-white font-mono text-xs font-bold text-slate-900 shadow-2xs">
                         {h.hasil?.jatahPersen || "0%"}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 font-bold text-[#0b6245]">
+                    <td className="px-4 py-3.5 font-extrabold text-[#0b6245] font-mono text-sm">
                       Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}
                     </td>
-                    <td className="px-4 py-3.5 text-slate-500">{h.hasil?.alasan || "Terhalang (Mahjub)."}</td>
+                    <td className="px-4 py-3.5 text-slate-600 leading-relaxed max-w-xs">{h.hasil?.alasan || "Terhalang (Mahjub)."}</td>
                   </tr>
                 ))}
             </tbody>
