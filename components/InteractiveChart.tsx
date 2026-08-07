@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PieChart as PieChartIcon } from "lucide-react";
 
 interface DayStat {
   day: string;
@@ -8,19 +9,119 @@ interface DayStat {
   isToday: boolean;
 }
 
-interface InteractiveChartProps {
-  dayStats: DayStat[];
-  maxDayCount: number;
-  totalJenazah: number;
+interface HeirShareItem {
+  nama: string;
+  jatahNominal: number;
+  jatahPersen: string;
 }
+
+interface InteractiveChartProps {
+  // Option A: Weekly activity chart
+  dayStats?: DayStat[];
+  maxDayCount?: number;
+  totalJenazah?: number;
+
+  // Option B: Heir share breakdown chart
+  title?: string;
+  data?: HeirShareItem[];
+}
+
+const BAR_COLORS = [
+  "bg-[#0b6245]",
+  "bg-[#ca9a28]",
+  "bg-blue-600",
+  "bg-emerald-600",
+  "bg-amber-600",
+  "bg-[#084b34]",
+  "bg-purple-600",
+  "bg-rose-600",
+];
 
 export default function InteractiveChart({
   dayStats,
   maxDayCount,
   totalJenazah,
+  title,
+  data,
 }: InteractiveChartProps) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+  // If rendering Heir Share Breakdown Chart (data prop provided)
+  if (data && data.length > 0) {
+    const totalNominal = data.reduce((acc, curr) => acc + curr.jatahNominal, 0);
+
+    return (
+      <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold text-base">
+            <PieChartIcon className="size-5 text-[#0b6245]" /> {title || "Diagram Porsi Waris"}
+          </div>
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#e6f4ee] dark:bg-emerald-950/40 text-[#0b6245] dark:text-emerald-400 font-mono">
+            Total Tirkah: Rp {totalNominal.toLocaleString("id-ID")}
+          </span>
+        </div>
+
+        {/* Stacked Percentage Progress Bar */}
+        <div className="h-6 w-full rounded-full overflow-hidden flex bg-slate-100 dark:bg-slate-800 p-1 gap-1">
+          {data.map((item, idx) => {
+            const pct = totalNominal > 0 ? (item.jatahNominal / totalNominal) * 100 : 0;
+            const colorClass = BAR_COLORS[idx % BAR_COLORS.length];
+            const isHovered = hoveredIdx === idx;
+
+            return (
+              <div
+                key={idx}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                style={{ width: `${pct}%` }}
+                className={`h-full rounded-full transition-all cursor-pointer relative ${colorClass} ${
+                  isHovered ? "opacity-100 scale-y-110 shadow-md" : "opacity-90 hover:opacity-100"
+                }`}
+              />
+            );
+          })}
+        </div>
+
+        {/* Legend List Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {data.map((item, idx) => {
+            const colorClass = BAR_COLORS[idx % BAR_COLORS.length];
+            const isHovered = hoveredIdx === idx;
+
+            return (
+              <div
+                key={idx}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                  isHovered
+                    ? "border-[#0b6245] bg-[#e6f4ee]/50 dark:bg-slate-800 shadow-2xs"
+                    : "border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40"
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <span className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                    <span className={`size-3 rounded-full shrink-0 ${colorClass}`} />
+                    {item.nama}
+                  </span>
+                  <span className="font-mono text-[#0b6245] dark:text-emerald-400 font-bold">{item.jatahPersen}</span>
+                </div>
+                <div className="text-xs font-bold text-slate-900 dark:text-slate-100 font-mono mt-1 text-right">
+                  Rp {item.jatahNominal.toLocaleString("id-ID")}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // If rendering Dashboard Weekly Activity Chart (dayStats provided)
+  if (!dayStats || dayStats.length === 0) return null;
+
+  const maxVal = maxDayCount || 1;
 
   return (
     <div className="space-y-4">
@@ -36,7 +137,7 @@ export default function InteractiveChart({
         <span className="font-mono font-bold text-[#0b6245] dark:text-emerald-400">
           {hoveredIdx !== null
             ? `${dayStats[hoveredIdx].count} Kasus`
-            : `${totalJenazah} Total Kasus`}
+            : `${totalJenazah || 0} Total Kasus`}
         </span>
       </div>
 
@@ -45,7 +146,7 @@ export default function InteractiveChart({
         {dayStats.map((b, idx) => {
           const isHovered = hoveredIdx === idx;
           const isSelected = selectedDay === b.day;
-          const heightPct = Math.max((b.count / maxDayCount) * 100, b.count > 0 ? 30 : 12);
+          const heightPct = Math.max((b.count / maxVal) * 100, b.count > 0 ? 30 : 12);
 
           return (
             <div
