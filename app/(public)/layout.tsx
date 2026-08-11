@@ -64,7 +64,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </span>
             <span className="leading-none">
               <span className="block text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans whitespace-nowrap">
-                SI-<span className="text-[#ca9a28]">WARIS</span>
+                E-<span className="text-[#ca9a28]">MAWARIST</span>
               </span>
               <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
                 KALKULATOR WARIS
