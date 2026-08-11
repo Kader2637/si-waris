@@ -52,11 +52,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-[#0f172a] font-sans antialiased">
-
+      
       {/* PUBLIC NAVBAR TRANSLUCENT GLASS (AGAK TRANSPARAN DENGAN BACKDROP BLUR) */}
       <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/65 dark:bg-[#151c2c]/70 backdrop-blur-xl shadow-2xs transition-colors">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
-
+          
           {/* Logo Badge & Brand Name */}
           <Link href="/" className="shrink-0 flex items-center gap-2.5 no-underline">
             <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#0b6245] text-white shadow-2xs">
@@ -64,7 +64,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </span>
             <span className="leading-none">
               <span className="block text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans whitespace-nowrap">
-                E-<span className="text-[#ca9a28]">MAWARIST</span>
+                SI-<span className="text-[#ca9a28]">WARIS</span>
               </span>
               <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
                 KALKULATOR WARIS
@@ -80,10 +80,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors no-underline ${isActive
+                  className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors no-underline ${
+                    isActive
                       ? "bg-[#dcfce7]/90 text-[#0b6245] font-semibold dark:bg-[#0b6245]/20 dark:text-emerald-400 font-bold"
                       : "text-[#64748b] dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-800 hover:text-slate-900"
-                    }`}
+                  }`}
                 >
                   {l.label}
                 </Link>
@@ -139,10 +140,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     key={l.href}
                     href={l.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors no-underline ${isActive
+                    className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors no-underline ${
+                      isActive
                         ? "bg-[#dcfce7] text-[#0b6245]"
                         : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:text-slate-900"
-                      }`}
+                    }`}
                   >
                     {l.label}
                   </Link>
@@ -177,7 +179,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       {/* FOOTER WIDGET */}
       <footer className="mt-20 border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#151c2c]">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
-
+          
           <div>
             <Link href="/" className="flex items-center gap-2.5 no-underline mb-4">
               <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#0b6245] text-white shadow-2xs">
@@ -185,16 +187,16 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </span>
               <span className="leading-none">
                 <span className="block text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
-                  E-<span className="text-[#ca9a28]">MAWARIST</span>
+                  SI-<span className="text-[#ca9a28]">WARIS</span>
                 </span>
                 <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono">
                   KALKULATOR WARIS
                 </span>
               </span>
             </Link>
-
+            
             <p className="max-w-sm text-xs leading-relaxed text-[#64748b] dark:text-slate-400 font-normal">
-              E-Mawarist adalah sistem informasi dan kalkulator pembagian waris yang membantu masyarakat
+              SI-WARIS adalah sistem informasi dan kalkulator pembagian waris yang membantu masyarakat
               memahami hak waris berdasarkan Hukum Syariah (Faraidh), KUHPerdata, dan Hukum Adat Jawa secara
               transparan dan mudah dipahami.
             </p>
@@ -217,7 +219,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900 dark:text-slate-100 font-mono">Kontak & Alamat</h3>
             <ul className="mt-4 space-y-3 text-xs text-[#64748b] dark:text-slate-400 font-normal">
               <li className="flex items-start gap-2">
-                <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> halo@E-Mawarist.id
+                <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> halo@si-waris.id
               </li>
               <li className="flex items-start gap-2">
                 <Phone className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> (021) 5555-1945
@@ -232,7 +234,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
         <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-[11px] text-[#64748b] dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 font-normal">
-            <p>&copy; {new Date().getFullYear()} E-Mawarist. Seluruh hak cipta dilindungi.</p>
+            <p>&copy; {new Date().getFullYear()} SI-WARIS. Seluruh hak cipta dilindungi.</p>
             <p>
               Hasil perhitungan bersifat simulasi edukatif — untuk kepastian hukum konsultasikan dengan
               ahli faraidh atau notaris.

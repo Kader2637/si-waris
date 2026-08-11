@@ -77,7 +77,7 @@ export default function AdminKalkulatorPage() {
     doc.setFontSize(20);
     doc.text("LAPORAN PEMBAGIAN WARIS ADMIN", 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text("E-Mawarist Engine Simulation", 105, 27, { align: "center" });
+    doc.text("SI-WARIS Engine Simulation", 105, 27, { align: "center" });
     doc.line(20, 32, 190, 32);
 
     doc.setFontSize(11);
@@ -109,7 +109,7 @@ export default function AdminKalkulatorPage() {
 
   return (
     <div className="space-y-6 text-[#0f172a] font-sans">
-
+      
       {/* Header Title */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -117,7 +117,7 @@ export default function AdminKalkulatorPage() {
           <p className="text-slate-500 text-xs mt-1">Pengujian kalkulasi waris cepat tanpa perlu menyimpan data ke database.</p>
         </div>
         {step === 2 && (
-          <button
+          <button 
             className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all cursor-pointer"
             onClick={() => setStep(1)}
           >
@@ -129,7 +129,7 @@ export default function AdminKalkulatorPage() {
       {step === 1 ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-6">
-
+            
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
               <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
                 <Sliders className="size-5 text-[#0b6245]" /> Parameter Perhitungan Cepat
@@ -138,26 +138,29 @@ export default function AdminKalkulatorPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-600">Pilih Sistem Hukum</label>
                 <div className="grid grid-cols-3 gap-2">
-                  <button
+                  <button 
                     type="button"
-                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${hukum === "Islam" ? "bg-[#0b6245] text-white border-[#0b6245]" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                      }`}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === "Islam" ? "bg-[#0b6245] text-white border-[#0b6245]" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
                     onClick={() => setHukum("Islam")}
                   >
                     Faraid Islam
                   </button>
-                  <button
+                  <button 
                     type="button"
-                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${hukum === "Jawa" ? "bg-[#ca9a28] text-white border-[#ca9a28]" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                      }`}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === "Jawa" ? "bg-[#ca9a28] text-white border-[#ca9a28]" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
                     onClick={() => setHukum("Jawa")}
                   >
                     Hukum Adat Jawa
                   </button>
-                  <button
+                  <button 
                     type="button"
-                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${hukum === "Perdata" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                      }`}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      hukum === "Perdata" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
                     onClick={() => setHukum("Perdata")}
                   >
                     Hukum Perdata (BW)
@@ -169,7 +172,7 @@ export default function AdminKalkulatorPage() {
                 <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-amber-900">Metode Adat Jawa</label>
-                    <select
+                    <select 
                       className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
                       value={metodeAdat}
                       onChange={(e) => setMetodeAdat(e.target.value as any)}
@@ -179,8 +182,8 @@ export default function AdminKalkulatorPage() {
                     </select>
                   </div>
                   <label className="flex items-center gap-2 text-xs font-medium text-amber-900 cursor-pointer">
-                    <input
-                      type="checkbox"
+                    <input 
+                      type="checkbox" 
                       className="rounded text-[#0b6245]"
                       checked={potongGonoGini}
                       onChange={(e) => setPotongGonoGini(e.target.checked)}
@@ -193,8 +196,8 @@ export default function AdminKalkulatorPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-600">Nama Pewaris (Opsional)</label>
-                  <input
-                    type="text"
+                  <input 
+                    type="text" 
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
                     placeholder="Contoh: Almarhum Budi"
                     value={namaJenazah}
@@ -203,9 +206,9 @@ export default function AdminKalkulatorPage() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-600">Jenis Kelamin</label>
-                  <select
+                  <select 
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
-                    value={gender}
+                    value={gender} 
                     onChange={(e) => setGender(e.target.value)}
                   >
                     <option value="Laki-laki">Laki-laki</option>
@@ -217,32 +220,32 @@ export default function AdminKalkulatorPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-600">Harta Kotor (Rp)</label>
-                  <input
-                    type="text"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-[#0b6245] placeholder-slate-400 focus:outline-none"
-                    value={harta}
-                    onChange={(e) => setHarta(formatIDR(e.target.value))}
-                    placeholder="0"
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-[#0b6245] placeholder-slate-400 focus:outline-none" 
+                    value={harta} 
+                    onChange={(e) => setHarta(formatIDR(e.target.value))} 
+                    placeholder="0" 
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-600">Utang (Rp)</label>
-                  <input
-                    type="text"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
-                    value={utang}
-                    onChange={(e) => setUtang(formatIDR(e.target.value))}
-                    placeholder="0"
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none" 
+                    value={utang} 
+                    onChange={(e) => setUtang(formatIDR(e.target.value))} 
+                    placeholder="0" 
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-600">Wasiat (Rp)</label>
-                  <input
-                    type="text"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
-                    value={wasiat}
-                    onChange={(e) => setWasiat(formatIDR(e.target.value))}
-                    placeholder="0"
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none" 
+                    value={wasiat} 
+                    onChange={(e) => setWasiat(formatIDR(e.target.value))} 
+                    placeholder="0" 
                   />
                 </div>
               </div>
@@ -253,7 +256,7 @@ export default function AdminKalkulatorPage() {
                 <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
                   <Users className="size-5 text-[#0b6245]" /> Silsilah Ahli Waris ({ahliWaris.length})
                 </div>
-                <button
+                <button 
                   type="button"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f4ee] text-[#0b6245] text-xs font-semibold rounded-xl hover:bg-[#0b6245] hover:text-white transition-colors cursor-pointer"
                   onClick={addHeir}
@@ -284,8 +287,8 @@ export default function AdminKalkulatorPage() {
                         <tr key={i}>
                           <td className="px-3 py-3 text-center font-mono font-semibold text-slate-400">{i + 1}</td>
                           <td className="px-3 py-3">
-                            <input
-                              type="text"
+                            <input 
+                              type="text" 
                               className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
                               placeholder="Nama..."
                               value={h.nama}
@@ -293,7 +296,7 @@ export default function AdminKalkulatorPage() {
                             />
                           </td>
                           <td className="px-3 py-3">
-                            <select
+                            <select 
                               className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
                               value={h.hubungan}
                               onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
@@ -302,8 +305,8 @@ export default function AdminKalkulatorPage() {
                             </select>
                           </td>
                           <td className="px-3 py-3 text-center">
-                            <button
-                              type="button"
+                            <button 
+                              type="button" 
                               className="size-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center transition-colors mx-auto cursor-pointer"
                               onClick={() => removeHeir(i)}
                             >
@@ -332,7 +335,7 @@ export default function AdminKalkulatorPage() {
                 </strong>
               </div>
 
-              <button
+              <button 
                 type="button"
                 className="w-full py-3 px-4 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50 inline-flex items-center justify-center gap-2"
                 disabled={!harta || ahliWaris.length === 0}
@@ -352,8 +355,8 @@ export default function AdminKalkulatorPage() {
               </span>
               <h2 className="text-xl font-bold text-slate-900 mt-1">Hasil Kalkulasi Cepat</h2>
             </div>
-            <button
-              type="button"
+            <button 
+              type="button" 
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
               onClick={downloadPDF}
             >
@@ -379,8 +382,9 @@ export default function AdminKalkulatorPage() {
                     <td className="px-4 py-3.5 font-bold">{i + 1}</td>
                     <td className="px-4 py-3.5 font-semibold text-slate-900">{h.nama || "-"} ({h.hubungan})</td>
                     <td className="px-4 py-3.5">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${h.status === "Mewarisi" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
-                        }`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                        h.status === "Mewarisi" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                      }`}>
                         {h.status}
                       </span>
                     </td>

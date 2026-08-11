@@ -23,7 +23,7 @@ const DASAR = [
 export default function TentangPage() {
   return (
     <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
-
+      
       {/* PAGE HERO */}
       <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
@@ -33,20 +33,20 @@ export default function TentangPage() {
             </span>
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Menghadirkan Kepastian dalam Pembagian Warisan</h1>
             <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
-              E-Mawarist lahir dari kebutuhan masyarakat akan alat bantu yang transparan untuk memahami hak waris setiap anggota keluarga sebelum melangkah ke proses hukum formal.
+              SI-WARIS lahir dari kebutuhan masyarakat akan alat bantu yang transparan untuk memahami hak waris setiap anggota keluarga sebelum melangkah ke proses hukum formal.
             </p>
           </ScrollReveal>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 space-y-12">
-
+        
         {/* AUDIO EXPLANATION */}
         <ScrollReveal>
           <AudioExplanation
-            title="Tentang Platform E-Mawarist Indonesia"
-            badge="Voice Assistant E-Mawarist"
-            text="E-Mawarist adalah platform sistem informasi dan kalkulator pembagian warisan terpadu di Indonesia. Misi kami adalah menghadirkan edukasi yang transparan, akurat, dan netral untuk membantu keluarga merencanakan pembagian harta waris secara damai dan adil."
+            title="Tentang Platform SI-WARIS Indonesia"
+            badge="Voice Assistant SI-WARIS"
+            text="SI-WARIS adalah platform sistem informasi dan kalkulator pembagian warisan terpadu di Indonesia. Misi kami adalah menghadirkan edukasi yang transparan, akurat, dan netral untuk membantu keluarga merencanakan pembagian harta waris secara damai dan adil."
           />
         </ScrollReveal>
 
@@ -113,7 +113,7 @@ export default function TentangPage() {
             ))}
           </ul>
           <p className="mt-6 rounded-2xl border border-[oklch(0.76_0.12_87/0.3)] bg-[oklch(0.76_0.12_87/0.1)] p-4 text-sm text-[oklch(0.25_0.05_80)]">
-            <strong>Disclaimer:</strong> hasil perhitungan E-Mawarist bersifat simulasi edukatif dan bukan
+            <strong>Disclaimer:</strong> hasil perhitungan SI-WARIS bersifat simulasi edukatif dan bukan
             merupakan penetapan hukum. Untuk kekuatan hukum tetap, ajukan penetapan waris di Pengadilan Agama
             atau Pengadilan Negeri, atau buat akta pembagian waris di hadapan notaris.
           </p>

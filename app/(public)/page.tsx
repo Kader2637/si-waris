@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import ScrollReveal from "@/components/ScrollReveal";
-import HeroSection from "@/components/HeroSection";
 import {
   ArrowRight,
   BookOpen,
@@ -68,7 +67,7 @@ const FAQ = [
   },
   {
     q: "Apakah hasil perhitungan ini sah secara hukum?",
-    a: "Hasil E-Mawarist bersifat simulasi edukatif. Untuk kepastian hukum, hasil perlu dikuatkan melalui penetapan Pengadilan Agama, Pengadilan Negeri, atau akta notaris.",
+    a: "Hasil SI-WARIS bersifat simulasi edukatif. Untuk kepastian hukum, hasil perlu dikuatkan melalui penetapan Pengadilan Agama, Pengadilan Negeri, atau akta notaris.",
   },
   {
     q: "Apa itu Legitieme Portie?",
@@ -84,10 +83,119 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-[#f8fafc] font-sans antialiased">
-
+    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] font-sans antialiased">
+      
       {/* HERO SECTION */}
-      <HeroSection />
+      <section className="hero-aurora relative overflow-hidden border-b border-slate-200/70 pt-10 pb-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center">
+            
+            {/* LEFT COLUMN */}
+            <ScrollReveal className="space-y-6">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#ca9a28]/35 bg-[#ca9a28]/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#8e6b18] shadow-2xs">
+                <Sparkles className="size-3.5 text-[#ca9a28]" /> Sistem Informasi Waris Terpadu
+              </span>
+              
+              <h1 className="text-4xl sm:text-6xl font-extrabold leading-[1.05] tracking-tight text-[#0f172a]">
+                Hitung Pembagian<br />
+                Waris Secara <span className="text-[#0b6245]">Adil,</span><br />
+                <span className="text-[#0b6245]">Akurat,</span> dan <span className="text-[#ca9a28]">Sesuai</span><br />
+                <span className="text-[#ca9a28]">Hukum</span>
+              </h1>
+              
+              <p className="max-w-xl text-base sm:text-lg leading-relaxed text-[#475569] font-normal">
+                SI-WARIS membantu Anda mensimulasikan pembagian harta warisan berdasarkan tiga sistem hukum yang berlaku di Indonesia — Syariah (Faraidh), KUHPerdata, dan Adat Jawa — lengkap dengan visualisasi dan laporan resmi.
+              </p>
+              
+              <div className="pt-2 flex flex-wrap gap-3">
+                <Link 
+                  href="/kalkulator" 
+                  className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-[#0b6245] hover:bg-[#084b34] text-white text-sm font-semibold rounded-full shadow-lg shadow-emerald-900/20 transition-all no-underline"
+                >
+                  Mulai Simulasi Waris <ArrowRight className="size-4" />
+                </Link>
+                <Link 
+                  href="/syariah" 
+                  className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-slate-300/80 hover:bg-slate-50 text-slate-800 text-sm font-semibold rounded-full shadow-2xs transition-all no-underline"
+                >
+                  <BookOpen className="size-4 text-slate-500" /> Pelajari Faraidh
+                </Link>
+              </div>
+
+              <dl className="pt-4 grid grid-cols-3 gap-3.5 max-w-md">
+                {[
+                  ["3", "Sistem Hukum"],
+                  ["13+", "Kategori Ahli Waris"],
+                  ["100%", "Gratis & Privat"],
+                ].map(([val, label]) => (
+                  <div key={label} className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-2xs">
+                    <dt className="text-2xl font-black text-[#0b6245]">{val}</dt>
+                    <dd className="text-xs text-[#64748b] mt-0.5 font-normal">{label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </ScrollReveal>
+
+            {/* RIGHT COLUMN */}
+            <ScrollReveal delay={150} className="glass rounded-3xl p-7 sm:p-8 space-y-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#64748b] font-mono">
+                  CONTOH HASIL SIMULASI
+                </p>
+                <p className="mt-1 text-xs sm:text-sm font-normal text-[#475569]">
+                  Harta bersih Rp 1.200.000.000 — Suami, Ibu, 2 Anak Perempuan
+                </p>
+              </div>
+
+              <ul className="space-y-3">
+                <li className="rounded-2xl border border-slate-100 bg-white/80 p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="font-semibold text-[#0f172a]">Suami</span>
+                    <span className="rounded-md bg-[#0b6245]/10 px-2 py-0.5 font-mono text-xs text-[#0b6245] font-bold">
+                      1/4
+                    </span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200/80">
+                    <div className="h-full rounded-full bg-[#0b6245]" style={{ width: "25%" }} />
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold tabular-nums font-mono text-[#0f172a]">Rp 300.000.000</p>
+                </li>
+
+                <li className="rounded-2xl border border-slate-100 bg-white/80 p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="font-semibold text-[#0f172a]">Ibu</span>
+                    <span className="rounded-md bg-[#0b6245]/10 px-2 py-0.5 font-mono text-xs text-[#0b6245] font-bold">
+                      1/6
+                    </span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200/80">
+                    <div className="h-full rounded-full bg-[#0b6245]" style={{ width: "16.7%" }} />
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold tabular-nums font-mono text-[#0f172a]">Rp 200.000.000</p>
+                </li>
+
+                <li className="rounded-2xl border border-slate-100 bg-white/80 p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="font-semibold text-[#0f172a]">Anak Perempuan (2)</span>
+                    <span className="rounded-md bg-[#0b6245]/10 px-2 py-0.5 font-mono text-xs text-[#0b6245] font-bold">
+                      2/3
+                    </span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200/80">
+                    <div className="h-full rounded-full bg-[#0b6245]" style={{ width: "58.3%" }} />
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold tabular-nums font-mono text-[#0f172a]">Rp 700.000.000</p>
+                </li>
+              </ul>
+
+              <p className="pt-2 border-t border-slate-100/80 flex items-center gap-2 text-xs text-[#64748b] font-normal">
+                <ShieldCheck className="size-4 text-[#0b6245] shrink-0" /> Perhitungan diproses di perangkat Anda.
+              </p>
+            </ScrollReveal>
+
+          </div>
+        </div>
+      </section>
 
       {/* 3 SISTEM HUKUM WARIS SECTION */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
@@ -116,7 +224,7 @@ export default function HomePage() {
                     <h3 className="mt-5 text-xl font-bold text-[#0f172a]">{s.nama}</h3>
                     <p className="text-xs font-semibold uppercase tracking-wider text-[#ca9a28] mt-1 font-mono">{s.sub}</p>
                     <p className="mt-3 text-sm leading-relaxed text-[#64748b] font-normal">{s.desc}</p>
-
+                    
                     <ul className="mt-4 space-y-1.5 text-sm font-normal">
                       {s.poin.map((p) => (
                         <li key={p} className="flex gap-2 text-[#64748b]">
@@ -144,7 +252,7 @@ export default function HomePage() {
               Fitur Unggulan
             </h2>
           </ScrollReveal>
-
+          
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {FITUR.map((f, idx) => {
               const Icon = f.icon;
@@ -174,11 +282,11 @@ export default function HomePage() {
             <p className="mt-3 text-[#64748b] text-base leading-relaxed font-normal">
               Pertanyaan yang paling sering diajukan seputar aturan pembagian waris di Indonesia.
             </p>
-            <Link
-              href="/tentang"
+            <Link 
+              href="/tentang" 
               className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-[#ca9a28] hover:bg-[#a87e1c] text-white text-sm font-semibold rounded-full shadow-md transition-all no-underline"
             >
-              Tentang E-Mawarist
+              Tentang SI-WARIS
             </Link>
           </ScrollReveal>
 
@@ -216,8 +324,8 @@ export default function HomePage() {
               Bandingkan hasil ketiga sistem hukum secara bersandingan dalam satu layar.
             </p>
             <div className="pt-4">
-              <Link
-                href="/kalkulator"
+              <Link 
+                href="/kalkulator" 
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#0b6245] hover:bg-[#084b34] text-white text-sm font-semibold rounded-full shadow-lg transition-all no-underline"
               >
                 <Calculator className="size-4" /> Buka Kalkulator Terpadu

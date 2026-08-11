@@ -86,7 +86,7 @@ export default function PublicKalkulatorPage() {
     doc.setFontSize(18);
     doc.text(`LAPORAN PEMBAGIAN WARIS — ${sistem.toUpperCase()}`, 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text(`Platform E-Mawarist — ${dateStr}`, 105, 26, { align: "center" });
+    doc.text(`Platform SI-WARIS — ${dateStr}`, 105, 26, { align: "center" });
     doc.line(20, 30, 190, 30);
 
     doc.setFontSize(11);
@@ -115,7 +115,7 @@ export default function PublicKalkulatorPage() {
 
   return (
     <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
-
+      
       {/* PAGE HERO */}
       <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
@@ -132,7 +132,7 @@ export default function PublicKalkulatorPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 space-y-8">
-
+        
         {/* AUDIO EXPLANATION */}
         <ScrollReveal>
           <AudioExplanation
@@ -144,7 +144,7 @@ export default function PublicKalkulatorPage() {
 
         {/* WIZARD CONTAINER */}
         <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 sm:p-8 shadow-2xs space-y-8">
-
+          
           <div className="flex items-center justify-between border-b border-slate-100 pb-6">
             <div className="flex items-center gap-2">
               {[
@@ -154,12 +154,13 @@ export default function PublicKalkulatorPage() {
               ].map((s) => (
                 <span
                   key={s.idx}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${step === s.idx
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
+                    step === s.idx
                       ? "bg-[oklch(0.4_0.093_158)] text-white"
                       : step > s.idx
-                        ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
+                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
+                      : "bg-slate-100 text-slate-400"
+                  }`}
                 >
                   {s.label}
                 </span>
