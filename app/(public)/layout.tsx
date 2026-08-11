@@ -14,12 +14,18 @@ import {
   Mail,
   Phone,
   MapPin,
+  Wrench,
+  ShieldAlert,
+  RefreshCw,
+  Clock,
+  Server,
 } from "lucide-react";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -27,6 +33,15 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       setIsDark(true);
       document.documentElement.classList.add("dark");
     }
+
+    const checkMaint = () => {
+      const savedMaint = localStorage.getItem("setting_maintenanceMode");
+      setIsMaintenance(savedMaint === "true");
+    };
+
+    checkMaint();
+    window.addEventListener("storage", checkMaint);
+    return () => window.removeEventListener("storage", checkMaint);
   }, []);
 
   const toggleDarkMode = () => {
@@ -40,6 +55,132 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       localStorage.setItem("theme", "light");
     }
   };
+
+  // MAINTENANCE MODE VIEW
+  if (isMaintenance) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased flex flex-col justify-between hero-aurora">
+        
+        {/* TOP BAR IN MAINTENANCE MODE */}
+        <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/65 dark:bg-[#151c2c]/70 backdrop-blur-xl shadow-2xs">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+            <Link href="/" className="shrink-0 flex items-center gap-2.5 no-underline">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#0b6245] text-white shadow-2xs">
+                <Scale className="size-4.5" />
+              </span>
+              <span className="leading-none">
+                <span className="block text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans whitespace-nowrap">
+                  E-<span className="text-[#ca9a28]">MAWARIST</span>
+                </span>
+                <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
+                  SYSTEM MAINTENANCE
+                </span>
+              </span>
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleDarkMode}
+                className="grid size-8 place-items-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-400 rounded-md hover:bg-slate-100/70 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                aria-label="Toggle Dark Mode"
+              >
+                {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500" />}
+              </button>
+
+              <Link
+                href="/admin/dashboard"
+                className="inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-md border border-slate-200/90 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-3 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors no-underline backdrop-blur-sm"
+              >
+                <LogIn className="size-3.5 text-slate-500 dark:text-slate-400" /> Portal Admin
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* MAIN MAINTENANCE CARD CONTAINER */}
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-24 pb-12">
+          <div className="w-full max-w-2xl text-center space-y-6">
+            
+            {/* Maintenance Hero Glass Card */}
+            <div className="glass rounded-3xl p-8 sm:p-12 space-y-6 border border-slate-200/80 dark:border-slate-800 shadow-2xl relative overflow-hidden">
+              
+              {/* Top Status Pill */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 shadow-2xs">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-amber-500" />
+                </span>
+                PEMELIHARAAN SISTEM BERLANGSUNG
+              </div>
+
+              {/* Icon Badge */}
+              <div className="mx-auto size-20 rounded-3xl bg-gradient-to-tr from-[#0b6245]/20 to-[#ca9a28]/20 dark:from-[#0b6245]/40 dark:to-[#ca9a28]/40 border border-[#0b6245]/30 flex items-center justify-center shadow-lg">
+                <Wrench className="size-10 text-[#0b6245] dark:text-emerald-400 animate-bounce" />
+              </div>
+
+              {/* Main Heading */}
+              <div className="space-y-2">
+                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
+                  Situs Web Sedang Dalam Pemeliharaan
+                </h1>
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-lg mx-auto leading-relaxed font-normal">
+                  Kami sedang melakukan peningkatan performa dan pembaruan rutin pada platform <strong className="text-[#0b6245] dark:text-emerald-400">E-MAWARIST</strong> untuk kenyamanan & ketepatan simulasi waris Anda.
+                </p>
+              </div>
+
+              {/* Status Metrics Box */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-800/60 text-left">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase font-mono">STATUS SERVER</div>
+                  <div className="text-xs font-bold text-amber-600 dark:text-amber-400 mt-0.5 flex items-center gap-1.5">
+                    <Server className="size-3.5" /> Maintenance Mode
+                  </div>
+                </div>
+                <div className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-800/60 text-left">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase font-mono">ESTIMASI SELESAI</div>
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1.5">
+                    <Clock className="size-3.5 text-[#ca9a28]" /> Segera Membaik
+                  </div>
+                </div>
+                <div className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-800/60 text-left">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase font-mono">KEAMANAN DATA</div>
+                  <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 flex items-center gap-1.5">
+                    <ShieldAlert className="size-3.5" /> Aman 100%
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions Buttons */}
+              <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-bold rounded-full shadow-lg transition-all cursor-pointer"
+                >
+                  <RefreshCw className="size-4" /> Coba Muat Ulang Halaman
+                </button>
+                
+                <Link
+                  href="/admin/dashboard"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-full shadow-sm hover:bg-slate-50 transition-all no-underline"
+                >
+                  <LogIn className="size-4 text-slate-500" /> Masuk Portal Admin
+                </Link>
+              </div>
+
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
+              &copy; {new Date().getFullYear()} E-MAWARIST Platform Waris Terpadu. Seluruh hak cipta dilindungi.
+            </p>
+
+          </div>
+        </main>
+
+      </div>
+    );
+  }
 
   const navLinks = [
     { href: "/", label: "Beranda" },
