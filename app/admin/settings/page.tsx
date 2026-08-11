@@ -3,7 +3,7 @@ import { Shield, Database, Sliders } from "lucide-react";
 export default function SettingsPage() {
   return (
     <div className="space-y-6 text-[#0f172a] font-sans">
-      
+
       {/* Header */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs">
         <h1 className="text-2xl font-bold text-slate-900">Pengaturan Sistem Portal</h1>
@@ -12,7 +12,7 @@ export default function SettingsPage() {
 
       {/* Settings Sections */}
       <div className="scroll-reveal grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center gap-3 mb-3">
@@ -22,7 +22,7 @@ export default function SettingsPage() {
               <h2 className="text-base font-bold text-slate-900">Profil & Keamanan</h2>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Kelola kredensial administrator & sesi masuk portal SI-WARIS.
+              Kelola kredensial administrator & sesi masuk portal E-Mawarist.
             </p>
           </div>
           <button className="w-full py-2.5 px-4 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer">
