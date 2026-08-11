@@ -341,7 +341,7 @@ export default function AdminKalkulatorPage() {
                 disabled={!harta || ahliWaris.length === 0}
                 onClick={handleHitung}
               >
-                <Calculator className="size-4" /> Hitung Hasil Now
+                <Calculator className="size-4" /> Hitung Hasil
               </button>
             </div>
           </div>
