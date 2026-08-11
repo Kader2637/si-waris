@@ -22,7 +22,7 @@ export default function SettingsPage() {
               <h2 className="text-base font-bold text-slate-900">Profil & Keamanan</h2>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Kelola kredensial administrator & sesi masuk portal SI-WARIS.
+              Kelola kredensial administrator & sesi masuk portal E-MAWARIST.
             </p>
           </div>
           <button className="w-full py-2.5 px-4 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer">

@@ -87,7 +87,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   DARK MODE SYSTEM & OVERRIDES (FULL COMPATIBILITY)
+   DARK MODE SYSTEM & OVERRIDES (FULL COMPATIBILITY ACROSS ALL PAGES)
    ========================================================================== */
 
 .dark {
@@ -100,25 +100,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark [class*="bg-[#f8fafc]"],
-.dark .bg-slate-100\/60,
-.dark .bg-slate-100\/70 {
-  background-color: #0b0f19 !important;
+.dark [class*="bg-slate-100"],
+.dark [class*="bg-slate-50"] {
+  background-color: #1a2336 !important;
 }
 
-.dark .bg-white {
+.dark [class*="bg-white"] {
   background-color: #151c2c !important;
   border-color: #26334d !important;
   color: #f1f5f9 !important;
 }
 
-.dark .bg-slate-50 {
-  background-color: #1a2336 !important;
-  border-color: #2a3854 !important;
-  color: #cbd5e1 !important;
-}
-
 .dark header {
-  background-color: rgba(21, 28, 44, 0.9) !important;
+  background-color: rgba(21, 28, 44, 0.85) !important;
   border-color: #26334d !important;
 }
 
@@ -128,27 +122,24 @@ h1, h2, h3, h4, h5, h6 {
   color: #e2e8f0 !important;
 }
 
+.dark [class*="text-[#0f172a]"],
 .dark .text-slate-900,
-.dark .text-slate-800,
-.dark [class*="text-[#0f172a]"] {
+.dark .text-slate-800 {
   color: #f8fafc !important;
 }
 
+.dark [class*="text-[#475569]"],
 .dark .text-slate-700,
-.dark .text-slate-600,
-.dark [class*="text-[#475569]"] {
+.dark .text-slate-600 {
   color: #cbd5e1 !important;
 }
 
-.dark .text-slate-500,
-.dark [class*="text-[#64748b]"] {
+.dark [class*="text-[#64748b]"],
+.dark .text-slate-500 {
   color: #94a3b8 !important;
 }
 
-.dark .border-slate-200,
-.dark .border-slate-200\/80,
-.dark .border-slate-200\/70,
-.dark .border-slate-100 {
+.dark [class*="border-slate-"] {
   border-color: #26334d !important;
 }
 
@@ -169,9 +160,28 @@ h1, h2, h3, h4, h5, h6 {
   border-color: #334155 !important;
 }
 
+.dark select option {
+  background-color: #151c2c !important;
+  color: #f8fafc !important;
+}
+
 .dark .glass {
-  background: rgba(21, 28, 44, 0.85);
-  border-color: rgba(51, 65, 85, 0.8);
+  background: rgba(21, 28, 44, 0.85) !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .hero-aurora {
+  background-image: 
+    radial-gradient(1000px 500px at 15% -10%, rgba(11, 98, 69, 0.25), transparent),
+    radial-gradient(800px 420px at 90% 0%, rgba(202, 154, 40, 0.2), transparent) !important;
+  background-color: #0f172a !important;
+}
+
+/* Ensure vibrant CTA buttons keep white text in dark mode */
+.dark button.bg-\[\#0b6245\],
+.dark a.bg-\[\#0b6245\] {
+  color: #ffffff !important;
 }
 
 @media print {

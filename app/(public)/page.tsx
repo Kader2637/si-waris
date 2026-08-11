@@ -67,7 +67,7 @@ const FAQ = [
   },
   {
     q: "Apakah hasil perhitungan ini sah secara hukum?",
-    a: "Hasil SI-WARIS bersifat simulasi edukatif. Untuk kepastian hukum, hasil perlu dikuatkan melalui penetapan Pengadilan Agama, Pengadilan Negeri, atau akta notaris.",
+    a: "Hasil E-MAWARIST bersifat simulasi edukatif. Untuk kepastian hukum, hasil perlu dikuatkan melalui penetapan Pengadilan Agama, Pengadilan Negeri, atau akta notaris.",
   },
   {
     q: "Apa itu Legitieme Portie?",
@@ -83,7 +83,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] font-sans antialiased">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* HERO SECTION */}
       <section className="hero-aurora relative overflow-hidden border-b border-slate-200/70 pt-10 pb-20 sm:py-24">
@@ -104,7 +104,7 @@ export default function HomePage() {
               </h1>
               
               <p className="max-w-xl text-base sm:text-lg leading-relaxed text-[#475569] font-normal">
-                SI-WARIS membantu Anda mensimulasikan pembagian harta warisan berdasarkan tiga sistem hukum yang berlaku di Indonesia — Syariah (Faraidh), KUHPerdata, dan Adat Jawa — lengkap dengan visualisasi dan laporan resmi.
+                E-MAWARIST membantu Anda mensimulasikan pembagian harta warisan berdasarkan tiga sistem hukum yang berlaku di Indonesia — Syariah (Faraidh), KUHPerdata, dan Adat Jawa — lengkap dengan visualisasi dan laporan resmi.
               </p>
               
               <div className="pt-2 flex flex-wrap gap-3">
@@ -286,7 +286,7 @@ export default function HomePage() {
               href="/tentang" 
               className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-[#ca9a28] hover:bg-[#a87e1c] text-white text-sm font-semibold rounded-full shadow-md transition-all no-underline"
             >
-              Tentang SI-WARIS
+              Tentang E-MAWARIST
             </Link>
           </ScrollReveal>
 

@@ -78,7 +78,7 @@ export default function PerdataPage() {
     doc.setFontSize(18);
     doc.text("LAPORAN PEMBAGIAN WARIS KUHPERDATA (BW)", 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text(`Platform SI-WARIS — ${dateStr}`, 105, 26, { align: "center" });
+    doc.text(`Platform E-MAWARIST — ${dateStr}`, 105, 26, { align: "center" });
     doc.line(20, 30, 190, 30);
 
     doc.setFontSize(11);

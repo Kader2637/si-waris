@@ -51,7 +51,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc] text-[#0f172a] font-sans antialiased">
+    <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* PUBLIC NAVBAR TRANSLUCENT GLASS (AGAK TRANSPARAN DENGAN BACKDROP BLUR) */}
       <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/65 dark:bg-[#151c2c]/70 backdrop-blur-xl shadow-2xs transition-colors">
@@ -64,7 +64,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </span>
             <span className="leading-none">
               <span className="block text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans whitespace-nowrap">
-                SI-<span className="text-[#ca9a28]">WARIS</span>
+                E-<span className="text-[#ca9a28]">MAWARIST</span>
               </span>
               <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
                 KALKULATOR WARIS
@@ -80,10 +80,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors no-underline ${
+                  className={`whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all no-underline ${
                     isActive
-                      ? "bg-[#dcfce7]/90 text-[#0b6245] font-semibold dark:bg-[#0b6245]/20 dark:text-emerald-400 font-bold"
-                      : "text-[#64748b] dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-800 hover:text-slate-900"
+                      ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-[#34d399] font-bold shadow-2xs ring-1 ring-[#0b6245]/20 dark:ring-[#34d399]/30"
+                      : "text-[#64748b] dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   {l.label}
@@ -97,7 +97,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="grid size-8 place-items-center text-slate-500 hover:text-slate-900 dark:hover:bg-slate-800 rounded-md hover:bg-slate-100/70 transition-colors cursor-pointer"
+              className="grid size-8 place-items-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-400 rounded-md hover:bg-slate-100/70 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               aria-label="Toggle Dark Mode"
             >
               {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500" />}
@@ -105,21 +105,21 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
             <Link
               href="/admin/dashboard"
-              className="hidden md:inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-md border border-slate-200/90 dark:border-slate-700 bg-white/80 dark:bg-slate-800 px-3 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 transition-colors no-underline backdrop-blur-sm"
+              className="hidden md:inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-md border border-slate-200/90 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-3 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors no-underline backdrop-blur-sm"
             >
-              <LogIn className="size-3.5 text-slate-500" /> Login Admin
+              <LogIn className="size-3.5 text-slate-500 dark:text-slate-400" /> Login Admin
             </Link>
 
             <Link
               href="/kalkulator"
               className="hidden sm:inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-full bg-[#0b6245] px-3.5 text-xs font-medium text-white shadow-md hover:bg-[#084b34] transition-colors no-underline"
             >
-              <Calculator className="size-3.5" /> Mulai Simulasi Waris
+              <Calculator className="size-3.5 text-white" /> Mulai Simulasi Waris
             </Link>
 
             {/* Mobile Drawer Button */}
             <button
-              className="lg:hidden p-1.5 text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100"
+              className="lg:hidden p-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Buka menu"
             >
@@ -131,7 +131,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
         {/* Mobile Navigation Drawer */}
         {mobileOpen && (
-          <div className="lg:hidden border-b border-slate-200 bg-white/95 dark:bg-[#151c2c] px-4 py-4 space-y-3 backdrop-blur-md">
+          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#151c2c] px-4 py-4 space-y-3 backdrop-blur-md">
             <nav className="flex flex-col gap-1">
               {navLinks.map((l) => {
                 const isActive = pathname === l.href;
@@ -142,8 +142,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     onClick={() => setMobileOpen(false)}
                     className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors no-underline ${
                       isActive
-                        ? "bg-[#dcfce7] text-[#0b6245]"
-                        : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-[#34d399] font-bold border-l-4 border-[#0b6245] dark:border-[#34d399]"
+                        : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
                     {l.label}
@@ -187,7 +187,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </span>
               <span className="leading-none">
                 <span className="block text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
-                  SI-<span className="text-[#ca9a28]">WARIS</span>
+                  E-<span className="text-[#ca9a28]">MAWARIST</span>
                 </span>
                 <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono">
                   KALKULATOR WARIS
@@ -196,7 +196,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </Link>
             
             <p className="max-w-sm text-xs leading-relaxed text-[#64748b] dark:text-slate-400 font-normal">
-              SI-WARIS adalah sistem informasi dan kalkulator pembagian waris yang membantu masyarakat
+              E-MAWARIST adalah sistem informasi dan kalkulator pembagian waris yang membantu masyarakat
               memahami hak waris berdasarkan Hukum Syariah (Faraidh), KUHPerdata, dan Hukum Adat Jawa secara
               transparan dan mudah dipahami.
             </p>
@@ -219,7 +219,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900 dark:text-slate-100 font-mono">Kontak & Alamat</h3>
             <ul className="mt-4 space-y-3 text-xs text-[#64748b] dark:text-slate-400 font-normal">
               <li className="flex items-start gap-2">
-                <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> halo@si-waris.id
+                <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> halo@e-mawarist.id
               </li>
               <li className="flex items-start gap-2">
                 <Phone className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> (021) 5555-1945
@@ -234,7 +234,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
         <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-[11px] text-[#64748b] dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 font-normal">
-            <p>&copy; {new Date().getFullYear()} SI-WARIS. Seluruh hak cipta dilindungi.</p>
+            <p>&copy; {new Date().getFullYear()} E-MAWARIST. Seluruh hak cipta dilindungi.</p>
             <p>
               Hasil perhitungan bersifat simulasi edukatif — untuk kepastian hukum konsultasikan dengan
               ahli faraidh atau notaris.

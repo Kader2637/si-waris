@@ -77,7 +77,7 @@ export default function AdminKalkulatorPage() {
     doc.setFontSize(20);
     doc.text("LAPORAN PEMBAGIAN WARIS ADMIN", 105, 20, { align: "center" });
     doc.setFontSize(10);
-    doc.text("SI-WARIS Engine Simulation", 105, 27, { align: "center" });
+    doc.text("E-MAWARIST Engine Simulation", 105, 27, { align: "center" });
     doc.line(20, 32, 190, 32);
 
     doc.setFontSize(11);
