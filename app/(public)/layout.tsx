@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Scale,
   Menu,
@@ -19,6 +19,9 @@ import {
   RefreshCw,
   Clock,
   Server,
+  ChevronDown,
+  BookOpen,
+  Building2,
 } from "lucide-react";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -26,6 +29,25 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isMaintenance, setIsMaintenance] = useState(false);
+
+  // Dropdown combobox states & refs
+  const [hukumOpen, setHukumOpen] = useState(false);
+  const [simulasiOpen, setSimulasiOpen] = useState(false);
+  const hukumRef = useRef<HTMLDivElement>(null);
+  const simulasiRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (hukumRef.current && !hukumRef.current.contains(event.target as Node)) {
+        setHukumOpen(false);
+      }
+      if (simulasiRef.current && !simulasiRef.current.contains(event.target as Node)) {
+        setSimulasiOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -56,151 +78,19 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     }
   };
 
-  // MAINTENANCE MODE VIEW
-  if (isMaintenance) {
-    return (
-      <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased flex flex-col justify-between hero-aurora">
-        
-        {/* TOP BAR IN MAINTENANCE MODE */}
-        <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/65 dark:bg-[#151c2c]/70 backdrop-blur-xl shadow-2xs">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-            <Link href="/" className="shrink-0 flex items-center gap-2.5 no-underline">
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#0b6245] text-white shadow-2xs">
-                <Scale className="size-4.5" />
-              </span>
-              <span className="leading-none">
-                <span className="block text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans whitespace-nowrap">
-                  E-<span className="text-[#ca9a28]">MAWARIST</span>
-                </span>
-                <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
-                  SYSTEM MAINTENANCE
-                </span>
-              </span>
-            </Link>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={toggleDarkMode}
-                className="grid size-8 place-items-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-400 rounded-md hover:bg-slate-100/70 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                aria-label="Toggle Dark Mode"
-              >
-                {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500" />}
-              </button>
-
-              <Link
-                href="/admin/dashboard"
-                className="inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-md border border-slate-200/90 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-3 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors no-underline backdrop-blur-sm"
-              >
-                <LogIn className="size-3.5 text-slate-500 dark:text-slate-400" /> Portal Admin
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        {/* MAIN MAINTENANCE CARD CONTAINER */}
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-24 pb-12">
-          <div className="w-full max-w-2xl text-center space-y-6">
-            
-            {/* Maintenance Hero Glass Card */}
-            <div className="glass rounded-3xl p-8 sm:p-12 space-y-6 border border-slate-200/80 dark:border-slate-800 shadow-2xl relative overflow-hidden">
-              
-              {/* Top Status Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 shadow-2xs">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-full bg-amber-500" />
-                </span>
-                PEMELIHARAAN SISTEM BERLANGSUNG
-              </div>
-
-              {/* Icon Badge */}
-              <div className="mx-auto size-20 rounded-3xl bg-gradient-to-tr from-[#0b6245]/20 to-[#ca9a28]/20 dark:from-[#0b6245]/40 dark:to-[#ca9a28]/40 border border-[#0b6245]/30 flex items-center justify-center shadow-lg">
-                <Wrench className="size-10 text-[#0b6245] dark:text-emerald-400 animate-bounce" />
-              </div>
-
-              {/* Main Heading */}
-              <div className="space-y-2">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-                  Situs Web Sedang Dalam Pemeliharaan
-                </h1>
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-lg mx-auto leading-relaxed font-normal">
-                  Kami sedang melakukan peningkatan performa dan pembaruan rutin pada platform <strong className="text-[#0b6245] dark:text-emerald-400">E-MAWARIST</strong> untuk kenyamanan & ketepatan simulasi waris Anda.
-                </p>
-              </div>
-
-              {/* Status Metrics Box */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-800/60 text-left">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase font-mono">STATUS SERVER</div>
-                  <div className="text-xs font-bold text-amber-600 dark:text-amber-400 mt-0.5 flex items-center gap-1.5">
-                    <Server className="size-3.5" /> Maintenance Mode
-                  </div>
-                </div>
-                <div className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-800/60 text-left">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase font-mono">ESTIMASI SELESAI</div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 flex items-center gap-1.5">
-                    <Clock className="size-3.5 text-[#ca9a28]" /> Segera Membaik
-                  </div>
-                </div>
-                <div className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-800/60 text-left">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase font-mono">KEAMANAN DATA</div>
-                  <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 flex items-center gap-1.5">
-                    <ShieldAlert className="size-3.5" /> Aman 100%
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions Buttons */}
-              <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => window.location.reload()}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-bold rounded-full shadow-lg transition-all cursor-pointer"
-                >
-                  <RefreshCw className="size-4" /> Coba Muat Ulang Halaman
-                </button>
-                
-                <Link
-                  href="/admin/dashboard"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-full shadow-sm hover:bg-slate-50 transition-all no-underline"
-                >
-                  <LogIn className="size-4 text-slate-500" /> Masuk Portal Admin
-                </Link>
-              </div>
-
-            </div>
-
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
-              &copy; {new Date().getFullYear()} E-MAWARIST Platform Waris Terpadu. Seluruh hak cipta dilindungi.
-            </p>
-
-          </div>
-        </main>
-
-      </div>
-    );
-  }
-
-  const navLinks = [
-    { href: "/", label: "Beranda" },
-    { href: "/syariah", label: "Syariah" },
-    { href: "/perdata", label: "Perdata" },
-    { href: "/adat-jawa", label: "Adat Jawa" },
-    { href: "/kalkulator", label: "Kalkulator Terpadu" },
-    { href: "/tentang", label: "Tentang Kami" },
-  ];
+  const isHukumActive = ["/syariah", "/perdata", "/adat-jawa"].includes(pathname);
+  const isSimulasiActive = ["/konversi-harta", "/kalkulator"].includes(pathname);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
-      {/* PUBLIC NAVBAR TRANSLUCENT GLASS (AGAK TRANSPARAN DENGAN BACKDROP BLUR) */}
-      <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/65 dark:bg-[#151c2c]/70 backdrop-blur-xl shadow-2xs transition-colors">
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
+      {/* PUBLIC NAVBAR TRANSLUCENT GLASS */}
+      <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/80 dark:bg-[#151c2c]/85 backdrop-blur-xl shadow-xs transition-colors">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           
-          {/* Logo Badge & Brand Name */}
-          <Link href="/" className="shrink-0 flex items-center gap-2.5 no-underline">
-            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#0b6245] text-white shadow-2xs">
+          {/* Left Brand / Logo */}
+          <Link href="/" className="shrink-0 flex items-center gap-2.5 no-underline group">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#0b6245] text-white shadow-2xs group-hover:scale-105 transition-transform">
               <Scale className="size-4.5" />
             </span>
             <span className="leading-none">
@@ -213,32 +103,174 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="ml-4 hidden flex-1 items-center gap-1 lg:flex">
-            {navLinks.map((l) => {
-              const isActive = pathname === l.href;
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={`whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all no-underline ${
-                    isActive
-                      ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-[#34d399] font-bold shadow-2xs ring-1 ring-[#0b6245]/20 dark:ring-[#34d399]/30"
-                      : "text-[#64748b] dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  {l.label}
-                </Link>
-              );
-            })}
+          {/* Center Desktop Navigation Links & Dropdowns */}
+          <nav className="hidden lg:flex items-center gap-6">
+            
+            {/* 1. BERANDA */}
+            <Link
+              href="/"
+              className={`text-sm font-medium transition-colors no-underline ${
+                pathname === "/"
+                  ? "text-[#0b6245] dark:text-[#34d399] font-bold"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              Beranda
+            </Link>
+
+            {/* 2. COMBOBOX DROPDOWN: SISTEM HUKUM */}
+            <div
+              className="relative py-2"
+              ref={hukumRef}
+              onMouseEnter={() => {
+                setHukumOpen(true);
+                setSimulasiOpen(false);
+              }}
+              onMouseLeave={() => setHukumOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setHukumOpen(!hukumOpen);
+                  setSimulasiOpen(false);
+                }}
+                className={`inline-flex items-center gap-1 text-sm font-medium transition-colors cursor-pointer ${
+                  isHukumActive
+                    ? "text-[#0b6245] dark:text-[#34d399] font-bold"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <span>Sistem Hukum</span>
+                <ChevronDown className={`size-4 transition-transform duration-200 ${hukumOpen ? "rotate-180 text-[#0b6245]" : "opacity-60"}`} />
+              </button>
+
+              {hukumOpen && (
+                <div className="absolute top-full left-0 mt-0 w-56 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200/90 dark:border-slate-800 p-2 shadow-xl backdrop-blur-2xl space-y-1 z-50 animate-in fade-in slide-in-from-top-2">
+                  <Link
+                    href="/syariah"
+                    onClick={() => setHukumOpen(false)}
+                    className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold no-underline transition-colors ${
+                      pathname === "/syariah"
+                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span>Hukum Syariah (Faraidh)</span>
+                    <span className="text-[9px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded font-mono">Islam</span>
+                  </Link>
+
+                  <Link
+                    href="/perdata"
+                    onClick={() => setHukumOpen(false)}
+                    className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold no-underline transition-colors ${
+                      pathname === "/perdata"
+                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span>Hukum Perdata (BW)</span>
+                    <span className="text-[9px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded font-mono">KUHPd</span>
+                  </Link>
+
+                  <Link
+                    href="/adat-jawa"
+                    onClick={() => setHukumOpen(false)}
+                    className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold no-underline transition-colors ${
+                      pathname === "/adat-jawa"
+                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <span>Hukum Adat Jawa</span>
+                    <span className="text-[9px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded font-mono">Tradisi</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* 3. COMBOBOX DROPDOWN: SIMULASI & TAKSIRAN */}
+            <div
+              className="relative py-2"
+              ref={simulasiRef}
+              onMouseEnter={() => {
+                setSimulasiOpen(true);
+                setHukumOpen(false);
+              }}
+              onMouseLeave={() => setSimulasiOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setSimulasiOpen(!simulasiOpen);
+                  setHukumOpen(false);
+                }}
+                className={`inline-flex items-center gap-1 text-sm font-medium transition-colors cursor-pointer ${
+                  isSimulasiActive
+                    ? "text-[#0b6245] dark:text-[#34d399] font-bold"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <span>Simulasi & Taksiran</span>
+                <ChevronDown className={`size-4 transition-transform duration-200 ${simulasiOpen ? "rotate-180 text-[#ca9a28]" : "opacity-60"}`} />
+              </button>
+
+              {simulasiOpen && (
+                <div className="absolute top-full left-0 mt-0 w-64 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200/90 dark:border-slate-800 p-2 shadow-xl backdrop-blur-2xl space-y-1 z-50 animate-in fade-in slide-in-from-top-2">
+                  <Link
+                    href="/konversi-harta"
+                    onClick={() => setSimulasiOpen(false)}
+                    className={`flex items-start gap-3 rounded-xl p-2.5 text-xs no-underline transition-colors ${
+                      pathname === "/konversi-harta"
+                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <Building2 className="size-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white">Konversi Harta (ZNT & PUPR)</div>
+                      <div className="text-[10px] text-slate-500 font-normal">Taksiran tanah, rumah, mobil, emas</div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/kalkulator"
+                    onClick={() => setSimulasiOpen(false)}
+                    className={`flex items-start gap-3 rounded-xl p-2.5 text-xs no-underline transition-colors ${
+                      pathname === "/kalkulator"
+                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
+                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <Calculator className="size-4 text-[#0b6245] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white">Kalkulator Terpadu</div>
+                      <div className="text-[10px] text-slate-500 font-normal">Komparasi 3 hukum bersamaan</div>
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* 4. TENTANG KAMI */}
+            <Link
+              href="/tentang"
+              className={`text-sm font-medium transition-colors no-underline ${
+                pathname === "/tentang"
+                  ? "text-[#0b6245] dark:text-[#34d399] font-bold"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              Tentang Kami
+            </Link>
+
           </nav>
 
-          {/* Header Action Buttons */}
-          <div className="ml-auto flex items-center gap-2">
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="grid size-8 place-items-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-400 rounded-md hover:bg-slate-100/70 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="grid size-9 place-items-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               aria-label="Toggle Dark Mode"
             >
               {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500" />}
@@ -246,21 +278,21 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
             <Link
               href="/admin/dashboard"
-              className="hidden md:inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-md border border-slate-200/90 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-3 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors no-underline backdrop-blur-sm"
+              className="hidden md:inline-flex h-9 whitespace-nowrap items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-all no-underline"
             >
-              <LogIn className="size-3.5 text-slate-500 dark:text-slate-400" /> Login Admin
+              <LogIn className="size-3.5 text-slate-500 dark:text-slate-400" /> Admin
             </Link>
 
             <Link
               href="/kalkulator"
-              className="hidden sm:inline-flex h-8 whitespace-nowrap items-center justify-center gap-1.5 rounded-full bg-[#0b6245] px-3.5 text-xs font-medium text-white shadow-md hover:bg-[#084b34] transition-colors no-underline"
+              className="hidden sm:inline-flex h-9 whitespace-nowrap items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0b6245] to-emerald-700 px-4 text-xs font-bold text-white shadow-md shadow-[#0b6245]/20 hover:shadow-lg transition-all no-underline scale-102 hover:scale-105"
             >
-              <Calculator className="size-3.5 text-white" /> Mulai Simulasi Waris
+              <Calculator className="size-3.5" /> Mulai Simulasi
             </Link>
 
             {/* Mobile Drawer Button */}
             <button
-              className="lg:hidden p-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Buka menu"
             >
@@ -272,42 +304,82 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
         {/* Mobile Navigation Drawer */}
         {mobileOpen && (
-          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#151c2c] px-4 py-4 space-y-3 backdrop-blur-md">
-            <nav className="flex flex-col gap-1">
-              {navLinks.map((l) => {
-                const isActive = pathname === l.href;
-                return (
+          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#151c2c] px-4 py-4 space-y-4 backdrop-blur-xl shadow-xl">
+            <nav className="flex flex-col gap-1.5">
+              <Link
+                href="/"
+                onClick={() => setMobileOpen(false)}
+                className={`rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all no-underline ${
+                  pathname === "/" ? "bg-[#0b6245]/10 text-[#0b6245] dark:text-emerald-400 font-extrabold" : "text-slate-700 dark:text-slate-300"
+                }`}
+              >
+                Beranda
+              </Link>
+
+              <div className="pt-2">
+                <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#0b6245] dark:text-emerald-400 font-mono">
+                  Sistem Hukum
+                </div>
+                <div className="mt-1 space-y-1">
                   <Link
-                    key={l.href}
-                    href={l.href}
+                    href="/syariah"
                     onClick={() => setMobileOpen(false)}
-                    className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors no-underline ${
-                      isActive
-                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-[#34d399] font-bold border-l-4 border-[#0b6245] dark:border-[#34d399]"
-                        : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
+                    className="flex items-center justify-between rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
-                    {l.label}
+                    <span>• Hukum Syariah (Faraidh)</span>
+                    <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">Islam</span>
                   </Link>
-                );
-              })}
+                  <Link
+                    href="/perdata"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <span>• Hukum Perdata (BW)</span>
+                    <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">KUHPd</span>
+                  </Link>
+                  <Link
+                    href="/adat-jawa"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <span>• Hukum Adat Jawa</span>
+                    <span className="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Tradisi</span>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#ca9a28] font-mono">
+                  Simulasi & Taksiran
+                </div>
+                <div className="mt-1 space-y-1">
+                  <Link
+                    href="/konversi-harta"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <Building2 className="size-3.5 text-amber-600" />
+                    <span>Konversi Harta (ZNT & PUPR)</span>
+                  </Link>
+                  <Link
+                    href="/kalkulator"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <Calculator className="size-3.5 text-[#0b6245]" />
+                    <span>Kalkulator Terpadu (3 Hukum)</span>
+                  </Link>
+                </div>
+              </div>
+
+              <Link
+                href="/tentang"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 no-underline mt-2"
+              >
+                Tentang Kami
+              </Link>
             </nav>
-            <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
-              <Link
-                href="/kalkulator"
-                onClick={() => setMobileOpen(false)}
-                className="w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#0b6245] text-white text-xs font-medium no-underline"
-              >
-                <Calculator className="size-3.5" /> Mulai Simulasi Waris
-              </Link>
-              <Link
-                href="/admin/dashboard"
-                onClick={() => setMobileOpen(false)}
-                className="w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-slate-300 bg-white text-slate-700 text-xs font-medium no-underline"
-              >
-                <LogIn className="size-3.5" /> Login Admin
-              </Link>
-            </div>
           </div>
         )}
       </header>
@@ -346,7 +418,15 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <div>
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900 dark:text-slate-100 font-mono">Navigasi Utama</h3>
             <ul className="mt-4 space-y-2 text-xs text-[#64748b] dark:text-slate-400 font-normal">
-              {navLinks.map((link) => (
+              {[
+                { href: "/", label: "Beranda" },
+                { href: "/syariah", label: "Hukum Syariah (Faraidh)" },
+                { href: "/perdata", label: "Hukum Perdata (BW)" },
+                { href: "/adat-jawa", label: "Hukum Adat Jawa" },
+                { href: "/konversi-harta", label: "Konversi Harta (ZNT & PUPR)" },
+                { href: "/kalkulator", label: "Kalkulator Terpadu" },
+                { href: "/tentang", label: "Tentang Kami" },
+              ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="hover:text-[#0b6245] transition-colors no-underline">
                     {link.label}
@@ -363,10 +443,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> halo@e-mawarist.id
               </li>
               <li className="flex items-start gap-2">
-                <Phone className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> (021) 5555-1945
+                <Phone className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> (0341) 555-1945
               </li>
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> Jl. Kebon Sirih No. 17, Jakarta Pusat
+                <MapPin className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> Jl. Veteran No. 8, Ketawanggede, Lowokwaru, Kota Malang, Jawa Timur 65145
               </li>
             </ul>
           </div>

@@ -15,6 +15,7 @@ import {
   Sparkles,
   Moon,
   Sun,
+  Building2,
 } from "lucide-react";
 
 const NAV_MENU = [
@@ -25,6 +26,7 @@ const NAV_MENU = [
 ];
 
 const NAV_TOOLS = [
+  { href: "/admin/konversi-harta", label: "Konversi & Database", icon: Building2, badge: "ZNT" },
   { href: "/admin/kalkulator", label: "Kalkulator Cepat", icon: Calculator },
   { href: "/admin/panduan", label: "Panduan Hukum", icon: BookOpen },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },

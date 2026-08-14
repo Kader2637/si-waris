@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ScrollReveal from "@/components/ScrollReveal";
 import AudioExplanation from "@/components/AudioExplanation";
-import { ArrowLeft, ArrowRight, Download, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, RotateCcw, Lock, Building2 } from "lucide-react";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
 
 const METODE = [
@@ -33,11 +34,19 @@ const formatIDR = (val: number) => {
 export default function AdatJawaPage() {
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [namaPewaris, setNamaPewaris] = useState("");
-  const [totalHarta, setTotalHarta] = useState("");
+  const [hartaKonversi, setHartaKonversi] = useState(0);
+  const [hartaTunai, setHartaTunai] = useState("");
   const [hutang, setHutang] = useState("");
   const [wasiat, setWasiat] = useState("");
   const [metodeAdat, setMetodeAdat] = useState<"SEPIKUL_SEGENDONGAN" | "KUM_KUM_KUPAT">("SEPIKUL_SEGENDONGAN");
   const [potongGonoGini, setPotongGonoGini] = useState(true);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("emawarist_total_harta_kotor");
+    if (saved && parseInt(saved) > 0) {
+      setHartaKonversi(parseInt(saved));
+    }
+  }, []);
 
   const [ahliWaris, setAhliWaris] = useState<{ nama: string; hubungan: string }[]>([]);
 
@@ -51,7 +60,9 @@ export default function AdatJawaPage() {
     setAhliWaris(arr);
   };
 
-  const hartaKotorVal = parseNum(totalHarta);
+  const hartaKonversiVal = hartaKonversi;
+  const hartaTunaiVal = parseNum(hartaTunai);
+  const hartaKotorVal = hartaKonversiVal + hartaTunaiVal;
   const hutangVal = parseNum(hutang);
   const wasiatVal = parseNum(wasiat);
 
@@ -112,7 +123,7 @@ export default function AdatJawaPage() {
 
   return (
     <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
-      
+
       {/* PAGE HERO WITH EXACT WARIS-WISE STYLE */}
       <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
@@ -129,7 +140,7 @@ export default function AdatJawaPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 space-y-8">
-        
+
         {/* AUDIO EXPLANATION WIDGET */}
         <ScrollReveal>
           <AudioExplanation
@@ -164,7 +175,7 @@ export default function AdatJawaPage() {
 
         {/* WIZARD CONTAINER */}
         <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 sm:p-8 shadow-2xs space-y-8">
-          
+
           <div className="flex items-center justify-between border-b border-slate-100 pb-6">
             <div className="flex items-center gap-2">
               {[
@@ -174,13 +185,12 @@ export default function AdatJawaPage() {
               ].map((s) => (
                 <span
                   key={s.idx}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
-                    step === s.idx
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${step === s.idx
                       ? "bg-[oklch(0.4_0.093_158)] text-white"
                       : step > s.idx
-                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
-                      : "bg-slate-100 text-slate-400"
-                  }`}
+                        ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
+                        : "bg-slate-100 text-slate-400"
+                    }`}
                 >
                   {s.label}
                 </span>
@@ -191,7 +201,7 @@ export default function AdatJawaPage() {
               type="button"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
               onClick={() => {
-                setTotalHarta("");
+                setHartaTunai("");
                 setHutang("");
                 setWasiat("");
                 setNamaPewaris("");
@@ -217,23 +227,56 @@ export default function AdatJawaPage() {
                 />
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* 1. Harta Hasil Konversi (Readonly) */}
                 <div>
-                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Total Harta Peninggalan</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                      1. Harta Hasil Konversi (Readonly)
+                    </label>
+                    <Link
+                      href="/konversi-harta"
+                      className="text-[10px] font-bold text-[#0b6245] dark:text-emerald-400 hover:underline flex items-center gap-1 no-underline"
+                    >
+                      <Building2 className="size-3" /> Edit Konversi Harta
+                    </Link>
+                  </div>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
-                    placeholder="Rp 0"
-                    value={totalHarta ? Number(totalHarta.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
-                    onChange={(e) => setTotalHarta(e.target.value)}
+                    readOnly
+                    disabled
+                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 px-4 text-sm font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed outline-none"
+                    value={formatIDR(hartaKonversiVal)}
                   />
+                  <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                    <Lock className="size-3" /> Terimpor dari Konversi Harta (Terkunci)
+                  </span>
                 </div>
 
+                {/* 2. Harta Tunai / Tabungan Kas Mandiri (Editable) */}
                 <div>
-                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Hutang Pewaris</label>
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block mb-1.5">
+                    2. Harta Tunai / Tabungan Kas Mandiri (Rp)
+                  </label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    placeholder="Masukkan nominal tunai/kas"
+                    value={hartaTunai ? Number(hartaTunai.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
+                    onChange={(e) => setHartaTunai(e.target.value)}
+                  />
+                  <span className="text-[10px] text-slate-400 block mt-1">
+                    Nominal tunai / uang kas tambahan yang belum ada di konversi
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1.5">Hutang Pewaris (Rp)</label>
+                  <input
+                    type="text"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
                     placeholder="Rp 0"
                     value={hutang ? Number(hutang.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setHutang(e.target.value)}
@@ -241,10 +284,10 @@ export default function AdatJawaPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Wasiat</label>
+                  <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1.5">Wasiat Pewaris (Rp)</label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-mono focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
                     placeholder="Rp 0"
                     value={wasiat ? Number(wasiat.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setWasiat(e.target.value)}
@@ -252,11 +295,22 @@ export default function AdatJawaPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-[oklch(0.4_0.093_158/0.1)] border border-[oklch(0.4_0.093_158/0.2)] p-5">
-                <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Harta Bersih Siap Dibagi</p>
-                <p className="text-2xl font-extrabold text-[oklch(0.4_0.093_158)] font-mono mt-1">
-                  {formatIDR(Math.max(0, hartaKotorVal - hutangVal - wasiatVal))}
-                </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div className="rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4 space-y-1">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Total Harta Kotor (Tirkah)</p>
+                  <p className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                    {formatIDR(hartaKotorVal)}
+                  </p>
+                  <p className="text-[10px] text-slate-400">Konversi ({formatIDR(hartaKonversiVal)}) + Tunai ({formatIDR(hartaTunaiVal)})</p>
+                </div>
+
+                <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-1">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#0b6245] dark:text-emerald-400 font-mono">Harta Bersih Siap Dibagi</p>
+                  <p className="text-xl font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono">
+                    {formatIDR(Math.max(0, hartaKotorVal - hutangVal - wasiatVal))}
+                  </p>
+                  <p className="text-[10px] text-slate-500">Setelah dikurangi Hutang ({formatIDR(hutangVal)}) & Wasiat ({formatIDR(wasiatVal)})</p>
+                </div>
               </div>
             </div>
           )}
@@ -273,18 +327,17 @@ export default function AdatJawaPage() {
                     <label
                       key={m.value}
                       onClick={() => setMetodeAdat(m.value)}
-                      className={`flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 transition-all shadow-2xs ${
-                        metodeAdat === m.value
+                      className={`flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 transition-all shadow-2xs ${metodeAdat === m.value
                           ? "border-[oklch(0.4_0.093_158)] bg-[oklch(0.4_0.093_158/0.05)] ring-2 ring-[oklch(0.4_0.093_158/0.2)]"
                           : "border-slate-200 bg-white hover:border-emerald-300"
-                      }`}
+                        }`}
                     >
                       <span className="flex items-center gap-2">
-                        <input 
-                          type="radio" 
-                          name="metode" 
-                          checked={metodeAdat === m.value} 
-                          onChange={() => setMetodeAdat(m.value)} 
+                        <input
+                          type="radio"
+                          name="metode"
+                          checked={metodeAdat === m.value}
+                          onChange={() => setMetodeAdat(m.value)}
                           className="accent-[oklch(0.4_0.093_158)]"
                         />
                         <span className="text-sm font-bold text-slate-900">{m.judul}</span>
@@ -299,10 +352,10 @@ export default function AdatJawaPage() {
 
               <div>
                 <label className="flex items-center gap-2.5 p-4 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={potongGonoGini} 
-                    onChange={(e) => setPotongGonoGini(e.target.checked)} 
+                  <input
+                    type="checkbox"
+                    checked={potongGonoGini}
+                    onChange={(e) => setPotongGonoGini(e.target.checked)}
                     className="rounded text-[oklch(0.4_0.093_158)] focus:ring-[oklch(0.4_0.093_158)] cursor-pointer"
                   />
                   <span>Potong Gono-Gini (50% untuk Suami/Istri sebelum sisa harta dibagi kepada anak)</span>
@@ -434,8 +487,22 @@ export default function AdatJawaPage() {
             {step < 2 && (
               <button
                 type="button"
-                onClick={() => setStep((s) => (s + 1) as any)}
-                className="px-6 py-3 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-md cursor-pointer"
+                disabled={(step === 0 && (!namaPewaris.trim() || hartaKotorVal <= 0)) || (step === 1 && ahliWaris.length === 0)}
+                onClick={() => {
+                  if (step === 0 && (!namaPewaris.trim() || hartaKotorVal <= 0)) {
+                    alert("Silakan lengkapi Nama Pewaris dan Total Harta Peninggalan terlebih dahulu!");
+                    return;
+                  }
+                  if (step === 1 && ahliWaris.length === 0) {
+                    alert("Silakan tambahkan minimal 1 Ahli Waris terlebih dahulu!");
+                    return;
+                  }
+                  setStep((s) => (s + 1) as any);
+                }}
+                className={`px-6 py-3 text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-md transition-all ${(step === 0 && namaPewaris.trim() && hartaKotorVal > 0) || (step === 1 && ahliWaris.length > 0)
+                    ? "bg-[#0b6245] hover:bg-[#084b34] text-white cursor-pointer scale-102 hover:scale-105"
+                    : "bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed opacity-60"
+                  }`}
               >
                 Lanjut <ArrowRight className="size-4" />
               </button>
