@@ -507,7 +507,7 @@ export default function KonversiHartaPage() {
             
             {/* CARD 1: FORM TAMBAH ASET */}
             <ScrollReveal delay={150}>
-              <div className="glass rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 space-y-6 shadow-xl">
+              <div className="glass rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 space-y-6 shadow-xl relative z-30 overflow-visible">
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                   <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                     <Plus className="size-5 text-[#0b6245] dark:text-emerald-400" /> Tambah Aset Warisan Baru
@@ -575,7 +575,7 @@ export default function KonversiHartaPage() {
 
                   {/* PROPERTI SPECIFIC FORM: SEARCHABLE COMBOBOX 3-TINGKAT */}
                   {selectedKategori === "properti" && (
-                    <div className="p-4.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-4">
+                    <div className="p-4.5 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-4 relative z-30 overflow-visible">
                       {/* METODOLOGI PENILAIAN CALLOUT */}
                       <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-[#0b6245] dark:text-emerald-300 space-y-1">
                         <div className="font-bold flex items-center gap-1.5">

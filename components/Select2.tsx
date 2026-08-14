@@ -74,7 +74,7 @@ export default function Select2({
   };
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`relative ${open ? "z-50" : "z-10"} ${className}`} ref={containerRef}>
       {/* TRIGGER BUTTON */}
       <button
         type="button"
@@ -96,7 +96,7 @@ export default function Select2({
 
       {/* DROPDOWN POPOVER WITH SEARCH (SELECT2 STYLE) */}
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200 dark:border-slate-800 shadow-2xl z-[100] p-2 space-y-2 animate-in fade-in slide-in-from-top-2">
+        <div className="absolute top-full left-0 right-0 mt-1.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200 dark:border-slate-800 shadow-2xl z-[9999] p-2 space-y-2 animate-in fade-in slide-in-from-top-2">
           {/* SEARCH INPUT */}
           <div className="relative">
             <Search className="absolute left-3 top-2.5 size-3.5 text-slate-400" />
