@@ -481,10 +481,10 @@ export default function KonversiHartaPage() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  Portal Cek Peta Zonasi Pertanahan Digital (E-MAWARIST Spatial)
+                  Portal Cek Peta Zonasi Pertanahan Digital
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                  Ingin mengecek koordinat zona tanah persil Anda secara real-time dari peta digital? Gunakan portal Peta Geografis resmi.
+                  Ingin mengecek koordinat zona tanah persil Anda secara real-time? Gunakan portal Peta Pertanahan Geografis resmi.
                 </p>
               </div>
             </div>
@@ -494,7 +494,7 @@ export default function KonversiHartaPage() {
               rel="noopener noreferrer"
               className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-bold shadow-md transition-all no-underline cursor-pointer"
             >
-              <ExternalLink className="size-4" /> Buka Portal Peta Geografis
+              <ExternalLink className="size-4" /> Buka Peta Pertanahan Digital
             </a>
           </div>
         </ScrollReveal>
