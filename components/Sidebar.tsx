@@ -85,7 +85,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             </span>
             <span className="leading-none">
               <span className="block text-lg font-extrabold tracking-tight text-slate-900 font-sans">
-                SI-<span className="text-[#ca9a28]">WARIS</span>
+                E-<span className="text-[#ca9a28]">MAWARIST</span>
               </span>
               <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748b] font-mono">
                 ADMIN PORTAL

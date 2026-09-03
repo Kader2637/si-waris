@@ -252,7 +252,7 @@ export default function AdminLayout({
               </div>
               <div className="hidden md:block text-left leading-tight">
                 <div className="font-bold text-slate-900 dark:text-slate-100 text-xs">Admin Utama</div>
-                <div className="text-slate-400 text-[11px] font-mono">admin@siwaris.id</div>
+                <div className="text-slate-400 text-[11px] font-mono">admin@e-mawarist.id</div>
               </div>
             </div>
 
