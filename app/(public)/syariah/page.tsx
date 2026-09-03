@@ -28,14 +28,8 @@ const TEORI = [
   },
 ];
 
-const HUBUNGAN_OPTIONS = [
-  "Suami", "Istri",
-  "Anak Laki-laki", "Anak Perempuan",
-  "Cucu Laki-laki", "Cucu Perempuan",
-  "Ayah", "Ibu", "Kakek", "Nenek",
-  "Saudara Laki-laki Sekandung", "Saudara Perempuan Sekandung",
-  "Saudara Laki-laki Seibu", "Saudara Perempuan Seibu",
-];
+import Select2 from "@/components/Select2";
+import { HUBUNGAN_OPTIONS, GENDER_OPTIONS } from "@/lib/constants";
 
 const formatIDR = (val: number) => {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
@@ -226,14 +220,12 @@ export default function SyariahPage() {
 
                 <div>
                   <label className="text-xs font-medium text-slate-800 block mb-1.5">Jenis Kelamin Pewaris</label>
-                  <select
-                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-medium focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                  <Select2
+                    options={GENDER_OPTIONS}
                     value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                  >
-                    <option value="Laki-laki">Laki-laki (Suami / Ayah)</option>
-                    <option value="Perempuan">Perempuan (Istri / Ibu)</option>
-                  </select>
+                    onChange={(val) => setGender(val)}
+                    placeholder="Pilih Jenis Kelamin..."
+                  />
                 </div>
               </div>
 
@@ -357,16 +349,14 @@ export default function SyariahPage() {
                         />
                       </div>
 
-                      <div className="w-64">
-                        <select
-                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                      <div className="w-64 min-w-[220px]">
+                        <Select2
+                          options={HUBUNGAN_OPTIONS}
                           value={h.hubungan}
-                          onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
-                        >
-                          {HUBUNGAN_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
-                          ))}
-                        </select>
+                          onChange={(val) => updateHeir(i, "hubungan", val)}
+                          placeholder="Pilih Hubungan..."
+                          searchPlaceholder="Cari hubungan..."
+                        />
                       </div>
 
                       <button

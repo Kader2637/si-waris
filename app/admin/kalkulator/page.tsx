@@ -6,16 +6,9 @@ import autoTable from "jspdf-autotable";
 import { calculateFaraid } from "@/lib/faraidLogic";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
 import { calculatePerdata } from "@/lib/perdataLogic";
+import Select2 from "@/components/Select2";
+import { HUBUNGAN_OPTIONS, GENDER_OPTIONS, METODE_ADAT_OPTIONS } from "@/lib/constants";
 import { Calculator, Edit3, Plus, Trash2, FileDown, Sliders, Users, PieChart } from "lucide-react";
-
-const HUBUNGAN_OPTIONS = [
-  "Suami", "Istri",
-  "Anak Laki-laki", "Anak Perempuan",
-  "Cucu Laki-laki", "Cucu Perempuan",
-  "Ayah", "Ibu", "Kakek", "Nenek",
-  "Saudara Laki-laki Sekandung", "Saudara Perempuan Sekandung",
-  "Saudara Laki-laki Seibu", "Saudara Perempuan Seibu",
-];
 
 const formatIDR = (val: string) => {
   const n = val.replace(/\D/g, "");
@@ -171,15 +164,13 @@ export default function AdminKalkulatorPage() {
               {hukum === "Jawa" && (
                 <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-amber-900">Metode Adat Jawa</label>
-                    <select 
-                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
+                    <label className="text-xs font-semibold text-amber-900 block mb-1">Metode Adat Jawa</label>
+                    <Select2
+                      options={METODE_ADAT_OPTIONS}
                       value={metodeAdat}
-                      onChange={(e) => setMetodeAdat(e.target.value as any)}
-                    >
-                      <option value="SEPIKUL_SEGENDONGAN">Sepikul Segendongan (2:1)</option>
-                      <option value="KUM_KUM_KUPAT">Dum-Duman (1:1 Sama Rata)</option>
-                    </select>
+                      onChange={(val) => setMetodeAdat(val as any)}
+                      placeholder="Pilih Metode Adat..."
+                    />
                   </div>
                   <label className="flex items-center gap-2 text-xs font-medium text-amber-900 cursor-pointer">
                     <input 
@@ -205,15 +196,13 @@ export default function AdminKalkulatorPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-600">Jenis Kelamin</label>
-                  <select 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
-                    value={gender} 
-                    onChange={(e) => setGender(e.target.value)}
-                  >
-                    <option value="Laki-laki">Laki-laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                  </select>
+                  <label className="text-xs font-semibold text-slate-600 block mb-1">Jenis Kelamin</label>
+                  <Select2
+                    options={GENDER_OPTIONS}
+                    value={gender}
+                    onChange={(val) => setGender(val)}
+                    placeholder="Pilih Jenis Kelamin..."
+                  />
                 </div>
               </div>
 
@@ -295,14 +284,14 @@ export default function AdminKalkulatorPage() {
                               onChange={(e) => updateHeir(i, "nama", e.target.value)}
                             />
                           </td>
-                          <td className="px-3 py-3">
-                            <select 
-                              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                          <td className="px-3 py-3 w-72 min-w-[240px]">
+                            <Select2
+                              options={HUBUNGAN_OPTIONS}
                               value={h.hubungan}
-                              onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
-                            >
-                              {HUBUNGAN_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                            </select>
+                              onChange={(val) => updateHeir(i, "hubungan", val)}
+                              placeholder="Pilih Hubungan..."
+                              searchPlaceholder="Cari hubungan..."
+                            />
                           </td>
                           <td className="px-3 py-3 text-center">
                             <button 

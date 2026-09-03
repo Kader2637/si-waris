@@ -6,6 +6,8 @@ import Link from "next/link";
 import { createKeluarga } from "@/app/actions/waris";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/ConfirmModal";
+import Select2 from "@/components/Select2";
+import { HUBUNGAN_OPTIONS, GENDER_OPTIONS, METODE_ADAT_OPTIONS, STATUS_HIDUP_OPTIONS } from "@/lib/constants";
 import { ArrowLeft, UserPlus, Users, Wallet, Plus, Trash2 } from "lucide-react";
 
 export default function TambahKeluargaPage() {
@@ -167,15 +169,13 @@ export default function TambahKeluargaPage() {
             {hukum === "Jawa" && (
               <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-amber-900">Metode Adat Jawa</label>
-                  <select 
-                    className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none"
+                  <label className="text-xs font-semibold text-amber-900 block mb-1">Metode Adat Jawa</label>
+                  <Select2
+                    options={METODE_ADAT_OPTIONS}
                     value={metodeAdat}
-                    onChange={(e) => setMetodeAdat(e.target.value)}
-                  >
-                    <option value="SEPIKUL_SEGENDONGAN">Sepikul Segendongan (2:1)</option>
-                    <option value="KUM_KUM_KUPAT">Dum-Duman (1:1 Sama Rata)</option>
-                  </select>
+                    onChange={(val) => setMetodeAdat(val)}
+                    placeholder="Pilih Metode Adat..."
+                  />
                 </div>
                 <label className="flex items-center gap-2 text-xs font-medium text-amber-900 cursor-pointer">
                   <input 
@@ -214,15 +214,13 @@ export default function TambahKeluargaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600">Jenis Kelamin</label>
-                <select 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
+                <label className="text-xs font-semibold text-slate-600 block mb-1">Jenis Kelamin</label>
+                <Select2
+                  options={GENDER_OPTIONS}
                   value={jenazah.gender}
-                  onChange={(e) => setJenazah({...jenazah, gender: e.target.value})}
-                >
-                  <option value="Laki-laki">Laki-laki</option>
-                  <option value="Perempuan">Perempuan</option>
-                </select>
+                  onChange={(val) => setJenazah({...jenazah, gender: val})}
+                  placeholder="Pilih Jenis Kelamin..."
+                />
               </div>
 
               <div className="space-y-1">
@@ -283,30 +281,22 @@ export default function TambahKeluargaPage() {
                             onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
                           />
                         </td>
-                        <td className="px-3 py-3">
-                          <select 
-                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                        <td className="px-3 py-3 w-72 min-w-[240px]">
+                          <Select2
+                            options={HUBUNGAN_OPTIONS}
                             value={heir.hubungan}
-                            onChange={(e) => updateAhliWaris(idx, "hubungan", e.target.value)}
-                          >
-                            <option value="Suami">Suami</option>
-                            <option value="Istri">Istri</option>
-                            <option value="Anak Laki-laki">Anak Laki-laki</option>
-                            <option value="Anak Perempuan">Anak Perempuan</option>
-                            <option value="Ayah">Ayah</option>
-                            <option value="Ibu">Ibu</option>
-                            <option value="Saudara Laki-laki Sekandung">Saudara Laki-laki Sekandung</option>
-                          </select>
+                            onChange={(val) => updateAhliWaris(idx, "hubungan", val)}
+                            placeholder="Pilih Hubungan..."
+                            searchPlaceholder="Cari hubungan..."
+                          />
                         </td>
-                        <td className="px-3 py-3">
-                          <select 
-                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                        <td className="px-3 py-3 w-48 min-w-[160px]">
+                          <Select2
+                            options={STATUS_HIDUP_OPTIONS}
                             value={heir.statusHidup ? "Hidup" : "Meninggal"}
-                            onChange={(e) => updateAhliWaris(idx, "statusHidup", e.target.value === "Hidup")}
-                          >
-                            <option value="Hidup">Masih Hidup</option>
-                            <option value="Meninggal">Meninggal</option>
-                          </select>
+                            onChange={(val) => updateAhliWaris(idx, "statusHidup", val === "Hidup")}
+                            placeholder="Pilih Status..."
+                          />
                         </td>
                         <td className="px-3 py-3 text-center">
                           <button 

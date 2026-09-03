@@ -12,14 +12,7 @@ import { calculateFaraid } from "@/lib/faraidLogic";
 import { calculateAdatJawa } from "@/lib/jawaLogic";
 import { calculatePerdata } from "@/lib/perdataLogic";
 
-const HUBUNGAN_OPTIONS = [
-  "Suami", "Istri",
-  "Anak Laki-laki", "Anak Perempuan",
-  "Cucu Laki-laki", "Cucu Perempuan",
-  "Ayah", "Ibu", "Kakek", "Nenek",
-  "Saudara Laki-laki Sekandung", "Saudara Perempuan Sekandung",
-  "Saudara Laki-laki Seibu", "Saudara Perempuan Seibu",
-];
+import { HUBUNGAN_OPTIONS } from "@/lib/constants";
 
 const formatIDR = (val: number) => {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
@@ -346,7 +339,7 @@ export default function PublicKalkulatorPage() {
 
                       <div className="w-64">
                         <Select2
-                          options={HUBUNGAN_OPTIONS.map((opt) => ({ value: opt, label: opt }))}
+                          options={HUBUNGAN_OPTIONS}
                           value={h.hubungan}
                           onChange={(val) => updateHeir(i, "hubungan", val)}
                           placeholder="Pilih Hubungan..."

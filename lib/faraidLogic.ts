@@ -27,7 +27,7 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
   if (wasiat > hartaSetelahUtang / 3) wasiat = hartaSetelahUtang / 3;
   const hartaBersih = Math.max(0, hartaSetelahUtang - wasiat);
 
-  // Preprocessing: Auto-link 'Cucu' to deceased 'Anak' if parentId is missing (Otomatis dari System)
+  // Preprocessing: Auto-link 'Cucu' to deceased 'Anak' if parentId is missing
   const deceasedChildren = ahliWarisList.filter(h => 
     (h.hubungan === "Anak Laki-laki" || h.hubungan === "Anak Perempuan") && h.statusHidup === false
   );
@@ -42,8 +42,8 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
 
   let heirs = ahliWarisList.map(a => ({
     ...a,
-    status: 'Menunggu',
-    alasan: '',
+    status: a.statusHidup === false ? 'Meninggal' : 'Menunggu',
+    alasan: a.statusHidup === false ? 'Telah wafat sebelum pewaris.' : '',
     jatahPersen: '',
     jatahNominal: 0,
     fraction: { n: 0, d: 1 }, 
@@ -52,7 +52,7 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
     raddTarget: false,
   }));
 
-  const count = (hubungan: string) => heirs.filter(h => h.hubungan === hubungan).length;
+  const count = (hubungan: string) => heirs.filter(h => h.hubungan === hubungan && h.status !== 'Meninggal').length;
   
   const adaAnakLaki = count('Anak Laki-laki') > 0;
   const adaAnakPr = count('Anak Perempuan') > 0;
@@ -63,17 +63,32 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
   const adaIbu = count('Ibu') > 0;
   const totalSaudara = count('Saudara Laki-laki Sekandung') + count('Saudara Perempuan Sekandung') + count('Saudara Laki-laki Seibu') + count('Saudara Perempuan Seibu');
 
-  // 1. Deteksi Hijab Mahjub
+  // 1. Deteksi Hijab Mahjub (Hirman)
   heirs = heirs.map(h => {
+    if (h.status === 'Meninggal') return h;
+
     if (['Saudara Laki-laki Sekandung', 'Saudara Perempuan Sekandung'].includes(h.hubungan)) {
-      if (adaAnakLaki || adaCucuLaki) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh keturunan laki-laki.'; }
-      else if (adaBapak) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Bapak.'; }
+      if (adaAnakLaki || adaCucuLaki) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh keturunan laki-laki (Anak/Cucu Laki-laki).'; }
+      else if (adaBapak) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Ayah/Bapak.'; }
     }
     if (['Cucu Laki-laki', 'Cucu Perempuan'].includes(h.hubungan)) {
       if (adaAnakLaki) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Anak Laki-laki.'; }
     }
-    if (h.hubungan === 'Kakek' && adaBapak) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Bapak.'; }
+    if (h.hubungan === 'Cucu Perempuan' && count('Anak Perempuan') >= 2 && !adaCucuLaki) {
+      h.status = 'Mahjub';
+      h.alasan = 'Mahjub Hirman: Terhalang karena bagian 2/3 Anak Perempuan telah terpenuhi.';
+    }
+    if (h.hubungan === 'Kakek' && adaBapak) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Ayah/Bapak.'; }
     if (h.hubungan === 'Nenek' && adaIbu) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Ibu.'; }
+    if (['Saudara Laki-laki Seibu', 'Saudara Perempuan Seibu'].includes(h.hubungan)) {
+      if (adaKeturunan) {
+        h.status = 'Mahjub';
+        h.alasan = 'Mahjub Hirman: Terhalang oleh adanya keturunan (Anak/Cucu).';
+      } else if (adaBapak || count('Kakek') > 0) {
+        h.status = 'Mahjub';
+        h.alasan = 'Mahjub Hirman: Terhalang oleh Ayah/Bapak/Kakek.';
+      }
+    }
     return h;
   });
 
@@ -82,34 +97,33 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
   const isGharrawainWife = count('Istri') > 0 && adaIbu && adaBapak && !adaKeturunan && totalSaudara < 2;
   const isSpecialGharrawain = isGharrawainHusband || isGharrawainWife;
 
-  const activeHeirs = heirs.filter(h => h.status !== 'Mahjub');
-  
-  // 3. Distribusi Porsi (Dzawil Furud)
+  const activeHeirs = heirs.filter(h => h.status !== 'Mahjub' && h.status !== 'Meninggal');
+  const countActive = (hubungan: string) => activeHeirs.filter(h => h.hubungan === hubungan).length;
+
+  // 3. Distribusi Porsi (Dzawil Furud & Ashabah)
   activeHeirs.forEach(h => {
     if (h.hubungan === 'Suami') {
       h.fraction = adaKeturunan ? { n: 1, d: 4 } : { n: 1, d: 2 };
       h.jatahPersen = adaKeturunan ? '1/4' : '1/2';
-      h.alasan = `Fardhu ${h.jatahPersen} karena istri ${adaKeturunan ? 'memiliki' : 'tidak memiliki'} keturunan.`;
+      h.alasan = `Fardhu ${h.jatahPersen} karena pewaris ${adaKeturunan ? 'memiliki' : 'tidak memiliki'} keturunan.`;
       h.status = 'Mewarisi';
     }
     if (h.hubungan === 'Istri') {
-      const totalI = count('Istri');
+      const totalI = countActive('Istri');
       h.fraction = adaKeturunan ? { n: 1, d: 8 * totalI } : { n: 1, d: 4 * totalI };
-      h.jatahPersen = `${adaKeturunan ? '1/8' : '1/4'} (Bagi ${totalI})`;
-      h.alasan = `Fardhu ${adaKeturunan ? '1/8' : '1/4'} karena suami ${adaKeturunan ? 'memiliki' : 'tidak memiliki'} keturunan (bagi rata ${totalI} istri).`;
+      h.jatahPersen = totalI > 1 ? `${adaKeturunan ? '1/8' : '1/4'} (Bagi ${totalI})` : (adaKeturunan ? '1/8' : '1/4');
+      h.alasan = `Fardhu ${adaKeturunan ? '1/8' : '1/4'} karena pewaris ${adaKeturunan ? 'memiliki' : 'tidak memiliki'} keturunan${totalI > 1 ? ` (dibagi rata ${totalI} istri)` : ''}.`;
       h.status = 'Mewarisi';
     }
     if (h.hubungan === 'Ibu') {
       if (isSpecialGharrawain) {
         h.status = 'Mewarisi';
         h.raddTarget = true;
-        // In Gharrawain, Mother gets 1/3 of REMAINDER.
-        // We handle this by setting a special case later in nominal calculation
       } else {
         const banyakSdr = totalSaudara >= 2;
         h.fraction = (adaKeturunan || banyakSdr) ? { n: 1, d: 6 } : { n: 1, d: 3 };
         h.jatahPersen = (adaKeturunan || banyakSdr) ? '1/6' : '1/3';
-        h.alasan = `Fardhu ${h.jatahPersen} karena jenazah ${adaKeturunan ? 'memiliki keturunan' : (banyakSdr ? 'mempunyai banyak saudara' : 'tidak memiliki keturunan/banyak saudara')}.`;
+        h.alasan = `Fardhu ${h.jatahPersen} karena pewaris ${adaKeturunan ? 'memiliki keturunan' : (banyakSdr ? 'mempunyai banyak saudara' : 'tidak memiliki keturunan/banyak saudara')}.`;
         h.status = 'Mewarisi';
         h.raddTarget = true;
       }
@@ -120,21 +134,41 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
         h.alasan = 'Mendapat Sisa (Ashabah) setelah bagian Istri/Suami dan Ibu (Tsulutsul Baqi) dibagikan.';
       } else if (adaAnakLaki || adaCucuLaki) {
         h.fraction = { n: 1, d: 6 }; h.jatahPersen = '1/6'; h.status = 'Mewarisi';
-        h.alasan = 'Fardhu 1/6 karena ada anak/cucu laki-laki.';
+        h.alasan = 'Fardhu 1/6 karena ada keturunan laki-laki (anak/cucu).';
       } else if (adaAnakPr || adaCucuPr) {
         h.fraction = { n: 1, d: 6 }; h.jatahPersen = '1/6 + Ashabah'; h.status = 'Mewarisi'; h.ashabah = true; h.ashabahRatio = 1;
-        h.alasan = 'Fardhu 1/6 ditambah sisa karena hanya ada anak/cucu perempuan.';
+        h.alasan = 'Fardhu 1/6 ditambah sisa harta (Ashabah) karena hanya ada keturunan perempuan.';
       } else {
         h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah';
         h.alasan = 'Mendapat seluruh sisa harta (Ashabah) karena tidak ada keturunan.';
       }
     }
+    if (h.hubungan === 'Kakek') {
+      if (adaAnakLaki || adaCucuLaki) {
+        h.fraction = { n: 1, d: 6 }; h.jatahPersen = '1/6'; h.status = 'Mewarisi';
+        h.alasan = 'Fardhu 1/6 menggantikan Ayah karena ada keturunan laki-laki.';
+      } else if (adaAnakPr || adaCucuPr) {
+        h.fraction = { n: 1, d: 6 }; h.jatahPersen = '1/6 + Ashabah'; h.status = 'Mewarisi'; h.ashabah = true; h.ashabahRatio = 1;
+        h.alasan = 'Fardhu 1/6 ditambah sisa menggantikan Ayah karena hanya ada keturunan perempuan.';
+      } else {
+        h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah';
+        h.alasan = 'Mendapat sisa harta (Ashabah) menggantikan Ayah karena tidak ada keturunan.';
+      }
+    }
+    if (h.hubungan === 'Nenek') {
+      const totalNenek = countActive('Nenek');
+      h.fraction = { n: 1, d: 6 * totalNenek };
+      h.jatahPersen = totalNenek > 1 ? `1/6 (Bagi ${totalNenek})` : '1/6';
+      h.alasan = `Fardhu 1/6 menggantikan Ibu${totalNenek > 1 ? ` (dibagi rata ${totalNenek} nenek)` : ''}.`;
+      h.status = 'Mewarisi';
+      h.raddTarget = true;
+    }
     if (h.hubungan === 'Anak Perempuan') {
       if (adaAnakLaki) {
         h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah (1:2)';
-        h.alasan = 'Menjadi Ashabah bil Ghair karena ada anak laki-laki dengan perbandingan 1:2.';
+        h.alasan = 'Menjadi Ashabah bil Ghair bersama anak laki-laki dengan perbandingan 1:2.';
       } else {
-        const totalAP = count('Anak Perempuan');
+        const totalAP = countActive('Anak Perempuan');
         h.fraction = totalAP === 1 ? { n: 1, d: 2 } : { n: 2, d: 3 * totalAP };
         h.jatahPersen = totalAP === 1 ? '1/2' : `2/3 (Bagi ${totalAP})`;
         h.alasan = `Fardhu ${h.jatahPersen} karena merupakan anak perempuan ${totalAP === 1 ? 'tunggal' : 'berjumlah '+totalAP}.`;
@@ -142,12 +176,75 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
       }
     }
     if (h.hubungan === 'Anak Laki-laki') {
-      h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 2; h.jatahPersen = 'Ashabah (2:1)';
-      h.alasan = 'Mendapat sisa harta (Ashabah) dengan porsi 2x lipat dari anak perempuan.';
+      h.ashabah = true; h.status = 'Mewarisi'; 
+      h.ashabahRatio = adaAnakPr ? 2 : 1; 
+      h.jatahPersen = adaAnakPr ? 'Ashabah (2:1)' : 'Ashabah';
+      h.alasan = adaAnakPr ? 'Mendapat sisa harta (Ashabah) dengan porsi 2x lipat dari anak perempuan.' : 'Mendapat sisa harta (Ashabah) sebagai keturunan laki-laki utama.';
+    }
+    if (h.hubungan === 'Cucu Laki-laki') {
+      h.ashabah = true; h.status = 'Mewarisi';
+      h.ashabahRatio = adaCucuPr ? 2 : 1;
+      h.jatahPersen = adaCucuPr ? 'Ashabah (2:1)' : 'Ashabah';
+      h.alasan = adaCucuPr ? 'Mendapat sisa harta (Ashabah) bersama cucu perempuan (2:1).' : 'Mendapat sisa harta (Ashabah) karena tidak ada anak laki-laki.';
+    }
+    if (h.hubungan === 'Cucu Perempuan') {
+      if (adaCucuLaki) {
+        h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah (1:2)';
+        h.alasan = 'Menjadi Ashabah bil Ghair bersama cucu laki-laki dengan perbandingan 1:2.';
+      } else if (countActive('Anak Perempuan') === 1) {
+        const totalCP = countActive('Cucu Perempuan');
+        h.fraction = { n: 1, d: 6 * totalCP };
+        h.jatahPersen = totalCP === 1 ? '1/6' : `1/6 (Bagi ${totalCP})`;
+        h.alasan = `Fardhu ${h.jatahPersen} sebagai penyempurna 2/3 (takmilah ats-tsulutsain) bersama 1 anak perempuan.`;
+        h.status = 'Mewarisi'; h.raddTarget = true;
+      } else if (countActive('Anak Perempuan') === 0) {
+        const totalCP = countActive('Cucu Perempuan');
+        h.fraction = totalCP === 1 ? { n: 1, d: 2 } : { n: 2, d: 3 * totalCP };
+        h.jatahPersen = totalCP === 1 ? '1/2' : `2/3 (Bagi ${totalCP})`;
+        h.alasan = `Fardhu ${h.jatahPersen} karena tidak ada anak laki-laki maupun anak perempuan.`;
+        h.status = 'Mewarisi'; h.raddTarget = true;
+      }
+    }
+    if (h.hubungan === 'Saudara Laki-laki Sekandung') {
+      h.ashabah = true; h.status = 'Mewarisi';
+      const adaSdrPr = countActive('Saudara Perempuan Sekandung') > 0;
+      h.ashabahRatio = adaSdrPr ? 2 : 1;
+      h.jatahPersen = adaSdrPr ? 'Ashabah (2:1)' : 'Ashabah';
+      h.alasan = adaSdrPr ? 'Mendapat sisa harta (Ashabah) bersama saudara perempuan sekandung (2:1).' : 'Mendapat sisa harta (Ashabah) karena tidak ada keturunan laki-laki / ayah.';
+    }
+    if (h.hubungan === 'Saudara Perempuan Sekandung') {
+      const adaSdrLk = countActive('Saudara Laki-laki Sekandung') > 0;
+      if (adaSdrLk) {
+        h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah (1:2)';
+        h.alasan = 'Menjadi Ashabah bil Ghair bersama saudara laki-laki sekandung (1:2).';
+      } else if (adaAnakPr || adaCucuPr) {
+        h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah ma\'al Ghair';
+        h.alasan = 'Menjadi Ashabah ma\'al Ghair bersama anak/cucu perempuan.';
+      } else {
+        const totalSPr = countActive('Saudara Perempuan Sekandung');
+        h.fraction = totalSPr === 1 ? { n: 1, d: 2 } : { n: 2, d: 3 * totalSPr };
+        h.jatahPersen = totalSPr === 1 ? '1/2' : `2/3 (Bagi ${totalSPr})`;
+        h.alasan = `Fardhu ${h.jatahPersen} karena tidak ada keturunan, bapak, maupun saudara laki-laki.`;
+        h.status = 'Mewarisi'; h.raddTarget = true;
+      }
+    }
+    if (['Saudara Laki-laki Seibu', 'Saudara Perempuan Seibu'].includes(h.hubungan)) {
+      const totalSeibu = countActive('Saudara Laki-laki Seibu') + countActive('Saudara Perempuan Seibu');
+      if (totalSeibu === 1) {
+        h.fraction = { n: 1, d: 6 };
+        h.jatahPersen = '1/6';
+        h.alasan = 'Fardhu 1/6 (saudara seibu tunggal saat kalalah).';
+      } else {
+        h.fraction = { n: 1, d: 3 * totalSeibu };
+        h.jatahPersen = `1/3 (Bagi ${totalSeibu})`;
+        h.alasan = `Fardhu 1/3 dibagi rata antarsaudara seibu (${totalSeibu} orang saat kalalah).`;
+      }
+      h.status = 'Mewarisi';
+      h.raddTarget = true;
     }
   });
 
-  // 4. Kalkulasi Nominal Dasar & Deteksi Gharrawain
+  // 4. Kalkulasi Nominal Dasar & Deteksi Gharrawain / Aul / Radd / Normal
   let usedNominal = 0;
   let statusProblem = 'Normal';
 
@@ -175,39 +272,64 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
       usedNominal = hartaBersih;
     }
   } else {
-    // Standard Calculation (Aul / Radd / Normal)
-    let kpk = 24; 
-    let totalNum = 0;
-    activeHeirs.forEach(h => { if (h.fraction.n > 0) totalNum += (h.fraction.n * (kpk / h.fraction.d)); });
+    // Standard Calculation
+    let totalFractionVal = 0;
+    activeHeirs.forEach(h => {
+      if (h.fraction && h.fraction.n > 0) {
+        totalFractionVal += h.fraction.n / h.fraction.d;
+      }
+    });
 
-    if (totalNum > kpk) {
-      statusProblem = 'Aul'; kpk = totalNum;
-    } else if (totalNum < kpk && activeHeirs.every(h => !h.ashabah)) {
+    const hasAshabah = activeHeirs.some(h => h.ashabah);
+
+    if (totalFractionVal > 1) {
+      statusProblem = 'Aul';
+      // Scaled down proportionally for Aul
+      activeHeirs.forEach(h => {
+        if (h.fraction && h.fraction.n > 0) {
+          const prop = (h.fraction.n / h.fraction.d) / totalFractionVal;
+          const nominal = Math.floor(hartaBersih * prop);
+          h.jatahNominal = nominal;
+          h.alasan += ` (Penyesuaian porsi 'Aul).`;
+          usedNominal += nominal;
+        }
+      });
+    } else if (totalFractionVal < 1 && !hasAshabah && activeHeirs.length > 0) {
       statusProblem = 'Radd';
-      // Radd logic: Surplus given back to Dzawil Furud (Prop) excluding Spouse
       const fuelForRadd = activeHeirs.filter(h => h.raddTarget);
-      const raddTotalNum = fuelForRadd.reduce((sum, h) => sum + (h.fraction.n * (kpk / h.fraction.d)), 0);
-      
+      const raddTotalFractionVal = fuelForRadd.reduce((sum, h) => sum + (h.fraction.n / h.fraction.d), 0);
+
       const fixedHeirs = activeHeirs.filter(h => !h.raddTarget); // Non-Radd (Spouse)
       fixedHeirs.forEach(h => {
-        const nominal = Math.floor(hartaBersih * (h.fraction.n / h.fraction.d));
-        h.jatahNominal = nominal;
-        usedNominal += nominal;
+        if (h.fraction && h.fraction.n > 0) {
+          const nominal = Math.floor(hartaBersih * (h.fraction.n / h.fraction.d));
+          h.jatahNominal = nominal;
+          usedNominal += nominal;
+        }
       });
 
       const sisaRadd = hartaBersih - usedNominal;
-      fuelForRadd.forEach(h => {
-        const prop = (h.fraction.n * (kpk / h.fraction.d)) / raddTotalNum;
-        const nominal = Math.floor(sisaRadd * prop);
-        h.jatahNominal = nominal;
-        h.alasan += ` (Ditambah porsi pengalihan Radd sebesar Rp ${nominal.toLocaleString('id-ID')}).`;
-        usedNominal += nominal;
-      });
-      usedNominal = hartaBersih; // Force balance
+      if (fuelForRadd.length > 0 && raddTotalFractionVal > 0) {
+        fuelForRadd.forEach(h => {
+          const prop = (h.fraction.n / h.fraction.d) / raddTotalFractionVal;
+          const nominal = Math.floor(sisaRadd * prop);
+          h.jatahNominal = nominal;
+          if (sisaRadd > 0 && prop < 1) {
+            h.alasan += ` (Ditambah porsi pengalihan Radd sebesar Rp ${nominal.toLocaleString('id-ID')}).`;
+          }
+          usedNominal += nominal;
+        });
+      } else if (fixedHeirs.length > 0 && sisaRadd > 0) {
+        // If ONLY spouse exists and no Radd targets
+        fixedHeirs.forEach(h => {
+          h.jatahNominal += sisaRadd;
+        });
+      }
+      usedNominal = hartaBersih;
     } else {
       // Normal or Ashabah
       activeHeirs.forEach(h => {
-        if (h.fraction.n > 0) {
+        if (h.fraction && h.fraction.n > 0) {
           const nominal = Math.floor(hartaBersih * (h.fraction.n / h.fraction.d));
           h.jatahNominal = nominal;
           usedNominal += nominal;
@@ -220,18 +342,26 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
     const totalAshabah = activeHeirs.reduce((sum, h) => sum + (h.ashabahRatio || 0), 0);
     if (sisa > 0 && totalAshabah > 0) {
       activeHeirs.forEach(h => {
-        if (h.ashabah && h.ashabahRatio > 0) {
+        if (h.ashabah && (h.ashabahRatio || 0) > 0) {
           const nominal = Math.floor(sisa * (h.ashabahRatio / totalAshabah));
           h.jatahNominal += nominal;
-          h.alasan += ` (Termasuk porsi sisa/Ashabah).`;
+          if (h.fraction && h.fraction.n > 0) {
+            h.alasan += ` (Termasuk porsi sisa/Ashabah sebesar Rp ${nominal.toLocaleString('id-ID')}).`;
+          }
         }
       });
     }
   }
 
+  // Calculate KPK for display
+  const denominators = activeHeirs.map(h => h.fraction?.d || 1).filter(d => d > 1);
+  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+  const lcm = (a: number, b: number): number => (a * b) / gcd(a, b);
+  const baseKpk = denominators.length > 0 ? denominators.reduce((acc, curr) => lcm(acc, curr), 1) : 24;
+
   return {
     hartaBersih,
-    kpk: isSpecialGharrawain ? 0 : 24, // KPK less relevant for special cases
+    kpk: isSpecialGharrawain ? 0 : baseKpk,
     statusAulRadd: statusProblem,
     ahliWarisGetted: heirs.map(h => ({
       ahliWarisId: h.id,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Search, ChevronDown, Check, Plus, X } from "lucide-react";
 
 export interface Select2Option {
@@ -25,25 +26,63 @@ export default function Select2({
   value,
   onChange,
   placeholder = "Pilih...",
-  searchPlaceholder = "Cari atau ketik...",
-  allowCustom = true,
+  searchPlaceholder = "Cari pilihan...",
+  allowCustom = false,
   className = "",
   disabled = false,
 }: Select2Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
 
-  // Close when clicking outside
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Update fixed popover position based on trigger button bounding rect
+  const updateCoords = () => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      updateCoords();
+      const handleScrollOrResize = () => updateCoords();
+      window.addEventListener("scroll", handleScrollOrResize, true);
+      window.addEventListener("resize", handleScrollOrResize);
+      return () => {
+        window.removeEventListener("scroll", handleScrollOrResize, true);
+        window.removeEventListener("resize", handleScrollOrResize);
+      };
+    }
+  }, [open]);
+
+  // Close when clicking outside trigger or popover
+  useEffect(() => {
+    if (!open) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        popoverRef.current && !popoverRef.current.contains(target)
+      ) {
         setOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [open]);
 
   // Selected Option Object
   const selectedOption = useMemo(() => {
@@ -66,17 +105,92 @@ export default function Select2({
   };
 
   const handleAddCustom = () => {
-    if (search.trim()) {
+    if (search.trim() && allowCustom) {
       onChange(search.trim());
       setOpen(false);
       setSearch("");
     }
   };
 
+  const popoverContent = open && mounted ? (
+    <div
+      ref={popoverRef}
+      style={{
+        position: "fixed",
+        top: `${coords.top}px`,
+        left: `${coords.left}px`,
+        width: `${Math.max(coords.width, 220)}px`,
+        zIndex: 99999,
+      }}
+      className="rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200 dark:border-slate-800 shadow-2xl p-2 space-y-2 animate-in fade-in slide-in-from-top-2"
+    >
+      {/* SEARCH INPUT */}
+      <div className="relative">
+        <Search className="absolute left-3 top-2.5 size-3.5 text-slate-400" />
+        <input
+          type="text"
+          autoFocus
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#0b6245]"
+        />
+        {search && (
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600"
+          >
+            <X className="size-3.5" />
+          </button>
+        )}
+      </div>
+
+      {/* OPTIONS LIST */}
+      <div className="max-h-56 overflow-y-auto space-y-0.5 pr-1">
+        {filteredOptions.length > 0 ? (
+          filteredOptions.map((opt) => {
+            const isSelected = opt.value === value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => handleSelect(opt.value)}
+                className={`w-full flex items-center justify-between p-2 rounded-lg text-xs text-left transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                }`}
+              >
+                <div>
+                  <div className="font-semibold">{opt.label}</div>
+                  {opt.subtext && <div className="text-[10px] text-slate-400 font-normal">{opt.subtext}</div>}
+                </div>
+                {isSelected && <Check className="size-3.5 text-[#0b6245] dark:text-emerald-400 shrink-0" />}
+              </button>
+            );
+          })
+        ) : allowCustom && search.trim() ? (
+          <button
+            type="button"
+            onClick={handleAddCustom}
+            className="w-full flex items-center gap-2 p-2.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-[#0b6245] dark:text-emerald-400 hover:bg-emerald-500/20 text-left transition-colors cursor-pointer"
+          >
+            <Plus className="size-4 shrink-0" />
+            <span>Gunakan &quot;{search}&quot; (Input Mandiri)</span>
+          </button>
+        ) : (
+          <div className="p-3 text-center text-xs text-slate-400">Tidak ada hasil ditemukan</div>
+        )}
+      </div>
+    </div>
+  ) : null;
+
   return (
-    <div className={`relative ${open ? "z-50" : "z-10"} ${className}`} ref={containerRef}>
+    <div className={`relative inline-block w-full ${className}`}>
       {/* TRIGGER BUTTON */}
       <button
+        ref={triggerRef}
         type="button"
         disabled={disabled}
         onClick={() => setOpen(!open)}
@@ -94,70 +208,8 @@ export default function Select2({
         <ChevronDown className={`size-4 text-slate-400 shrink-0 transition-transform ${open ? "rotate-180 text-[#0b6245]" : ""}`} />
       </button>
 
-      {/* DROPDOWN POPOVER WITH SEARCH (SELECT2 STYLE) */}
-      {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200 dark:border-slate-800 shadow-2xl z-[9999] p-2 space-y-2 animate-in fade-in slide-in-from-top-2">
-          {/* SEARCH INPUT */}
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 size-3.5 text-slate-400" />
-            <input
-              type="text"
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={searchPlaceholder}
-              className="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#0b6245]"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600"
-              >
-                <X className="size-3.5" />
-              </button>
-            )}
-          </div>
-
-          {/* OPTIONS LIST */}
-          <div className="max-h-56 overflow-y-auto space-y-0.5 pr-1">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((opt) => {
-                const isSelected = opt.value === value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => handleSelect(opt.value)}
-                    className={`w-full flex items-center justify-between p-2 rounded-lg text-xs text-left transition-colors cursor-pointer ${
-                      isSelected
-                        ? "bg-[#0b6245]/10 text-[#0b6245] dark:bg-[#0b6245]/30 dark:text-emerald-400 font-bold"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    <div>
-                      <div className="font-semibold">{opt.label}</div>
-                      {opt.subtext && <div className="text-[10px] text-slate-400 font-normal">{opt.subtext}</div>}
-                    </div>
-                    {isSelected && <Check className="size-3.5 text-[#0b6245] dark:text-emerald-400 shrink-0" />}
-                  </button>
-                );
-              })
-            ) : allowCustom && search.trim() ? (
-              <button
-                type="button"
-                onClick={handleAddCustom}
-                className="w-full flex items-center gap-2 p-2.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-[#0b6245] dark:text-emerald-400 hover:bg-emerald-500/20 text-left transition-colors cursor-pointer"
-              >
-                <Plus className="size-4 shrink-0" />
-                <span>Gunakan &quot;{search}&quot; (Input Mandiri)</span>
-              </button>
-            ) : (
-              <div className="p-3 text-center text-xs text-slate-400">Tidak ada hasil ditemukan</div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* RENDER POPOVER VIA PORTAL TO BODY */}
+      {mounted && popoverContent ? createPortal(popoverContent, document.body) : null}
     </div>
   );
 }

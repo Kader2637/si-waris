@@ -32,12 +32,8 @@ const GOLONGAN = [
   },
 ];
 
-const HUBUNGAN_OPTIONS = [
-  "Suami", "Istri",
-  "Anak Laki-laki", "Anak Perempuan",
-  "Ayah", "Ibu",
-  "Saudara Laki-laki Sekandung", "Saudara Perempuan Sekandung",
-];
+import Select2 from "@/components/Select2";
+import { HUBUNGAN_OPTIONS } from "@/lib/constants";
 
 const formatIDR = (val: number) => {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
@@ -346,16 +342,14 @@ export default function PerdataPage() {
                         />
                       </div>
 
-                      <div className="w-64">
-                        <select
-                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                      <div className="w-64 min-w-[220px]">
+                        <Select2
+                          options={HUBUNGAN_OPTIONS}
                           value={h.hubungan}
-                          onChange={(e) => updateHeir(i, "hubungan", e.target.value)}
-                        >
-                          {HUBUNGAN_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
-                          ))}
-                        </select>
+                          onChange={(val) => updateHeir(i, "hubungan", val)}
+                          placeholder="Pilih Hubungan..."
+                          searchPlaceholder="Cari hubungan..."
+                        />
                       </div>
 
                       <button

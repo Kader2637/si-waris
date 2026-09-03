@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Select2 from "@/components/Select2";
+import { HUKUM_SYSTEM_OPTIONS } from "@/lib/constants";
 import {
   Shield,
   Database,
@@ -478,15 +480,12 @@ export default function SettingsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Sistem Hukum Default Kalkulator</label>
-                <select
+                <Select2
+                  options={HUKUM_SYSTEM_OPTIONS}
                   value={defaultSystem}
-                  onChange={(e) => setDefaultSystem(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
-                >
-                  <option value="syariah">Hukum Syariah (Faraidh)</option>
-                  <option value="perdata">Hukum Perdata (KUHPerdata / BW)</option>
-                  <option value="adat-jawa">Hukum Adat Jawa (Sepikul Segendongan)</option>
-                </select>
+                  onChange={(val) => setDefaultSystem(val)}
+                  placeholder="Pilih Sistem Default..."
+                />
               </div>
 
               <div className="space-y-1.5">
