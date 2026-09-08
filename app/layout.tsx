@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: "E-MAWARIST — Sistem Informasi Waris Multi-Hukum (Islam, Adat Jawa & Perdata)",
   description: "Kalkulasi distribusi waris secara akurat, transparan, dan terpercaya berdasarkan 3 sistem hukum nasional: Hukum Islam (Faraid), Hukum Adat Jawa, dan Hukum Perdata (BW).",
   keywords: [
-    "waris", "mawarits", "e-mawarist", "faraid", "kalkulator waris",
+    "waris", "mawarits", "e-mawarist", "faraid", "perhitungan waris",
     "waris islam", "adat jawa", "waris perdata", "hukum waris",
     "distribusi waris", "e-mawarist", "sepikul segendongan", "khi"
   ],

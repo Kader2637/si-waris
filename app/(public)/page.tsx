@@ -235,7 +235,7 @@ export default function HomePage() {
                   </div>
 
                   <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[#0b6245]">
-                    Buka kalkulator <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                    Buka perhitungan <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </ScrollReveal>
@@ -328,7 +328,7 @@ export default function HomePage() {
                 href="/kalkulator" 
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#0b6245] hover:bg-[#084b34] text-white text-sm font-semibold rounded-full shadow-lg transition-all no-underline"
               >
-                <Calculator className="size-4" /> Buka Kalkulator Terpadu
+                <Calculator className="size-4" /> Buka Perhitungan Terpadu
               </Link>
             </div>
           </div>

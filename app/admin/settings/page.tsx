@@ -255,7 +255,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Pengaturan judul website, preferensi hukum default kalkulator, dan running text marquee topbar.
+                Pengaturan judul website, preferensi hukum default perhitungan, dan running text marquee topbar.
               </p>
             </div>
             <button
@@ -461,7 +461,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Preferensi & Tampilan Portal</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Konfigurasi nama platform, opsi kalkulator default, & topbar notification.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Konfigurasi nama platform, opsi perhitungan default, & topbar notification.</p>
             </div>
           </div>
 
@@ -479,7 +479,7 @@ export default function SettingsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Sistem Hukum Default Kalkulator</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Sistem Hukum Default Perhitungan</label>
                 <Select2
                   options={HUKUM_SYSTEM_OPTIONS}
                   value={defaultSystem}

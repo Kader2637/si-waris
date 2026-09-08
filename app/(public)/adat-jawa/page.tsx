@@ -129,7 +129,7 @@ export default function AdatJawaPage() {
             <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
               Hukum Adat Jawa
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Kalkulator Waris Adat Jawa</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Perhitungan Waris Adat Jawa</h1>
             <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
               Hukum adat Jawa mengedepankan asas kepatutan, kerukunan, dan musyawarah keluarga. Pembagian dapat mengikuti prinsip sepikul segendongan maupun kesepakatan bersama.
             </p>

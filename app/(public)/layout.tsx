@@ -98,7 +98,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 E-<span className="text-[#ca9a28]">MAWARIST</span>
               </span>
               <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
-                KALKULATOR WARIS
+                PERHITUNGAN WARIS
               </span>
             </span>
           </Link>
@@ -243,7 +243,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                   >
                     <Calculator className="size-4 text-[#0b6245] shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-slate-900 dark:text-white">Kalkulator Terpadu</div>
+                      <div className="font-bold text-slate-900 dark:text-white">Perhitungan Terpadu</div>
                       <div className="text-[10px] text-slate-500 font-normal">Komparasi 3 hukum bersamaan</div>
                     </div>
                   </Link>
@@ -367,7 +367,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     <Calculator className="size-3.5 text-[#0b6245]" />
-                    <span>Kalkulator Terpadu (3 Hukum)</span>
+                    <span>Perhitungan Terpadu (3 Hukum)</span>
                   </Link>
                 </div>
               </div>
@@ -403,13 +403,13 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                   E-<span className="text-[#ca9a28]">MAWARIST</span>
                 </span>
                 <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono">
-                  KALKULATOR WARIS
+                  PERHITUNGAN WARIS
                 </span>
               </span>
             </Link>
             
             <p className="max-w-sm text-xs leading-relaxed text-[#64748b] dark:text-slate-400 font-normal">
-              E-MAWARIST adalah sistem informasi dan kalkulator pembagian waris yang membantu masyarakat
+              E-MAWARIST adalah sistem informasi dan perhitungan pembagian waris yang membantu masyarakat
               memahami hak waris berdasarkan Hukum Syariah (Faraidh), KUHPerdata, dan Hukum Adat Jawa secara
               transparan dan mudah dipahami.
             </p>
@@ -424,7 +424,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 { href: "/perdata", label: "Hukum Perdata (BW)" },
                 { href: "/adat-jawa", label: "Hukum Adat Jawa" },
                 { href: "/konversi-harta", label: "Konversi Harta (ZNT & PUPR)" },
-                { href: "/kalkulator", label: "Kalkulator Terpadu" },
+                { href: "/kalkulator", label: "Perhitungan Terpadu" },
                 { href: "/tentang", label: "Tentang Kami" },
               ].map((link) => (
                 <li key={link.href}>

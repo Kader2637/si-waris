@@ -106,7 +106,7 @@ export default function AdminKalkulatorPage() {
       {/* Header Title */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kalkulator Cepat Admin</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Perhitungan Cepat Admin</h1>
           <p className="text-slate-500 text-xs mt-1">Pengujian kalkulasi waris cepat tanpa perlu menyimpan data ke database.</p>
         </div>
         {step === 2 && (

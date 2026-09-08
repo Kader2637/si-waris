@@ -412,7 +412,7 @@ export default function KonversiHartaPage() {
     doc.save(`Laporan_Konversi_Harta_EMawarist_${Date.now()}.pdf`);
   };
 
-  // Transfer ke Kalkulator Waris
+  // Transfer ke Perhitungan Waris
   const handleTransferToKalkulator = () => {
     sessionStorage.setItem("emawarist_total_harta_kotor", totalHartaKotor.toString());
     sessionStorage.setItem("emawarist_items_harta", JSON.stringify(items));
@@ -1029,7 +1029,7 @@ export default function KonversiHartaPage() {
                     onClick={handleTransferToKalkulator}
                     className="w-full py-3.5 px-4 bg-[#0b6245] hover:bg-[#084b34] disabled:bg-slate-400 text-white text-xs sm:text-sm font-bold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed scale-102 hover:scale-105"
                   >
-                    <Calculator className="size-4" /> Gunakan Total Ini di Kalkulator Waris
+                    <Calculator className="size-4" /> Gunakan Total Ini di Perhitungan Waris
                   </button>
 
                   <button
@@ -1051,7 +1051,7 @@ export default function KonversiHartaPage() {
                   <Info className="size-4 text-amber-600 dark:text-amber-400" /> Pengurangan Tirkah Sebelum Pembagian Waris
                 </div>
                 <p className="leading-relaxed text-[11px] font-normal">
-                  Sesuai hukum Faraidh & Perdata, setelah total harta kotor terkonversi, pastikan untuk mengisikan **Hutang Pewaris** dan **Wasiat (maksimal 1/3)** di halaman Kalkulator Waris sebelum membagi hak ahli waris.
+                  Sesuai hukum Faraidh & Perdata, setelah total harta kotor terkonversi, pastikan untuk mengisikan **Hutang Pewaris** dan **Wasiat (maksimal 1/3)** di halaman Perhitungan Waris sebelum membagi hak ahli waris.
                 </p>
               </div>
             </ScrollReveal>

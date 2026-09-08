@@ -46,7 +46,7 @@ export default function TentangPage() {
           <AudioExplanation
             title="Tentang Platform E-MAWARIST Indonesia"
             badge="Voice Assistant E-MAWARIST"
-            text="E-MAWARIST adalah platform sistem informasi dan kalkulator pembagian warisan terpadu di Indonesia. Misi kami adalah menghadirkan edukasi yang transparan, akurat, dan netral untuk membantu keluarga merencanakan pembagian harta waris secara damai dan adil."
+            text="E-MAWARIST adalah platform sistem informasi dan perhitungan pembagian warisan terpadu di Indonesia. Misi kami adalah menghadirkan edukasi yang transparan, akurat, dan netral untuk membantu keluarga merencanakan pembagian harta waris secara damai dan adil."
           />
         </ScrollReveal>
 

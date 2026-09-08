@@ -122,7 +122,7 @@ export default function PerdataPage() {
             <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
               Hukum Perdata
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Kalkulator Waris KUHPerdata (BW)</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Perhitungan Waris KUHPerdata (BW)</h1>
             <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
               Pewarisan ab intestato menurut Kitab Undang-Undang Hukum Perdata dengan sistem empat golongan ahli waris — golongan yang lebih tinggi menutup golongan berikutnya.
             </p>

@@ -126,7 +126,7 @@ export default function PublicKalkulatorPage() {
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
           <ScrollReveal className="max-w-3xl space-y-3">
             <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
-              Kalkulator Terpadu
+              Perhitungan Terpadu
             </span>
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Bandingkan Tiga Sistem Hukum Sekaligus</h1>
             <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
@@ -141,9 +141,9 @@ export default function PublicKalkulatorPage() {
         {/* AUDIO EXPLANATION */}
         <ScrollReveal>
           <AudioExplanation
-            title="Kalkulator Terpadu Komparasi 3 Sistem Hukum"
+            title="Perhitungan Terpadu Komparasi 3 Sistem Hukum"
             badge="Voice Assistant Simulator"
-            text="Fitur Kalkulator Terpadu memungkinkan Anda membandingkan hasil pembagian harta waris secara serentak antara hukum Syariah Faraidh, Kitab Undang-Undang Hukum Perdata, dan Hukum Adat Jawa dalam satu tampilan layar secara obyektif."
+            text="Fitur Perhitungan Terpadu memungkinkan Anda membandingkan hasil pembagian harta waris secara serentak antara hukum Syariah Faraidh, Kitab Undang-Undang Hukum Perdata, dan Hukum Adat Jawa dalam satu tampilan layar secara obyektif."
           />
         </ScrollReveal>
 
