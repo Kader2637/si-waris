@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 const NAV_MENU = [
-  { href: "/admin/dashboard", label: "Overview", icon: Grid },
+  { href: "/admin/dashboard", label: "Dashboard", icon: Grid },
   { href: "/admin/keluarga", label: "Data Keluarga", icon: Users },
   { href: "/admin/arsip", label: "Arsip Digital", icon: FolderSymlink, badge: "PDF" },
   { href: "/admin/laporan", label: "Laporan & Analytics", icon: BarChart3 },

@@ -43,7 +43,7 @@ export default function DashboardHeaderFilter() {
   const selectedRangeLabel = rangeLabels[currentRange] || "Semua Waktu";
 
   return (
-    <div className="animate-rise flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="animate-rise flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-40">
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
           Dashboard
@@ -87,7 +87,7 @@ export default function DashboardHeaderFilter() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 relative">
+      <div className="flex items-center gap-3 relative z-40">
         {/* Interactive Dropdown Range Selector syncing URL SearchParams */}
         <div className="relative">
           <button
@@ -100,7 +100,7 @@ export default function DashboardHeaderFilter() {
           </button>
 
           {rangeOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-30 py-1 font-sans animate-rise">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 py-1 font-sans animate-rise">
               {[
                 { key: "today", label: "Hari Ini" },
                 { key: "7days", label: "7 Hari Terakhir" },
