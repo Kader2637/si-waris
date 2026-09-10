@@ -52,10 +52,15 @@ export function calculateAdatJawa(
   );
 
   ahliWarisList.forEach(h => {
-    if ((h.hubungan === "Cucu Laki-laki" || h.hubungan === "Cucu Perempuan") && !h.parentId) {
-      // Link to the first deceased child found if not manually linked
-      if (deceasedChildren.length > 0) {
-        h.parentId = deceasedChildren[0].id;
+    const isCucu = h.hubungan.startsWith("Cucu");
+    if (isCucu && !h.parentId) {
+      if (h.hubungan.includes("Anak Perempuan")) {
+        const deceasedDaughter = deceasedChildren.find(d => d.hubungan === "Anak Perempuan");
+        if (deceasedDaughter) h.parentId = deceasedDaughter.id;
+      } else {
+        const deceasedSon = deceasedChildren.find(d => d.hubungan === "Anak Laki-laki");
+        if (deceasedSon) h.parentId = deceasedSon.id;
+        else if (deceasedChildren.length > 0) h.parentId = deceasedChildren[0].id;
       }
     }
   });

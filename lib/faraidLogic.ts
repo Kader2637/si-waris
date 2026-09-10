@@ -33,9 +33,20 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
   );
 
   ahliWarisList.forEach(h => {
-    if ((h.hubungan === "Cucu Laki-laki" || h.hubungan === "Cucu Perempuan") && !h.parentId) {
-      if (deceasedChildren.length > 0) {
-        h.parentId = deceasedChildren[0].id;
+    const isCucuType = [
+      "Cucu Laki-laki", "Cucu Perempuan", 
+      "Cucu Laki-laki dari Anak Laki-laki", "Cucu Perempuan dari Anak Laki-laki",
+      "Cucu Laki-laki dari Anak Perempuan", "Cucu Perempuan dari Anak Perempuan"
+    ].includes(h.hubungan);
+
+    if (isCucuType && !h.parentId) {
+      if (h.hubungan.includes("Anak Perempuan")) {
+        const deceasedDaughter = deceasedChildren.find(d => d.hubungan === "Anak Perempuan");
+        if (deceasedDaughter) h.parentId = deceasedDaughter.id;
+      } else {
+        const deceasedSon = deceasedChildren.find(d => d.hubungan === "Anak Laki-laki");
+        if (deceasedSon) h.parentId = deceasedSon.id;
+        else if (deceasedChildren.length > 0) h.parentId = deceasedChildren[0].id;
       }
     }
   });
@@ -54,30 +65,65 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
 
   const count = (hubungan: string) => heirs.filter(h => h.hubungan === hubungan && h.status !== 'Meninggal').length;
   
+  const isCucuLkLk = (h: string) => ["Cucu Laki-laki", "Cucu Laki-laki dari Anak Laki-laki"].includes(h);
+  const isCucuPrLk = (h: string) => ["Cucu Perempuan", "Cucu Perempuan dari Anak Laki-laki"].includes(h);
+  const isCucuLkPr = (h: string) => h === "Cucu Laki-laki dari Anak Perempuan";
+  const isCucuPrPr = (h: string) => h === "Cucu Perempuan dari Anak Perempuan";
+  const isCucuAny = (h: string) => isCucuLkLk(h) || isCucuPrLk(h) || isCucuLkPr(h) || isCucuPrPr(h);
+
   const adaAnakLaki = count('Anak Laki-laki') > 0;
   const adaAnakPr = count('Anak Perempuan') > 0;
-  const adaCucuLaki = count('Cucu Laki-laki') > 0;
-  const adaCucuPr = count('Cucu Perempuan') > 0;
+  const adaCucuLaki = heirs.some(h => (isCucuLkLk(h.hubungan) || isCucuLkPr(h.hubungan)) && h.status !== 'Meninggal');
+  const adaCucuPr = heirs.some(h => (isCucuPrLk(h.hubungan) || isCucuPrPr(h.hubungan)) && h.status !== 'Meninggal');
   const adaKeturunan = adaAnakLaki || adaAnakPr || adaCucuLaki || adaCucuPr;
   const adaBapak = count('Ayah') > 0 || count('Bapak') > 0;
   const adaIbu = count('Ibu') > 0;
   const totalSaudara = count('Saudara Laki-laki Sekandung') + count('Saudara Perempuan Sekandung') + count('Saudara Laki-laki Seibu') + count('Saudara Perempuan Seibu');
 
-  // 1. Deteksi Hijab Mahjub (Hirman)
+  // 1. Deteksi Hijab Mahjub (Hirman) & Status Orang Tua Cucu
   heirs = heirs.map(h => {
     if (h.status === 'Meninggal') return h;
+
+    // Cek jika Cucu memiliki parentId yang orang tuanya MASIH HIDUP
+    if (isCucuAny(h.hubungan)) {
+      if (h.parentId) {
+        const parentHeir = ahliWarisList.find(p => p.id === h.parentId);
+        if (parentHeir && parentHeir.statusHidup !== false) {
+          h.status = 'Mahjub';
+          h.alasan = `Mahjub Hirman: Terhalang karena orang tua (${parentHeir.nama || parentHeir.hubungan}) masih hidup dan menerima hak waris secara langsung.`;
+          return h;
+        }
+      }
+    }
 
     if (['Saudara Laki-laki Sekandung', 'Saudara Perempuan Sekandung'].includes(h.hubungan)) {
       if (adaAnakLaki || adaCucuLaki) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh keturunan laki-laki (Anak/Cucu Laki-laki).'; }
       else if (adaBapak) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Ayah/Bapak.'; }
     }
-    if (['Cucu Laki-laki', 'Cucu Perempuan'].includes(h.hubungan)) {
-      if (adaAnakLaki) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Anak Laki-laki.'; }
+
+    // Mahjub Cucu dari Anak Laki-laki jika ada Anak Laki-laki (Kecuali sebagai AWP KHI jika ayahnya wafat)
+    if (isCucuLkLk(h.hubungan) || isCucuPrLk(h.hubungan)) {
+      if (adaAnakLaki) {
+        // Cek apakah ayahnya sudah meninggal (punya parentId ke anak laki yang wafat)
+        const parentHeir = h.parentId ? ahliWarisList.find(p => p.id === h.parentId) : null;
+        const isOrangTuaWafat = parentHeir ? parentHeir.statusHidup === false : (h.hubungan.includes("dari Anak Laki-laki"));
+
+        if (!isOrangTuaWafat) {
+          h.status = 'Mahjub';
+          h.alasan = 'Mahjub Hirman: Terhalang oleh Anak Laki-laki pewaris yang masih hidup.';
+        }
+      }
     }
-    if (h.hubungan === 'Cucu Perempuan' && count('Anak Perempuan') >= 2 && !adaCucuLaki) {
-      h.status = 'Mahjub';
-      h.alasan = 'Mahjub Hirman: Terhalang karena bagian 2/3 Anak Perempuan telah terpenuhi.';
+
+    if (isCucuPrLk(h.hubungan) && count('Anak Perempuan') >= 2 && !adaCucuLaki) {
+      const parentHeir = h.parentId ? ahliWarisList.find(p => p.id === h.parentId) : null;
+      const isOrangTuaWafat = parentHeir ? parentHeir.statusHidup === false : (h.hubungan.includes("dari Anak Laki-laki"));
+      if (!isOrangTuaWafat) {
+        h.status = 'Mahjub';
+        h.alasan = 'Mahjub Hirman: Terhalang karena bagian 2/3 Anak Perempuan telah terpenuhi.';
+      }
     }
+
     if (h.hubungan === 'Kakek' && adaBapak) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Ayah/Bapak.'; }
     if (h.hubungan === 'Nenek' && adaIbu) { h.status = 'Mahjub'; h.alasan = 'Mahjub Hirman: Terhalang oleh Ibu.'; }
     if (['Saudara Laki-laki Seibu', 'Saudara Perempuan Seibu'].includes(h.hubungan)) {
@@ -99,6 +145,12 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
 
   const activeHeirs = heirs.filter(h => h.status !== 'Mahjub' && h.status !== 'Meninggal');
   const countActive = (hubungan: string) => activeHeirs.filter(h => h.hubungan === hubungan).length;
+
+  // Helper count active cucu
+  const activeCucuLkLk = activeHeirs.filter(h => isCucuLkLk(h.hubungan)).length;
+  const activeCucuPrLk = activeHeirs.filter(h => isCucuPrLk(h.hubungan)).length;
+  const activeCucuLkPr = activeHeirs.filter(h => isCucuLkPr(h.hubungan)).length;
+  const activeCucuPrPr = activeHeirs.filter(h => isCucuPrPr(h.hubungan)).length;
 
   // 3. Distribusi Porsi (Dzawil Furud & Ashabah)
   activeHeirs.forEach(h => {
@@ -181,27 +233,63 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
       h.jatahPersen = adaAnakPr ? 'Ashabah (2:1)' : 'Ashabah';
       h.alasan = adaAnakPr ? 'Mendapat sisa harta (Ashabah) dengan porsi 2x lipat dari anak perempuan.' : 'Mendapat sisa harta (Ashabah) sebagai keturunan laki-laki utama.';
     }
-    if (h.hubungan === 'Cucu Laki-laki') {
-      h.ashabah = true; h.status = 'Mewarisi';
-      h.ashabahRatio = adaCucuPr ? 2 : 1;
-      h.jatahPersen = adaCucuPr ? 'Ashabah (2:1)' : 'Ashabah';
-      h.alasan = adaCucuPr ? 'Mendapat sisa harta (Ashabah) bersama cucu perempuan (2:1).' : 'Mendapat sisa harta (Ashabah) karena tidak ada anak laki-laki.';
+
+    // Cucu Laki-laki dari Anak Laki-laki
+    if (isCucuLkLk(h.hubungan)) {
+      if (adaAnakLaki) {
+        // Ahli Waris Pengganti (AWP) menurut KHI Pasal 185
+        h.ashabah = true; h.status = 'Mewarisi';
+        h.ashabahRatio = activeCucuPrLk > 0 ? 2 : 1;
+        h.jatahPersen = 'Ashabah (AWP KHI Pasal 185)';
+        h.alasan = 'Ahli Waris Pengganti (KHI Pasal 185): Menggantikan posisi ayah (anak laki-laki) yang wafat terlebih dahulu.';
+      } else {
+        h.ashabah = true; h.status = 'Mewarisi';
+        h.ashabahRatio = activeCucuPrLk > 0 ? 2 : 1;
+        h.jatahPersen = activeCucuPrLk > 0 ? 'Ashabah (2:1)' : 'Ashabah';
+        h.alasan = activeCucuPrLk > 0 ? 'Mendapat sisa harta (Ashabah) bersama cucu perempuan dari anak laki-laki (2:1).' : 'Mendapat sisa harta (Ashabah) menggantikan anak laki-laki.';
+      }
     }
-    if (h.hubungan === 'Cucu Perempuan') {
-      if (adaCucuLaki) {
+
+    // Cucu Perempuan dari Anak Laki-laki
+    if (isCucuPrLk(h.hubungan)) {
+      if (activeCucuLkLk > 0) {
         h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1; h.jatahPersen = 'Ashabah (1:2)';
-        h.alasan = 'Menjadi Ashabah bil Ghair bersama cucu laki-laki dengan perbandingan 1:2.';
+        h.alasan = 'Menjadi Ashabah bil Ghair bersama cucu laki-laki dari anak laki-laki (1:2).';
       } else if (countActive('Anak Perempuan') === 1) {
-        const totalCP = countActive('Cucu Perempuan');
+        const totalCP = activeCucuPrLk;
         h.fraction = { n: 1, d: 6 * totalCP };
         h.jatahPersen = totalCP === 1 ? '1/6' : `1/6 (Bagi ${totalCP})`;
         h.alasan = `Fardhu ${h.jatahPersen} sebagai penyempurna 2/3 (takmilah ats-tsulutsain) bersama 1 anak perempuan.`;
         h.status = 'Mewarisi'; h.raddTarget = true;
       } else if (countActive('Anak Perempuan') === 0) {
-        const totalCP = countActive('Cucu Perempuan');
+        const totalCP = activeCucuPrLk;
         h.fraction = totalCP === 1 ? { n: 1, d: 2 } : { n: 2, d: 3 * totalCP };
         h.jatahPersen = totalCP === 1 ? '1/2' : `2/3 (Bagi ${totalCP})`;
-        h.alasan = `Fardhu ${h.jatahPersen} karena tidak ada anak laki-laki maupun anak perempuan.`;
+        h.alasan = `Fardhu ${h.jatahPersen} dari porsi cucu perempuan anak laki-laki (ayah wafat).`;
+        h.status = 'Mewarisi'; h.raddTarget = true;
+      } else if (adaAnakLaki) {
+        // AWP KHI
+        h.ashabah = true; h.status = 'Mewarisi'; h.ashabahRatio = 1;
+        h.jatahPersen = 'Ashabah (AWP KHI Pasal 185)';
+        h.alasan = 'Ahli Waris Pengganti (KHI Pasal 185): Menggantikan posisi ayah (anak laki-laki) yang wafat terlebih dahulu.';
+      }
+    }
+
+    // Cucu Laki-laki / Perempuan dari Anak Perempuan (AWP KHI Pasal 185)
+    if (isCucuLkPr(h.hubungan) || isCucuPrPr(h.hubungan)) {
+      const isLk = isCucuLkPr(h.hubungan);
+      const totalCucuPrLine = activeCucuLkPr + activeCucuPrPr;
+      if (adaAnakLaki || adaAnakPr) {
+        h.ashabah = true; h.status = 'Mewarisi';
+        h.ashabahRatio = (isLk && activeCucuPrPr > 0) ? 2 : 1;
+        h.jatahPersen = 'Ashabah (AWP KHI Pasal 185)';
+        h.alasan = 'Ahli Waris Pengganti (KHI Pasal 185): Menggantikan kedudukan ibu (anak perempuan) yang wafat terlebih dahulu.';
+      } else {
+        // Jika tidak ada anak sama sekali, cucu dari anak perempuan mewarisi fardhu ibunya / AWP
+        const totalCP = totalCucuPrLine;
+        h.fraction = totalCP === 1 ? { n: 1, d: 2 } : { n: 2, d: 3 * totalCP };
+        h.jatahPersen = totalCP === 1 ? '1/2 (AWP)' : `2/3 (Bagi ${totalCP} AWP)`;
+        h.alasan = `Menerima porsi Fardhu menggantikan kedudukan ibu (anak perempuan) yang wafat lebih dahulu.`;
         h.status = 'Mewarisi'; h.raddTarget = true;
       }
     }

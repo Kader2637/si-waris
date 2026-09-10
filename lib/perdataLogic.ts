@@ -25,7 +25,14 @@ export function calculatePerdata(
 
   const activeHeirs = ahliWarisList.filter(h => h.statusHidup !== false);
 
-  const gol1 = activeHeirs.filter(h => ["Suami", "Istri", "Anak Laki-laki", "Anak Perempuan"].includes(h.hubungan));
+  const gol1Types = [
+    "Suami", "Istri", "Anak Laki-laki", "Anak Perempuan",
+    "Cucu Laki-laki", "Cucu Perempuan",
+    "Cucu Laki-laki dari Anak Laki-laki", "Cucu Perempuan dari Anak Laki-laki",
+    "Cucu Laki-laki dari Anak Perempuan", "Cucu Perempuan dari Anak Perempuan"
+  ];
+
+  const gol1 = activeHeirs.filter(h => gol1Types.includes(h.hubungan));
   const gol2 = activeHeirs.filter(h => ["Ayah", "Ibu", "Saudara Laki-laki Sekandung", "Saudara Perempuan Sekandung"].includes(h.hubungan));
 
   let results: PerdataResultItem[] = [];
@@ -35,12 +42,15 @@ export function calculatePerdata(
     results = activeHeirs.map(h => {
       const isGol1 = gol1.some(g => g.hubungan === h.hubungan);
       if (isGol1) {
+        const isCucu = h.hubungan.startsWith("Cucu");
         return {
           ahliWarisId: h.id || h.hubungan,
           nama: h.nama || h.hubungan,
           hubungan: h.hubungan,
           status: "Mewarisi",
-          alasan: "Golongan I: Pasangan dan Anak membagi rata (Pasal 852a KUHPerdata)",
+          alasan: isCucu 
+            ? "Golongan I (Plaatsvervulling): Menggantikan tempat orang tua yang wafat (Pasal 841 KUHPerdata)"
+            : "Golongan I: Pasangan dan Anak membagi rata (Pasal 852a KUHPerdata)",
           jatahPersen: `${(sharePerPerson * 100).toFixed(2)}%`,
           jatahNominal: Math.round(sharePerPerson * hartaBersih),
         };
