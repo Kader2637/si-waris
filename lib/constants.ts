@@ -13,6 +13,8 @@ export const HUBUNGAN_OPTIONS: HubunganOption[] = [
   { value: "Cucu Perempuan", label: "Cucu Perempuan (dari Anak Laki-laki)", subtext: "Cucu perempuan dari anak laki-laki almarhum" },
   { value: "Cucu Laki-laki dari Anak Laki-laki", label: "Cucu Laki-laki dari Anak Laki-laki (Ayah Wafat)", subtext: "Cucu laki-laki dari anak laki-laki yang telah meninggal lebih dahulu" },
   { value: "Cucu Perempuan dari Anak Laki-laki", label: "Cucu Perempuan dari Anak Laki-laki (Ayah Wafat)", subtext: "Cucu perempuan dari anak laki-laki yang telah meninggal lebih dahulu" },
+  { value: "Cucu Laki-laki Anak Perempuan", label: "Cucu Laki-laki (dari Anak Perempuan)", subtext: "Cucu laki-laki dari anak perempuan almarhum" },
+  { value: "Cucu Perempuan Anak Perempuan", label: "Cucu Perempuan (dari Anak Perempuan)", subtext: "Cucu perempuan dari anak perempuan almarhum" },
   { value: "Cucu Laki-laki dari Anak Perempuan", label: "Cucu Laki-laki dari Anak Perempuan (Ibu Wafat)", subtext: "Cucu laki-laki dari anak perempuan yang telah meninggal (Ahli Waris Pengganti)" },
   { value: "Cucu Perempuan dari Anak Perempuan", label: "Cucu Perempuan dari Anak Perempuan (Ibu Wafat)", subtext: "Cucu perempuan dari anak perempuan yang telah meninggal (Ahli Waris Pengganti)" },
   { value: "Ayah", label: "Ayah", subtext: "Bapak kandung pewaris (Dzawil Furud / Ashabah)" },

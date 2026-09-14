@@ -67,7 +67,13 @@ export function calculateAdatJawa(
 
   // 3. Distribusi ke Keturunan (Recursive)
   // Cari anak-anak langsung dari Jenazah (parentId = null)
-  const children = ahliWarisList.filter(h => !h.parentId && (h.hubungan === "Anak Laki-laki" || h.hubungan === "Anak Perempuan"));
+  let children = ahliWarisList.filter(h => !h.parentId && (h.hubungan === "Anak Laki-laki" || h.hubungan === "Anak Perempuan"));
+
+  // Jika tidak ada Anak sama sekali di daftar (misal hanya cucu yang didaftarkan),
+  // perlakukan cucu tanpa parentId sebagai ahli waris tingkat pertama
+  if (children.length === 0) {
+    children = ahliWarisList.filter(h => h.hubungan.startsWith("Cucu") && !h.parentId);
+  }
 
   distributeRecursive(children, hartaBersih, 1, "Harta Warisan", ahliWarisList, results, metode, hartaBersih);
 

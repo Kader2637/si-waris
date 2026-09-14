@@ -184,10 +184,10 @@ export default function AdatJawaPage() {
                 <span
                   key={s.idx}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${step === s.idx
-                      ? "bg-[oklch(0.4_0.093_158)] text-white"
-                      : step > s.idx
-                        ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
-                        : "bg-slate-100 text-slate-400"
+                    ? "bg-[oklch(0.4_0.093_158)] text-white"
+                    : step > s.idx
+                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
+                      : "bg-slate-100 text-slate-400"
                     }`}
                 >
                   {s.label}
@@ -326,8 +326,8 @@ export default function AdatJawaPage() {
                       key={m.value}
                       onClick={() => setMetodeAdat(m.value)}
                       className={`flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 transition-all shadow-2xs ${metodeAdat === m.value
-                          ? "border-[oklch(0.4_0.093_158)] bg-[oklch(0.4_0.093_158/0.05)] ring-2 ring-[oklch(0.4_0.093_158/0.2)]"
-                          : "border-slate-200 bg-white hover:border-emerald-300"
+                        ? "border-[oklch(0.4_0.093_158)] bg-[oklch(0.4_0.093_158/0.05)] ring-2 ring-[oklch(0.4_0.093_158/0.2)]"
+                        : "border-slate-200 bg-white hover:border-emerald-300"
                         }`}
                     >
                       <span className="flex items-center gap-2">
@@ -496,8 +496,8 @@ export default function AdatJawaPage() {
                   setStep((s) => (s + 1) as any);
                 }}
                 className={`px-6 py-3 text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-md transition-all ${(step === 0 && namaPewaris.trim() && hartaKotorVal > 0) || (step === 1 && ahliWaris.length > 0)
-                    ? "bg-[#0b6245] hover:bg-[#084b34] text-white cursor-pointer scale-102 hover:scale-105"
-                    : "bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed opacity-60"
+                  ? "bg-[#0b6245] hover:bg-[#084b34] text-white cursor-pointer scale-102 hover:scale-105"
+                  : "bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed opacity-60"
                   }`}
               >
                 Lanjut <ArrowRight className="size-4" />

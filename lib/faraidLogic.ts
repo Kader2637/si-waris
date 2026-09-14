@@ -36,7 +36,8 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
     const isCucuType = [
       "Cucu Laki-laki", "Cucu Perempuan", 
       "Cucu Laki-laki dari Anak Laki-laki", "Cucu Perempuan dari Anak Laki-laki",
-      "Cucu Laki-laki dari Anak Perempuan", "Cucu Perempuan dari Anak Perempuan"
+      "Cucu Laki-laki dari Anak Perempuan", "Cucu Perempuan dari Anak Perempuan",
+      "Cucu Laki-laki Anak Perempuan", "Cucu Perempuan Anak Perempuan"
     ].includes(h.hubungan);
 
     if (isCucuType && !h.parentId) {
@@ -67,8 +68,8 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
   
   const isCucuLkLk = (h: string) => ["Cucu Laki-laki", "Cucu Laki-laki dari Anak Laki-laki"].includes(h);
   const isCucuPrLk = (h: string) => ["Cucu Perempuan", "Cucu Perempuan dari Anak Laki-laki"].includes(h);
-  const isCucuLkPr = (h: string) => h === "Cucu Laki-laki dari Anak Perempuan";
-  const isCucuPrPr = (h: string) => h === "Cucu Perempuan dari Anak Perempuan";
+  const isCucuLkPr = (h: string) => h === "Cucu Laki-laki dari Anak Perempuan" || h === "Cucu Laki-laki Anak Perempuan";
+  const isCucuPrPr = (h: string) => h === "Cucu Perempuan dari Anak Perempuan" || h === "Cucu Perempuan Anak Perempuan";
   const isCucuAny = (h: string) => isCucuLkLk(h) || isCucuPrLk(h) || isCucuLkPr(h) || isCucuPrPr(h);
 
   const adaAnakLaki = count('Anak Laki-laki') > 0;
@@ -228,10 +229,13 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
       }
     }
     if (h.hubungan === 'Anak Laki-laki') {
+      const adaAnakPrAtauCucuPrAWP = adaAnakPr || activeCucuLkPr > 0 || activeCucuPrPr > 0;
       h.ashabah = true; h.status = 'Mewarisi'; 
-      h.ashabahRatio = adaAnakPr ? 2 : 1; 
-      h.jatahPersen = adaAnakPr ? 'Ashabah (2:1)' : 'Ashabah';
-      h.alasan = adaAnakPr ? 'Mendapat sisa harta (Ashabah) dengan porsi 2x lipat dari anak perempuan.' : 'Mendapat sisa harta (Ashabah) sebagai keturunan laki-laki utama.';
+      h.ashabahRatio = adaAnakPrAtauCucuPrAWP ? 2 : 1; 
+      h.jatahPersen = adaAnakPrAtauCucuPrAWP ? 'Ashabah (2:1)' : 'Ashabah';
+      h.alasan = adaAnakPrAtauCucuPrAWP 
+        ? 'Mendapat sisa harta (Ashabah) dengan porsi 2x lipat dari keturunan perempuan / cucu AWP.' 
+        : 'Mendapat sisa harta (Ashabah) sebagai keturunan laki-laki utama.';
     }
 
     // Cucu Laki-laki dari Anak Laki-laki
@@ -280,12 +284,14 @@ export function calculateFaraid(jenazah: PartialJenazah, ahliWarisList: PartialA
       const isLk = isCucuLkPr(h.hubungan);
       const totalCucuPrLine = activeCucuLkPr + activeCucuPrPr;
       if (adaAnakLaki || adaAnakPr) {
+        // Cucu AWP menggantikan posisi Anak Perempuan → rasio 1 (sedangkan Anak Laki-laki rasio 2)
         h.ashabah = true; h.status = 'Mewarisi';
+        // Jika sesama cucu dari anak perempuan ada laki dan perempuan, mereka 2:1 sesama
         h.ashabahRatio = (isLk && activeCucuPrPr > 0) ? 2 : 1;
-        h.jatahPersen = 'Ashabah (AWP KHI Pasal 185)';
-        h.alasan = 'Ahli Waris Pengganti (KHI Pasal 185): Menggantikan kedudukan ibu (anak perempuan) yang wafat terlebih dahulu.';
+        h.jatahPersen = isLk && activeCucuPrPr > 0 ? 'Ashabah (AWP 2:1 sesama cucu)' : 'Ashabah (AWP KHI Pasal 185)';
+        h.alasan = 'Ahli Waris Pengganti (KHI Pasal 185): Menggantikan kedudukan ibu (anak perempuan) yang wafat terlebih dahulu. Mendapat porsi setara Anak Perempuan dalam rasio 2:1 dengan Anak Laki-laki.';
       } else {
-        // Jika tidak ada anak sama sekali, cucu dari anak perempuan mewarisi fardhu ibunya / AWP
+        // Jika tidak ada anak sama sekali, cucu dari anak perempuan mewarisi fardhu ibunya
         const totalCP = totalCucuPrLine;
         h.fraction = totalCP === 1 ? { n: 1, d: 2 } : { n: 2, d: 3 * totalCP };
         h.jatahPersen = totalCP === 1 ? '1/2 (AWP)' : `2/3 (Bagi ${totalCP} AWP)`;
