@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { applyTheme, useIsDark } from "@/lib/theme";
 import {
   Grid,
   Users,
@@ -39,26 +39,10 @@ interface SidebarProps {
 
 export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark" || document.documentElement.classList.contains("dark")) {
-      setIsDark(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
+  const isDark = useIsDark();
 
   const toggleDarkMode = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+    applyTheme(!isDark);
   };
 
   return (
@@ -73,21 +57,21 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
 
       {/* FIXED PINNED SIDEBAR (STAYS PINNED ON SCROLL) */}
       <aside
-        className={`w-64 min-w-64 bg-white text-slate-700 border-r border-slate-200/80 flex flex-col shrink-0 h-screen sticky top-0 left-0 transition-all duration-300 z-50 overflow-y-auto ${
+        className={`w-64 min-w-64 bg-white dark:bg-[#0f1624] text-slate-700 dark:text-slate-300 border-r border-slate-200/80 dark:border-slate-800 flex flex-col shrink-0 h-screen sticky top-0 left-0 transition-all duration-300 z-50 overflow-y-auto ${
           mobileOpen ? "fixed inset-y-0 left-0 shadow-2xl flex" : "hidden lg:flex"
         }`}
       >
         {/* Brand Logo Header */}
-        <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 shrink-0 sticky top-0 bg-white dark:bg-[#111726] z-10">
+        <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 shrink-0 sticky top-0 bg-white dark:bg-[#0f1624] z-10">
           <Link href="/admin/dashboard" className="flex items-center gap-3 no-underline">
             <span className="grid size-9 place-items-center rounded-xl bg-[#0b6245] text-white shadow-sm">
               <Scale className="size-5" />
             </span>
             <span className="leading-none">
-              <span className="block text-lg font-extrabold tracking-tight text-slate-900 font-sans">
+              <span className="block text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
                 E-<span className="text-[#ca9a28]">MAWARIST</span>
               </span>
-              <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748b] font-mono">
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748b] dark:text-slate-400 font-mono">
                 ADMIN PORTAL
               </span>
             </span>
@@ -99,7 +83,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           
           {/* MENU Group */}
           <div>
-            <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400">
+            <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400 dark:text-slate-400">
               MENU
             </p>
             <nav className="space-y-1">
@@ -115,11 +99,11 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                     onClick={onCloseMobile}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all no-underline ${
                       isActive
-                        ? "bg-[#e6f4ee] text-[#0b6245] dark:bg-[#0b6245]/20 dark:text-emerald-400 font-bold"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                        ? "bg-[#e6f4ee] text-[#0b6245] dark:bg-emerald-500/15 dark:text-emerald-400 font-bold"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100"
                     }`}
                   >
-                    <Icon className={`size-4 ${isActive ? "text-[#0b6245] dark:text-emerald-400" : "text-slate-400"}`} />
+                    <Icon className={`size-4 ${isActive ? "text-[#0b6245] dark:text-emerald-400" : "text-slate-400 dark:text-slate-400"}`} />
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
                       <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-rose-500 text-white rounded-md uppercase">
@@ -134,7 +118,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
 
           {/* SUPPORT Group (Renamed from PERKAKAS) */}
           <div>
-            <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400">
+            <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-widest text-slate-400 dark:text-slate-400">
               SUPPORT
             </p>
             <nav className="space-y-1">
@@ -148,11 +132,11 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                     onClick={onCloseMobile}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all no-underline ${
                       isActive
-                        ? "bg-[#e6f4ee] text-[#0b6245] dark:bg-[#0b6245]/20 dark:text-emerald-400 font-bold"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                        ? "bg-[#e6f4ee] text-[#0b6245] dark:bg-emerald-500/15 dark:text-emerald-400 font-bold"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100"
                     }`}
                   >
-                    <Icon className={`size-4 ${isActive ? "text-[#0b6245] dark:text-emerald-400" : "text-slate-400"}`} />
+                    <Icon className={`size-4 ${isActive ? "text-[#0b6245] dark:text-emerald-400" : "text-slate-400 dark:text-slate-400"}`} />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -167,13 +151,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           <button
             type="button"
             onClick={toggleDarkMode}
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition-colors border border-slate-200/60 dark:border-slate-700"
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#131b2b] text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200/60 dark:border-slate-700 cursor-pointer"
           >
             <span className="flex items-center gap-2">
-              {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500" />}
+              {isDark ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4 text-slate-500 dark:text-slate-400" />}
               {isDark ? "Light Mode" : "Dark Mode"}
             </span>
-            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isDark ? "bg-[#0b6245]" : "bg-slate-300"}`}>
+            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isDark ? "bg-[#0b6245] dark:bg-emerald-500" : "bg-slate-300"}`}>
               <div className={`w-3 h-3 rounded-full bg-white shadow-xs transition-transform ${isDark ? "translate-x-4" : "translate-x-0"}`} />
             </div>
           </button>

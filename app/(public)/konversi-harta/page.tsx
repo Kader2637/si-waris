@@ -512,7 +512,7 @@ export default function KonversiHartaPage() {
                   <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                     <Plus className="size-5 text-[#0b6245] dark:text-emerald-400" /> Tambah Aset Warisan Baru
                   </h2>
-                  <span className="text-xs text-[#0b6245] font-bold font-mono">Acuan ZNT E-MAWARIST</span>
+                  <span className="text-xs text-[#0b6245] dark:text-emerald-400 font-bold font-mono">Acuan ZNT E-MAWARIST</span>
                 </div>
 
                 {/* KATEGORI PILL TABS */}
@@ -733,7 +733,7 @@ export default function KonversiHartaPage() {
                         {formAdaBangunan && (
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                             <div>
-                              <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                              <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                                 Luas Bangunan (m²)
                               </label>
                               <input
@@ -741,11 +741,11 @@ export default function KonversiHartaPage() {
                                 value={formLuasBangunan}
                                 onChange={(e) => setFormLuasBangunan(e.target.value)}
                                 placeholder="Contoh: 100"
-                                className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 outline-none"
+                                className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 outline-none"
                               />
                             </div>
                             <div>
-                              <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                              <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                                 Tipe Bangunan (PUPR)
                               </label>
                               <Select2
@@ -757,14 +757,14 @@ export default function KonversiHartaPage() {
                               />
                             </div>
                             <div>
-                              <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                              <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                                 Biaya Bangunan/m² (Rp)
                               </label>
                               <input
                                 type="text"
                                 value={formHargaBangunanM2}
                                 onChange={(e) => setFormHargaBangunanM2(e.target.value)}
-                                className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono outline-none"
+                                className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-mono outline-none"
                               />
                             </div>
                           </div>
@@ -969,7 +969,7 @@ export default function KonversiHartaPage() {
             
             {/* TOTAL CONVERSION SUMMARY CARD */}
             <ScrollReveal delay={250}>
-              <div className="glass rounded-3xl p-6 sm:p-8 border border-[#0b6245]/30 bg-gradient-to-br from-white/90 via-[#0b6245]/5 to-[#ca9a28]/10 dark:from-[#151c2c] dark:to-[#0b6245]/20 space-y-6 shadow-2xl relative overflow-hidden">
+              <div className="glass rounded-3xl p-6 sm:p-8 border border-[#0b6245]/30 dark:border-emerald-500/30 bg-gradient-to-br from-white/90 via-[#0b6245]/5 to-[#ca9a28]/10 dark:from-[#131b2b] dark:via-[#131b2b] dark:to-[#0b6245]/20 space-y-6 shadow-2xl relative overflow-hidden">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold tracking-widest text-[#0b6245] dark:text-emerald-400 uppercase font-mono">
                     HASIL TAKSIRAN TERKONVERSI

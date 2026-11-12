@@ -1,12 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
   --font-sans: var(--font-plus-jakarta), 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-  --background: oklch(0.985 0.004 247);
-  --foreground: oklch(0.21 0.03 258);
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --primary: #0b6245;
   --gold: #ca9a28;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0b0f19;
+  --foreground: #f1f5f9;
 }
 
 * {
@@ -14,8 +23,8 @@
 }
 
 body {
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -28,26 +37,44 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-aurora {
-  background-image: 
+  background-color: #f8fafc;
+  background-image:
     radial-gradient(1000px 500px at 15% -10%, rgba(11, 98, 69, 0.14), transparent),
     radial-gradient(800px 420px at 90% 0%, rgba(202, 154, 40, 0.14), transparent);
 }
 
+.dark .hero-aurora {
+  background-color: #0b0f19;
+  background-image:
+    radial-gradient(1000px 500px at 15% -10%, rgba(16, 185, 129, 0.18), transparent),
+    radial-gradient(800px 420px at 90% 0%, rgba(202, 154, 40, 0.14), transparent);
+}
+
 .glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.85);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px -15px rgba(15, 23, 42, 0.08);
 }
 
+.dark .glass {
+  background: rgba(19, 27, 43, 0.85);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
 .lift {
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .lift:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 45px -20px rgba(11, 98, 69, 0.25);
+}
+
+.dark .lift:hover {
+  box-shadow: 0 20px 45px -20px rgba(16, 185, 129, 0.22);
 }
 
 /* ==========================================================================
@@ -86,109 +113,12 @@ h1, h2, h3, h4, h5, h6 {
   animation-range: entry 5% cover 25%;
 }
 
-/* ==========================================================================
-   DARK MODE SYSTEM & OVERRIDES (FULL COMPATIBILITY ACROSS ALL PAGES)
-   ========================================================================== */
-
-.dark {
-  color-scheme: dark;
-}
-
-.dark body {
-  background-color: #0b0f19 !important;
-  color: #f1f5f9 !important;
-}
-
-.dark [class*="bg-[#f8fafc]"],
-.dark [class*="bg-slate-100"],
-.dark [class*="bg-slate-50"] {
-  background-color: #1a2336 !important;
-}
-
-.dark [class*="bg-white"] {
-  background-color: #151c2c !important;
-  border-color: #26334d !important;
-  color: #f1f5f9 !important;
-}
-
-.dark header {
-  background-color: rgba(21, 28, 44, 0.85) !important;
-  border-color: #26334d !important;
-}
-
-.dark aside {
-  background-color: #111726 !important;
-  border-color: #222d42 !important;
-  color: #e2e8f0 !important;
-}
-
-.dark [class*="text-[#0f172a]"],
-.dark .text-slate-900,
-.dark .text-slate-800 {
-  color: #f8fafc !important;
-}
-
-.dark [class*="text-[#475569]"],
-.dark .text-slate-700,
-.dark .text-slate-600 {
-  color: #cbd5e1 !important;
-}
-
-.dark [class*="text-[#64748b]"],
-.dark .text-slate-500 {
-  color: #94a3b8 !important;
-}
-
-.dark [class*="border-slate-"] {
-  border-color: #26334d !important;
-}
-
-.dark table thead {
-  background-color: #1a2336 !important;
-  color: #94a3b8 !important;
-}
-
-.dark table tbody tr:hover {
-  background-color: #1e293b !important;
-}
-
-.dark input,
-.dark select,
-.dark textarea {
-  background-color: #1a2336 !important;
-  color: #f8fafc !important;
-  border-color: #334155 !important;
-}
-
-.dark select option {
-  background-color: #151c2c !important;
-  color: #f8fafc !important;
-}
-
-.dark .glass {
-  background: rgba(21, 28, 44, 0.85) !important;
-  border-color: rgba(51, 65, 85, 0.8) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-}
-
-.dark .hero-aurora {
-  background-image: 
-    radial-gradient(1000px 500px at 15% -10%, rgba(11, 98, 69, 0.25), transparent),
-    radial-gradient(800px 420px at 90% 0%, rgba(202, 154, 40, 0.2), transparent) !important;
-  background-color: #0f172a !important;
-}
-
-/* Ensure vibrant CTA buttons keep white text in dark mode */
-.dark button.bg-\[\#0b6245\],
-.dark a.bg-\[\#0b6245\] {
-  color: #ffffff !important;
-}
-
 @media print {
   .no-print {
     display: none !important;
   }
   body {
     background: white;
+    color: #0f172a;
   }
 }

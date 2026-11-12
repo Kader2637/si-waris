@@ -52,12 +52,12 @@ export default function InteractiveChart({
     const totalNominal = data.reduce((acc, curr) => acc + curr.jatahNominal, 0);
 
     return (
-      <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold text-base">
-            <PieChartIcon className="size-5 text-[#0b6245]" /> {title || "Diagram Porsi Waris"}
+            <PieChartIcon className="size-5 text-[#0b6245] dark:text-emerald-400" /> {title || "Diagram Porsi Waris"}
           </div>
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#e6f4ee] dark:bg-emerald-950/40 text-[#0b6245] dark:text-emerald-400 font-mono">
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#e6f4ee] dark:bg-emerald-950/50 text-[#0b6245] dark:text-emerald-400 font-mono">
             Total Tirkah: Rp {totalNominal.toLocaleString("id-ID")}
           </span>
         </div>
@@ -96,8 +96,8 @@ export default function InteractiveChart({
                 onMouseLeave={() => setHoveredIdx(null)}
                 className={`p-3 rounded-xl border transition-all cursor-pointer ${
                   isHovered
-                    ? "border-[#0b6245] bg-[#e6f4ee]/50 dark:bg-slate-800 shadow-2xs"
-                    : "border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40"
+                    ? "border-[#0b6245] dark:border-emerald-500 bg-[#e6f4ee]/60 dark:bg-emerald-500/15 shadow-2xs"
+                    : "border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]"
                 }`}
               >
                 <div className="flex items-center justify-between text-xs font-semibold">
@@ -126,7 +126,7 @@ export default function InteractiveChart({
   return (
     <div className="space-y-4">
       {/* Interactive Hover / Click Status Header */}
-      <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+      <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-[#0f172a] p-3 rounded-xl border border-slate-200/70 dark:border-slate-800">
         <span className="text-slate-600 dark:text-slate-300 font-medium">
           {selectedDay
             ? `Hari terpilih: ${selectedDay}`
@@ -170,10 +170,10 @@ export default function InteractiveChart({
                   isSelected
                     ? "bg-[#ca9a28] shadow-md scale-105"
                     : isHovered
-                    ? "bg-[#084b34] scale-105 shadow-md"
+                    ? "bg-[#084b34] dark:bg-emerald-500 scale-105 shadow-md"
                     : b.isToday || b.count > 0
-                    ? "bg-[#0b6245] hover:bg-[#084b34]"
-                    : "bg-slate-200 dark:bg-slate-700 hover:bg-slate-300"
+                    ? "bg-[#0b6245] dark:bg-emerald-600 hover:bg-[#084b34] dark:hover:bg-emerald-500"
+                    : "bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600"
                 }`}
                 style={{ height: `${heightPct}%` }}
               />
@@ -183,7 +183,7 @@ export default function InteractiveChart({
                 className={`text-xs font-semibold transition-colors ${
                   isSelected || isHovered
                     ? "text-[#0b6245] dark:text-emerald-400 font-bold"
-                    : "text-slate-400"
+                    : "text-slate-500 dark:text-slate-400"
                 }`}
               >
                 {b.day}
@@ -193,11 +193,11 @@ export default function InteractiveChart({
         })}
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
         <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full bg-[#0b6245]" /> Hover / Klik Batang Grafik
+          <span className="size-2.5 rounded-full bg-[#0b6245] dark:bg-emerald-500" /> Hover / Klik Batang Grafik
         </span>
-        <span className="font-mono text-slate-400">Database Real-time</span>
+        <span className="font-mono text-slate-500 dark:text-slate-400">Database Real-time</span>
       </div>
     </div>
   );

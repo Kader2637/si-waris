@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import ThemeSync from "@/components/ThemeSync";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
@@ -43,10 +44,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakarta.variable} ${inter.variable}`}>
-      <body className="min-vh-100 d-flex flex-column font-sans antialiased">
+    <html lang="id" suppressHydrationWarning className={`${plusJakarta.variable} ${inter.variable}`}>
+      <body className="min-h-screen flex flex-col font-sans antialiased bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100">
+        <ThemeSync />
         {children}
-        <Toaster position="top-center" reverseOrder={false} />
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            className: "!bg-white !text-slate-900 dark:!bg-[#131b2b] dark:!text-slate-100 dark:!border dark:!border-slate-700",
+          }}
+        />
       </body>
     </html>
   );

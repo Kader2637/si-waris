@@ -97,8 +97,8 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
 
   if (loading) {
     return (
-      <div className="p-16 text-center text-slate-400 text-xs font-mono space-y-3">
-        <span className="inline-block size-8 border-3 border-[#0b6245] border-t-transparent rounded-full animate-spin" />
+      <div className="p-16 text-center text-slate-500 dark:text-slate-400 text-xs font-mono space-y-3">
+        <span className="inline-block size-8 border-3 border-[#0b6245] dark:border-emerald-400 border-t-transparent rounded-full animate-spin" />
         <p>Memuat detail keluarga & hasil kalkulasi...</p>
       </div>
     );
@@ -106,7 +106,7 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
 
   if (!data) {
     return (
-      <div className="p-12 text-center text-rose-500 font-semibold text-sm bg-white rounded-2xl border border-rose-200">
+      <div className="p-12 text-center text-rose-500 dark:text-rose-400 font-semibold text-sm bg-white dark:bg-[#131b2b] rounded-2xl border border-rose-200 dark:border-rose-800/60">
         Data keluarga tidak ditemukan di database.
       </div>
     );
@@ -122,16 +122,16 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
       jatahPersen: h.hasil.jatahPersen,
     }));
 
-  const textVoice = `Ringkasan Pembagian Waris Keluarga ${data.nama}. Total harta kotor sebesar Rp ${data.hartaKotor.toLocaleString('id-ID')}, dikurangi hutang dan wasiat, menghasilkan harta bersih sebesar Rp ${hartaBersih.toLocaleString('id-ID')}. Dasar hukum yang digunakan adalah ${data.hukum === "Islam" ? "Faraidh Islam" : data.hukum === "Perdata" ? "Hukum Perdata KUHPerdata" : "Hukum Adat Jawa"}.`;
+  const textVoice = `Berikut ringkasan kasus waris almarhum atau almarhumah ${data.nama}. Total harta peninggalan tercatat Rp ${data.hartaKotor.toLocaleString('id-ID')}. Setelah dikurangi kewajiban utang dan wasiat, harta bersih yang siap dibagikan berjumlah Rp ${hartaBersih.toLocaleString('id-ID')}. Perhitungan ini mengacu pada ${data.hukum === "Islam" ? "Faraidh Islam" : data.hukum === "Perdata" ? "Hukum Perdata KUHPerdata" : "Hukum Adat Jawa"}.`;
 
   return (
-    <div className="space-y-6 text-[#0f172a] font-sans antialiased">
+    <div className="space-y-6 text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* Top Action Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link 
           href="/admin/keluarga" 
-          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all no-underline shadow-2xs"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#131b2b] hover:bg-slate-50 dark:hover:bg-slate-800 transition-all no-underline shadow-2xs"
         >
           <ArrowLeft className="size-4" /> Kembali ke Kelola Data
         </Link>
@@ -140,7 +140,7 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
           <button 
             onClick={downloadPDF} 
             disabled={!data.logKalkulasi}
-            className="inline-flex items-center gap-1.5 px-4 py-2 border border-rose-200 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 transition-all cursor-pointer shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-4 py-2 border border-rose-200 dark:border-rose-800/70 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/15 hover:bg-rose-100 dark:hover:bg-rose-500/25 disabled:opacity-50 transition-all cursor-pointer shadow-2xs"
           >
             <FileDown className="size-4" /> Unduh Laporan PDF
           </button>
@@ -197,56 +197,56 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
 
       {/* AUDIO EXPLANATION ASSISTANT WIDGET */}
       <AudioExplanation
-        title={`Penjelasan Suara Kasus Pewaris ${data.nama}`}
-        badge="Voice Summary Kasus"
+        title={`Ringkasan Audio Kasus Pewaris ${data.nama}`}
+        badge="Ringkasan Audio Kasus"
         text={textVoice}
       />
 
       {/* 4 SUMMARY METRIC CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Harta Kotor</span>
-            <Wallet className="size-4 text-[#0b6245]" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase font-mono">Harta Kotor</span>
+            <Wallet className="size-4 text-[#0b6245] dark:text-emerald-400" />
           </div>
-          <div className="text-xl font-bold text-slate-900 font-mono">
+          <div className="text-xl font-bold text-slate-900 dark:text-white font-mono">
             Rp {data.hartaKotor.toLocaleString('id-ID')}
           </div>
-          <p className="text-[11px] text-slate-400">Total aset kotor peninggalan</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">Total aset kotor peninggalan</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Utang & Wasiat</span>
-            <Building2 className="size-4 text-rose-500" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase font-mono">Utang & Wasiat</span>
+            <Building2 className="size-4 text-rose-500 dark:text-rose-400" />
           </div>
-          <div className="text-xl font-bold text-slate-900 font-mono">
+          <div className="text-xl font-bold text-slate-900 dark:text-white font-mono">
             Rp {(data.utang + data.wasiat).toLocaleString('id-ID')}
           </div>
-          <p className="text-[11px] text-slate-400">Utang: Rp {data.utang.toLocaleString('id-ID')} | Wasiat: Rp {data.wasiat.toLocaleString('id-ID')}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">Utang: Rp {data.utang.toLocaleString('id-ID')} | Wasiat: Rp {data.wasiat.toLocaleString('id-ID')}</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Harta Bersih</span>
-            <Sparkles className="size-4 text-[#ca9a28]" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase font-mono">Harta Bersih</span>
+            <Sparkles className="size-4 text-[#ca9a28] dark:text-amber-400" />
           </div>
-          <div className="text-xl font-extrabold text-[#0b6245] font-mono">
+          <div className="text-xl font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono">
             Rp {hartaBersih.toLocaleString('id-ID')}
           </div>
-          <p className="text-[11px] text-emerald-600 font-medium">Siap dibagi kepada ahli waris</p>
+          <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">Siap dibagi kepada ahli waris</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold text-slate-500 uppercase font-mono">Status Kalkulasi</span>
-            <ShieldCheck className="size-4 text-blue-600" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase font-mono">Status Kalkulasi</span>
+            <ShieldCheck className="size-4 text-blue-600 dark:text-blue-400" />
           </div>
-          <div className="text-sm font-bold text-slate-900">
+          <div className="text-sm font-bold text-slate-900 dark:text-white">
             {data.logKalkulasi?.statusAulRadd || "Normal"}
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
             {data.logKalkulasi ? "Tersimpan di PostgreSQL DB" : "Draft (Belum dihitung)"}
           </p>
         </div>
@@ -262,21 +262,21 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
       )}
 
       {/* TABEL AHLI WARIS DETAIL */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <Users className="size-5 text-[#0b6245]" /> Silsilah & Pembagian Ahli Waris ({data.ahliWaris.length})
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
+              <Users className="size-5 text-[#0b6245] dark:text-emerald-400" /> Silsilah & Pembagian Ahli Waris ({data.ahliWaris.length})
             </div>
-            <p className="text-slate-500 text-xs mt-0.5">Rincian status porsi, persentase, nominal rupiah, dan dasar hukum KHI / BW.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Rincian status porsi, persentase, nominal rupiah, dan dasar hukum KHI / BW.</p>
           </div>
           
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 p-1 rounded-xl">
             {["Semua", "Mewarisi", "Mahjub"].map(f => (
               <button 
                 key={f}
                 className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                  filterWaris === f ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-900"
+                  filterWaris === f ? "bg-white dark:bg-[#131b2b] text-[#0b6245] dark:text-emerald-400 shadow-2xs" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
                 onClick={() => setFilterWaris(f)}
               >
@@ -286,9 +286,9 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-100">
+        <div className="overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[11px] tracking-wider">
+            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px] tracking-wider">
               <tr>
                 <th className="px-4 py-3.5">No</th>
                 <th className="px-4 py-3.5">Nama Ahli Waris</th>
@@ -299,38 +299,38 @@ export default function DetailKeluargaPage({ params }: { params: Promise<{ id: s
                 <th className="px-4 py-3.5">Alasan Hukum / KHI</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {data.ahliWaris
                 .filter((h: any) => filterWaris === "Semua" || (filterWaris === "Mewarisi" ? h.hasil?.status === "Mewarisi" : h.hasil?.status !== "Mewarisi"))
                 .map((h: any, idx: number) => (
-                  <tr key={idx} className={h.hasil?.status === "Mahjub" || h.hasil?.status === "Terhijab" ? "bg-rose-50/40 text-slate-500" : "hover:bg-slate-50/80 transition-colors"}>
-                    <td className="px-4 py-3.5 font-bold font-mono text-slate-400">{idx + 1}</td>
+                  <tr key={idx} className={h.hasil?.status === "Mahjub" || h.hasil?.status === "Terhijab" ? "bg-rose-50/40 dark:bg-rose-950/20 text-slate-500 dark:text-slate-400" : "hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"}>
+                    <td className="px-4 py-3.5 font-bold font-mono text-slate-500 dark:text-slate-400">{idx + 1}</td>
                     <td className="px-4 py-3.5">
-                      <strong className="text-slate-900 block font-semibold text-sm">{h.nama || "-"}</strong>
-                      <span className="text-[11px] text-slate-400 font-mono">NIK: {h.nik || "-"}</span>
+                      <strong className="text-slate-900 dark:text-white block font-semibold text-sm">{h.nama || "-"}</strong>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">NIK: {h.nik || "-"}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                         {h.hubungan}
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                        h.hasil?.status === "Mewarisi" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                        h.hasil?.status === "Mewarisi" ? "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300" : "bg-rose-100 dark:bg-rose-500/15 text-rose-800 dark:text-rose-300"
                       }`}>
                         {h.hasil?.status === "Mewarisi" ? <CheckCircle2 className="size-3" /> : <AlertCircle className="size-3" />}
                         {h.hasil?.status || "Mahjub"}
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="px-2.5 py-1 rounded-md border border-slate-200 bg-white font-mono text-xs font-bold text-slate-900 shadow-2xs">
+                      <span className="px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f172a] font-mono text-xs font-bold text-slate-900 dark:text-slate-100 shadow-2xs">
                         {h.hasil?.jatahPersen || "0%"}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 font-extrabold text-[#0b6245] font-mono text-sm">
+                    <td className="px-4 py-3.5 font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono text-sm">
                       Rp {(h.hasil?.jatahNominal || 0).toLocaleString('id-ID')}
                     </td>
-                    <td className="px-4 py-3.5 text-slate-600 leading-relaxed max-w-xs">{h.hasil?.alasan || "Terhalang (Mahjub)."}</td>
+                    <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 leading-relaxed max-w-xs">{h.hasil?.alasan || "Terhalang (Mahjub)."}</td>
                   </tr>
                 ))}
             </tbody>

@@ -111,17 +111,17 @@ export default function SyariahPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* PAGE HERO WITH EXACT WARIS-WISE STYLE */}
-      <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
+      <section className="hero-aurora border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
           <ScrollReveal className="max-w-3xl space-y-3">
-            <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
+            <span className="inline-block rounded-full border border-[#0b6245]/30 dark:border-emerald-500/30 bg-[#0b6245]/10 dark:bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#0b6245] dark:text-emerald-400">
               Hukum Syariah
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Perhitungan Waris Islam (Faraidh)</h1>
-            <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900 dark:text-white">Perhitungan Waris Islam (Faraidh)</h1>
+            <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-300">
               Perhitungan mengikuti kaidah ilmu Faraidh dan Kompilasi Hukum Islam (KHI): penentuan dzawil furud, ashabah, hijab mahjub, hingga penyesuaian 'aul dan radd.
             </p>
           </ScrollReveal>
@@ -134,26 +134,26 @@ export default function SyariahPage() {
         <ScrollReveal>
           <AudioExplanation
             title="Sistem Pembagian Waris Syariah Islam (Faraidh & KHI)"
-            badge="Voice Assistant Faraidh"
-            text="Hukum waris Islam atau Faraidh bersumber dari Al-Qur'an surah An-Nisa. Pembagian harta diawali dengan pelunasan hutang dan wasiat. Kemudian harta dibagi kepada ahli waris Dzawil Furudh yang memiliki porsi tetap seperti setengah, seperempat, atau seperdelapan, dan sisanya dibagikan kepada Ashabah."
+            badge="Panduan Audio Faraidh"
+            text="Dalam hukum waris Islam atau Faraidh yang bersumber dari Surah An-Nisa, langkah pertama sebelum harta dibagikan adalah melunasi seluruh utang pewaris dan melaksanakan wasiat yang sah. Setelah itu, harta bersih diberikan terlebih dahulu kepada ahli waris Dzawil Furudh dengan bagian pasti seperti setengah, seperempat, atau seperdelapan. Barulah sisa hartanya dibagikan kepada ahli waris Ashabah sesuai kaidah nasab."
           />
         </ScrollReveal>
 
         {/* TEORI ACCORDION */}
         <ScrollReveal className="space-y-3">
-          <h2 className="text-xl font-bold text-slate-900">Ringkasan Aturan Faraidh</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Ringkasan Aturan Faraidh</h2>
           <div className="space-y-2">
             {TEORI.map((t, i) => (
-              <div key={i} className="rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white overflow-hidden shadow-2xs">
+              <div key={i} className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131b2b] overflow-hidden shadow-2xs">
                 <button
-                  className="w-full p-4 text-left text-sm font-semibold text-slate-900 flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                  className="w-full p-4 text-left text-sm font-semibold text-slate-900 dark:text-slate-100 flex justify-between items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
                   onClick={() => setOpenTeori(openTeori === i ? null : i)}
                 >
                   <span>{t.q}</span>
-                  <ChevronDown className={`size-4 text-slate-400 transition-transform ${openTeori === i ? "rotate-180 text-[oklch(0.4_0.093_158)]" : ""}`} />
+                  <ChevronDown className={`size-4 text-slate-400 transition-transform ${openTeori === i ? "rotate-180 text-[#0b6245] dark:text-emerald-400" : ""}`} />
                 </button>
                 {openTeori === i && (
-                  <div className="px-4 pb-4 text-sm leading-relaxed text-[oklch(0.53_0.03_255)] border-t border-slate-100 pt-2.5">
+                  <div className="px-4 pb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800 pt-2.5">
                     {t.a}
                   </div>
                 )}
@@ -163,10 +163,10 @@ export default function SyariahPage() {
         </ScrollReveal>
 
         {/* WIZARD CARD */}
-        <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 sm:p-8 shadow-2xs space-y-8">
+        <ScrollReveal className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131b2b] p-6 sm:p-8 shadow-2xs space-y-8">
           
-          <div className="flex items-center justify-between border-b border-slate-100 pb-6">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+            <div className="flex flex-wrap items-center gap-2">
               {[
                 { idx: 0, label: "1. Data Harta" },
                 { idx: 1, label: "2. Ahli Waris" },
@@ -176,10 +176,10 @@ export default function SyariahPage() {
                   key={s.idx}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
                     step === s.idx
-                      ? "bg-[oklch(0.4_0.093_158)] text-white"
+                      ? "bg-[#0b6245] text-white"
                       : step > s.idx
-                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
-                      : "bg-slate-100 text-slate-400"
+                      ? "bg-[#0b6245]/10 dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                   }`}
                 >
                   {s.label}
@@ -189,7 +189,7 @@ export default function SyariahPage() {
 
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer"
               onClick={() => {
                 setHartaTunai("");
                 setHutang("");
@@ -208,10 +208,10 @@ export default function SyariahPage() {
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Nama Pewaris / Almarhum</label>
+                  <label className="text-xs font-medium text-slate-800 dark:text-slate-200 block mb-1.5">Nama Pewaris / Almarhum</label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-medium focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-medium focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500 outline-none"
                     placeholder="Contoh: Bpk. H. Abdullah"
                     value={namaPewaris}
                     onChange={(e) => setNamaPewaris(e.target.value)}
@@ -219,7 +219,7 @@ export default function SyariahPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-slate-800 block mb-1.5">Jenis Kelamin Pewaris</label>
+                  <label className="text-xs font-medium text-slate-800 dark:text-slate-200 block mb-1.5">Jenis Kelamin Pewaris</label>
                   <Select2
                     options={GENDER_OPTIONS}
                     value={gender}
@@ -262,12 +262,12 @@ export default function SyariahPage() {
                   </label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[#0b6245] dark:focus:ring-emerald-500 outline-none"
                     placeholder="Masukkan nominal tunai/kas"
                     value={hartaTunai ? Number(hartaTunai.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setHartaTunai(e.target.value)}
                   />
-                  <span className="text-[10px] text-slate-400 block mt-1">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-1">
                     Nominal tunai / uang kas tambahan yang belum ada di konversi
                   </span>
                 </div>
@@ -278,7 +278,7 @@ export default function SyariahPage() {
                   <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1.5">Hutang Pewaris (Rp)</label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] dark:focus:ring-emerald-500 outline-none"
                     placeholder="Rp 0"
                     value={hutang ? Number(hutang.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setHutang(e.target.value)}
@@ -289,7 +289,7 @@ export default function SyariahPage() {
                   <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1.5">Wasiat Pewaris (Rp, Maks 1/3 Harta)</label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] dark:focus:ring-emerald-500 outline-none"
                     placeholder="Rp 0"
                     value={wasiat ? Number(wasiat.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setWasiat(e.target.value)}
@@ -299,11 +299,11 @@ export default function SyariahPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4 space-y-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Total Harta Kotor (Tirkah)</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">Total Harta Kotor (Tirkah)</p>
                   <p className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">
                     {formatIDR(hartaKotorVal)}
                   </p>
-                  <p className="text-[10px] text-slate-400">Konversi ({formatIDR(hartaKonversiVal)}) + Tunai ({formatIDR(hartaTunaiVal)})</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Konversi ({formatIDR(hartaKonversiVal)}) + Tunai ({formatIDR(hartaTunaiVal)})</p>
                 </div>
 
                 <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-1">
@@ -311,7 +311,7 @@ export default function SyariahPage() {
                   <p className="text-xl font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono">
                     {formatIDR(Math.max(0, hartaKotorVal - hutangVal - wasiatVal))}
                   </p>
-                  <p className="text-[10px] text-slate-500">Setelah dikurangi Hutang ({formatIDR(hutangVal)}) & Wasiat ({formatIDR(wasiatVal)})</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Setelah dikurangi Hutang ({formatIDR(hutangVal)}) & Wasiat ({formatIDR(wasiatVal)})</p>
                 </div>
               </div>
             </div>
@@ -321,28 +321,28 @@ export default function SyariahPage() {
           {step === 1 && (
             <div className="space-y-5">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-900">Pilih & Tambah Ahli Waris</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Pilih & Tambah Ahli Waris</h3>
                 <button
                   type="button"
                   onClick={addHeir}
-                  className="px-4 py-2 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer"
+                  className="px-4 py-2 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer"
                 >
                   + Tambah Ahli Waris
                 </button>
               </div>
 
               {ahliWaris.length === 0 ? (
-                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
-                  Belum ada ahli waris ditambahkan. Klik tombol "+ Tambah Ahli Waris" di atas.
+                <div className="p-8 text-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl text-xs text-slate-400 dark:text-slate-500">
+                  Belum ada ahli waris ditambahkan. Klik tombol &quot;+ Tambah Ahli Waris&quot; di atas.
                 </div>
               ) : (
                 <div className="space-y-3">
                   {ahliWaris.map((h, i) => (
-                    <div key={i} className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50">
+                    <div key={i} className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
                       <div className="flex-1 min-w-[180px]">
                         <input
                           type="text"
-                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                          className="w-full h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 px-3 text-xs font-medium outline-none focus:border-[#0b6245]"
                           placeholder="Nama Ahli Waris (Opsional)"
                           value={h.nama}
                           onChange={(e) => updateHeir(i, "nama", e.target.value)}
@@ -362,7 +362,7 @@ export default function SyariahPage() {
                       <button
                         type="button"
                         onClick={() => removeHeir(i)}
-                        className="px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl border border-rose-200 cursor-pointer"
+                        className="px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl border border-rose-200 dark:border-rose-800/60 cursor-pointer"
                       >
                         Hapus
                       </button>
@@ -377,23 +377,23 @@ export default function SyariahPage() {
           {step === 2 && (
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-3">
-                <div className="p-4 rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Sistem Hukum</p>
-                  <p className="text-lg font-extrabold text-slate-900 mt-1">Faraidh (KHI)</p>
+                <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60">
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Sistem Hukum</p>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white mt-1">Faraidh (KHI)</p>
                 </div>
-                <div className="p-4 rounded-2xl border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)]">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Harta Bersih</p>
-                  <p className="text-lg font-extrabold text-[oklch(0.4_0.093_158)] font-mono mt-1">{formatIDR(hasil.hartaBersih)}</p>
+                <div className="p-4 rounded-2xl border border-[#0b6245]/30 dark:border-emerald-500/30 bg-[#0b6245]/10 dark:bg-emerald-500/15">
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Harta Bersih</p>
+                  <p className="text-lg font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono mt-1">{formatIDR(hasil.hartaBersih)}</p>
                 </div>
-                <div className="p-4 rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Status Aul / Radd</p>
-                  <p className="text-lg font-extrabold text-slate-900 font-mono mt-1">{hasil.statusAulRadd || "Normal"}</p>
+                <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60">
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Status Aul / Radd</p>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white font-mono mt-1">{hasil.statusAulRadd || "Normal"}</p>
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white shadow-2xs">
-                <table className="w-full text-left text-sm text-slate-600">
-                  <thead className="bg-slate-50 text-[oklch(0.53_0.03_255)] font-semibold uppercase text-xs border-b border-slate-200">
+              <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131b2b] shadow-2xs">
+                <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                  <thead className="bg-slate-50 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-semibold uppercase text-xs border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="px-4 py-3">Ahli Waris</th>
                       <th className="px-4 py-3">Status</th>
@@ -401,20 +401,20 @@ export default function SyariahPage() {
                       <th className="px-4 py-3 text-right">Nominal Rupiah</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {hasil.ahliWarisGetted.map((b: any, i: number) => (
-                      <tr key={i} className="hover:bg-slate-50">
+                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="px-4 py-3.5">
-                          <strong className="text-slate-900 block font-semibold">{b.nama}</strong>
-                          <span className="text-xs text-[oklch(0.53_0.03_255)] block">{b.alasan}</span>
+                          <strong className="text-slate-900 dark:text-slate-100 block font-semibold">{b.nama}</strong>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 block">{b.alasan}</span>
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${b.status === "Mewarisi" ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]" : "bg-amber-100 text-amber-800"}`}>
+                          <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${b.status === "Mewarisi" ? "bg-[#0b6245]/10 dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400" : "bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300"}`}>
                             {b.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 font-mono font-bold text-[oklch(0.4_0.093_158)]">{b.jatahPersen}</td>
-                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900">{formatIDR(b.jatahNominal)}</td>
+                        <td className="px-4 py-3.5 font-mono font-bold text-[#0b6245] dark:text-emerald-400">{b.jatahPersen}</td>
+                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-slate-100">{formatIDR(b.jatahNominal)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -424,7 +424,7 @@ export default function SyariahPage() {
               <button
                 type="button"
                 onClick={exportPDF}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[oklch(0.76_0.12_87)] hover:bg-[oklch(0.7_0.12_87)] text-slate-950 text-sm font-semibold rounded-full shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#ca9a28] hover:bg-[#a87e1c] text-white text-sm font-semibold rounded-full shadow-md transition-all cursor-pointer"
               >
                 <Download className="size-4" /> Unduh Laporan PDF
               </button>
@@ -437,7 +437,7 @@ export default function SyariahPage() {
               type="button"
               disabled={step === 0}
               onClick={() => setStep((s) => (s - 1) as any)}
-              className="px-4 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg disabled:opacity-40 flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg disabled:opacity-40 flex items-center gap-1.5 cursor-pointer"
             >
               <ArrowLeft className="size-4" /> Sebelumnya
             </button>

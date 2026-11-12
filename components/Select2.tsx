@@ -122,7 +122,7 @@ export default function Select2({
         width: `${Math.max(coords.width, 220)}px`,
         zIndex: 99999,
       }}
-      className="rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200 dark:border-slate-800 shadow-2xl p-2 space-y-2 animate-in fade-in slide-in-from-top-2"
+      className="rounded-2xl bg-white dark:bg-[#131b2b] border border-slate-200 dark:border-slate-700 shadow-2xl p-2 space-y-2 animate-in fade-in slide-in-from-top-2"
     >
       {/* SEARCH INPUT */}
       <div className="relative">
@@ -133,13 +133,13 @@ export default function Select2({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#0b6245]"
+          className="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#0b6245] dark:focus:border-emerald-500"
         />
         {search && (
           <button
             type="button"
             onClick={() => setSearch("")}
-            className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600"
+            className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
             <X className="size-3.5" />
           </button>
@@ -196,10 +196,10 @@ export default function Select2({
         onClick={() => setOpen(!open)}
         className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border text-xs text-left transition-all cursor-pointer ${
           disabled
-            ? "bg-slate-100 dark:bg-slate-800 border-slate-200 text-slate-400 cursor-not-allowed"
+            ? "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 cursor-not-allowed"
             : open
-            ? "bg-white dark:bg-slate-900 border-[#0b6245] ring-2 ring-[#0b6245]/20 shadow-sm"
-            : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-slate-400"
+            ? "bg-white dark:bg-[#0f172a] border-[#0b6245] dark:border-emerald-500 ring-2 ring-[#0b6245]/20 dark:ring-emerald-500/20 text-slate-800 dark:text-slate-100 shadow-sm"
+            : "bg-white dark:bg-[#0f172a] border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-600"
         }`}
       >
         <span className="truncate font-semibold">

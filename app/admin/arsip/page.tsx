@@ -29,37 +29,37 @@ export default function ArsipPage() {
   });
 
   return (
-    <div className="space-y-6 text-[#0f172a] font-sans">
+    <div className="space-y-6 text-[#0f172a] dark:text-slate-100 font-sans">
       
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Arsip Digital Perhitungan</h1>
-          <p className="text-slate-500 text-xs mt-1">Riwayat laporan waris yang telah difinalisasi di database.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Arsip Digital Perhitungan</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Riwayat laporan waris yang telah difinalisasi di database.</p>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="w-full md:w-80 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 focus-within:ring-2 focus-within:ring-[#0b6245]/20 focus-within:border-[#0b6245] transition-all">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full md:w-80 flex items-center bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 focus-within:ring-2 focus-within:ring-[#0b6245]/20 focus-within:border-[#0b6245] dark:focus-within:border-emerald-500 transition-all">
           <Search className="size-4 text-slate-400 me-2.5 shrink-0" />
           <input
             type="text"
-            className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+            className="w-full bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
             placeholder="Cari nama atau NIK..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-1 bg-slate-50 p-1 border border-slate-200 rounded-xl w-full md:w-auto overflow-x-auto">
+        <div className="flex items-center gap-1 bg-slate-50 dark:bg-[#0f172a] p-1 border border-slate-200 dark:border-slate-700 rounded-xl w-full md:w-auto overflow-x-auto">
           {["Semua", "Islam", "Jawa", "Perdata"].map(h => (
             <button
               key={h}
               className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap ${
                 filterHukum === h 
                   ? "bg-[#0b6245] text-white shadow-xs font-semibold" 
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800"
               }`}
               onClick={() => setFilterHukum(h)}
             >
@@ -72,34 +72,34 @@ export default function ArsipPage() {
       {/* Cards Grid */}
       <div className="scroll-reveal grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full text-center py-12 text-slate-400 text-xs font-medium font-mono">
-            <span className="inline-block size-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2" />
+          <div className="col-span-full text-center py-12 text-slate-500 dark:text-slate-400 text-xs font-medium font-mono">
+            <span className="inline-block size-5 border-2 border-[#0b6245] dark:border-emerald-400 border-t-transparent rounded-full animate-spin me-2" />
             Memuat arsip digital...
           </div>
         ) : filteredArsip.length > 0 ? (
           filteredArsip.map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+            <div key={item.id} className="bg-white dark:bg-[#131b2b] rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <span className="px-2.5 py-1 bg-[#e6f4ee] text-[#0b6245] text-[11px] font-semibold rounded-full">
+                  <span className="px-2.5 py-1 bg-[#e6f4ee] dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400 text-[11px] font-semibold rounded-full">
                     {item.hukum}
                   </span>
-                  <span className="px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-mono rounded-md">
+                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-mono rounded-md">
                     {item.hukum === "Jawa" ? (item.logKalkulasi?.metodeAdat?.replace(/_/g, ' ') || 'Menunggu') : (item.logKalkulasi?.statusAulRadd || 'Normal')}
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-1">{item.nama}</h3>
-                <p className="text-xs text-slate-400 font-mono">NIK: {item.nik || "-"}</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{item.nama}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">NIK: {item.nik || "-"}</p>
               </div>
 
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 text-xs space-y-1.5">
+              <div className="bg-slate-50 dark:bg-[#0f172a] p-3.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-xs space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Harta Bersih:</span>
-                  <strong className="text-[#0b6245] font-semibold">Rp {item.logKalkulasi?.totalHartaBersih?.toLocaleString('id-ID')}</strong>
+                  <span className="text-slate-500 dark:text-slate-400">Harta Bersih:</span>
+                  <strong className="text-[#0b6245] dark:text-emerald-400 font-semibold">Rp {item.logKalkulasi?.totalHartaBersih?.toLocaleString('id-ID')}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Ahli Waris:</span>
-                  <strong className="text-slate-800">{item.ahliWaris?.length || 0} Orang</strong>
+                  <span className="text-slate-500 dark:text-slate-400">Ahli Waris:</span>
+                  <strong className="text-slate-800 dark:text-slate-200">{item.ahliWaris?.length || 0} Orang</strong>
                 </div>
               </div>
 
@@ -112,7 +112,7 @@ export default function ArsipPage() {
             </div>
           ))
         ) : (
-          <div className="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-200 text-slate-400 text-xs">
+          <div className="col-span-full text-center py-12 bg-white dark:bg-[#131b2b] rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs">
             Belum ada arsip perhitungan yang tersimpan.
           </div>
         )}

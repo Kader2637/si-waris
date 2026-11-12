@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import { applyTheme, useIsDark } from "@/lib/theme";
 import {
   Scale,
   Menu,
@@ -27,7 +28,7 @@ import {
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const isDark = useIsDark();
   const [isMaintenance, setIsMaintenance] = useState(false);
 
   // Dropdown combobox states & refs
@@ -50,12 +51,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   }, []);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark" || document.documentElement.classList.contains("dark")) {
-      setIsDark(true);
-      document.documentElement.classList.add("dark");
-    }
-
     const checkMaint = () => {
       const savedMaint = localStorage.getItem("setting_maintenanceMode");
       setIsMaintenance(savedMaint === "true");
@@ -63,19 +58,13 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
     checkMaint();
     window.addEventListener("storage", checkMaint);
-    return () => window.removeEventListener("storage", checkMaint);
+    return () => {
+      window.removeEventListener("storage", checkMaint);
+    };
   }, []);
 
   const toggleDarkMode = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+    applyTheme(!isDark);
   };
 
   const isHukumActive = ["/syariah", "/perdata", "/adat-jawa"].includes(pathname);
@@ -85,7 +74,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* PUBLIC NAVBAR TRANSLUCENT GLASS */}
-      <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/80 dark:bg-[#151c2c]/85 backdrop-blur-xl shadow-xs transition-colors">
+      <header className="no-print fixed top-0 inset-x-0 z-50 border-b border-slate-200/60 dark:border-slate-800/80 bg-white/80 dark:bg-[#0f1624]/85 backdrop-blur-xl shadow-xs transition-colors">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           
           {/* Left Brand / Logo */}
@@ -97,7 +86,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <span className="block text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans whitespace-nowrap">
                 E-<span className="text-[#ca9a28]">MAWARIST</span>
               </span>
-              <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono whitespace-nowrap">
+              <span className="block text-[9px] font-medium uppercase tracking-[0.18em] text-[#64748b] dark:text-slate-400 font-mono whitespace-nowrap">
                 PERHITUNGAN WARIS
               </span>
             </span>
@@ -145,7 +134,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </button>
 
               {hukumOpen && (
-                <div className="absolute top-full left-0 mt-0 w-56 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200/90 dark:border-slate-800 p-2 shadow-xl backdrop-blur-2xl space-y-1 z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full left-0 mt-0 w-56 rounded-2xl bg-white dark:bg-[#131b2b] border border-slate-200/90 dark:border-slate-800 p-2 shadow-xl backdrop-blur-2xl space-y-1 z-50 animate-in fade-in slide-in-from-top-2">
                   <Link
                     href="/syariah"
                     onClick={() => setHukumOpen(false)}
@@ -215,7 +204,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </button>
 
               {simulasiOpen && (
-                <div className="absolute top-full left-0 mt-0 w-64 rounded-2xl bg-white dark:bg-[#151c2c] border border-slate-200/90 dark:border-slate-800 p-2 shadow-xl backdrop-blur-2xl space-y-1 z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full left-0 mt-0 w-64 rounded-2xl bg-white dark:bg-[#131b2b] border border-slate-200/90 dark:border-slate-800 p-2 shadow-xl backdrop-blur-2xl space-y-1 z-50 animate-in fade-in slide-in-from-top-2">
                   <Link
                     href="/konversi-harta"
                     onClick={() => setSimulasiOpen(false)}
@@ -225,10 +214,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                         : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <Building2 className="size-4 text-amber-600 shrink-0 mt-0.5" />
+                    <Building2 className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                     <div>
                       <div className="font-bold text-slate-900 dark:text-white">Konversi Harta (ZNT & PUPR)</div>
-                      <div className="text-[10px] text-slate-500 font-normal">Taksiran tanah, rumah, mobil, emas</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Taksiran tanah, rumah, mobil, emas</div>
                     </div>
                   </Link>
 
@@ -241,10 +230,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                         : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <Calculator className="size-4 text-[#0b6245] shrink-0 mt-0.5" />
+                    <Calculator className="size-4 text-[#0b6245] dark:text-emerald-400 shrink-0 mt-0.5" />
                     <div>
                       <div className="font-bold text-slate-900 dark:text-white">Perhitungan Terpadu</div>
-                      <div className="text-[10px] text-slate-500 font-normal">Komparasi 3 hukum bersamaan</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Komparasi 3 hukum bersamaan</div>
                     </div>
                   </Link>
                 </div>
@@ -304,13 +293,13 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
         {/* Mobile Navigation Drawer */}
         {mobileOpen && (
-          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#151c2c] px-4 py-4 space-y-4 backdrop-blur-xl shadow-xl">
+          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#0f1624]/95 px-4 py-4 space-y-4 backdrop-blur-xl shadow-xl">
             <nav className="flex flex-col gap-1.5">
               <Link
                 href="/"
                 onClick={() => setMobileOpen(false)}
                 className={`rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all no-underline ${
-                  pathname === "/" ? "bg-[#0b6245]/10 text-[#0b6245] dark:text-emerald-400 font-extrabold" : "text-slate-700 dark:text-slate-300"
+                  pathname === "/" ? "bg-[#0b6245]/10 dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400 font-extrabold" : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
                 Beranda
@@ -327,7 +316,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     className="flex items-center justify-between rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     <span>• Hukum Syariah (Faraidh)</span>
-                    <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">Islam</span>
+                    <span className="text-[9px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-1.5 py-0.5 rounded">Islam</span>
                   </Link>
                   <Link
                     href="/perdata"
@@ -335,7 +324,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     className="flex items-center justify-between rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     <span>• Hukum Perdata (BW)</span>
-                    <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">KUHPd</span>
+                    <span className="text-[9px] bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 px-1.5 py-0.5 rounded">KUHPd</span>
                   </Link>
                   <Link
                     href="/adat-jawa"
@@ -343,13 +332,13 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     className="flex items-center justify-between rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     <span>• Hukum Adat Jawa</span>
-                    <span className="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Tradisi</span>
+                    <span className="text-[9px] bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 px-1.5 py-0.5 rounded">Tradisi</span>
                   </Link>
                 </div>
               </div>
 
               <div className="pt-2">
-                <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#ca9a28] font-mono">
+                <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#ca9a28] dark:text-amber-400 font-mono">
                   Simulasi & Taksiran
                 </div>
                 <div className="mt-1 space-y-1">
@@ -358,7 +347,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
-                    <Building2 className="size-3.5 text-amber-600" />
+                    <Building2 className="size-3.5 text-amber-600 dark:text-amber-400" />
                     <span>Konversi Harta (ZNT & PUPR)</span>
                   </Link>
                   <Link
@@ -366,7 +355,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
-                    <Calculator className="size-3.5 text-[#0b6245]" />
+                    <Calculator className="size-3.5 text-[#0b6245] dark:text-emerald-400" />
                     <span>Perhitungan Terpadu (3 Hukum)</span>
                   </Link>
                 </div>
@@ -375,9 +364,17 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <Link
                 href="/tentang"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 no-underline mt-2"
+                className="rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 no-underline mt-2"
               >
                 Tentang Kami
+              </Link>
+
+              <Link
+                href="/admin/dashboard"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 no-underline mt-1"
+              >
+                <LogIn className="size-3.5" /> Portal Admin
               </Link>
             </nav>
           </div>
@@ -390,7 +387,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </main>
 
       {/* FOOTER WIDGET */}
-      <footer className="mt-20 border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#151c2c]">
+      <footer className="mt-20 border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0f1624]">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
           
           <div>
@@ -402,7 +399,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <span className="block text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
                   E-<span className="text-[#ca9a28]">MAWARIST</span>
                 </span>
-                <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-[#64748b] font-mono">
+                <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-[#64748b] dark:text-slate-400 font-mono">
                   PERHITUNGAN WARIS
                 </span>
               </span>
@@ -428,7 +425,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 { href: "/tentang", label: "Tentang Kami" },
               ].map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="hover:text-[#0b6245] transition-colors no-underline">
+                  <Link href={link.href} className="hover:text-[#0b6245] dark:hover:text-emerald-400 transition-colors no-underline">
                     {link.label}
                   </Link>
                 </li>
@@ -440,13 +437,13 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900 dark:text-slate-100 font-mono">Kontak & Alamat</h3>
             <ul className="mt-4 space-y-3 text-xs text-[#64748b] dark:text-slate-400 font-normal">
               <li className="flex items-start gap-2">
-                <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> halo@e-mawarist.id
+                <Mail className="mt-0.5 size-4 shrink-0 text-[#0b6245] dark:text-emerald-400" /> halo@e-mawarist.id
               </li>
               <li className="flex items-start gap-2">
-                <Phone className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> (0341) 555-1945
+                <Phone className="mt-0.5 size-4 shrink-0 text-[#0b6245] dark:text-emerald-400" /> (0341) 555-1945
               </li>
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-[#0b6245]" /> Jl. Veteran No. 8, Ketawanggede, Lowokwaru, Kota Malang, Jawa Timur 65145
+                <MapPin className="mt-0.5 size-4 shrink-0 text-[#0b6245] dark:text-emerald-400" /> Jl. Veteran No. 8, Ketawanggede, Lowokwaru, Kota Malang, Jawa Timur 65145
               </li>
             </ul>
           </div>

@@ -63,7 +63,7 @@ function KeluargaContent() {
   };
 
   return (
-    <div className="space-y-6 text-[#0f172a] font-sans">
+    <div className="space-y-6 text-[#0f172a] dark:text-slate-100 font-sans">
       <ConfirmModal 
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
@@ -73,10 +73,10 @@ function KeluargaContent() {
       />
 
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kelola Data Keluarga & Waris</h1>
-          <p className="text-slate-500 text-xs mt-1">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Kelola Data Keluarga & Waris</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
             {searchTerm 
               ? `Hasil pencarian untuk kata kunci "${searchTerm}"` 
               : "Manajemen data pewaris, silsilah keluarga, & laporan hasil kalkulasi."}
@@ -91,26 +91,26 @@ function KeluargaContent() {
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="w-full md:w-80 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 focus-within:ring-2 focus-within:ring-[#0b6245]/20 focus-within:border-[#0b6245] transition-all">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full md:w-80 flex items-center bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 focus-within:ring-2 focus-within:ring-[#0b6245]/20 focus-within:border-[#0b6245] dark:focus-within:border-emerald-500 transition-all">
           <Search className="size-4 text-slate-400 me-2.5 shrink-0" />
           <input 
             type="text" 
-            className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+            className="w-full bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
             placeholder="Cari nama keluarga atau NIK..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-1 bg-slate-50 p-1 border border-slate-200 rounded-xl w-full md:w-auto overflow-x-auto">
+        <div className="flex items-center gap-1 bg-slate-50 dark:bg-[#0f172a] p-1 border border-slate-200 dark:border-slate-700 rounded-xl w-full md:w-auto overflow-x-auto">
           {["Semua", "Islam", "Jawa", "Perdata"].map((h) => (
             <button
               key={h}
               className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all whitespace-nowrap cursor-pointer ${
                 hukumFilter === h 
                   ? "bg-[#0b6245] text-white shadow-xs font-semibold" 
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800"
               }`}
               onClick={() => setHukumFilter(h)}
             >
@@ -121,10 +121,10 @@ function KeluargaContent() {
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600">
-            <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[11px] tracking-wider">
+          <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px] tracking-wider">
               <tr>
                 <th className="px-5 py-4 whitespace-nowrap">Nama Pewaris</th>
                 <th className="px-5 py-4 whitespace-nowrap">NIK</th>
@@ -134,29 +134,29 @@ function KeluargaContent() {
                 <th className="px-5 py-4 text-right whitespace-nowrap">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-400 text-xs">
-                    <span className="inline-block size-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2"></span>
+                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500 dark:text-slate-400 text-xs">
+                    <span className="inline-block size-5 border-2 border-[#0b6245] dark:border-emerald-400 border-t-transparent rounded-full animate-spin me-2"></span>
                     Memuat data keluarga...
                   </td>
                 </tr>
               ) : families.length > 0 ? (
                 families.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                  <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="px-5 py-4 whitespace-nowrap">
-                      <strong className="text-slate-900 block font-semibold text-sm">{item.nama}</strong>
-                      <span className="text-slate-400 text-[11px]">Jenis Kelamin: {item.gender}</span>
+                      <strong className="text-slate-900 dark:text-white block font-semibold text-sm">{item.nama}</strong>
+                      <span className="text-slate-500 dark:text-slate-400 text-[11px]">Jenis Kelamin: {item.gender}</span>
                     </td>
-                    <td className="px-5 py-4 font-mono text-slate-500 whitespace-nowrap">{item.nik || "-"}</td>
+                    <td className="px-5 py-4 font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">{item.nik || "-"}</td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                         item.hukum === "Jawa" 
-                          ? "bg-amber-100 text-amber-800" 
+                          ? "bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300" 
                           : item.hukum === "Perdata" 
-                          ? "bg-blue-100 text-blue-800" 
-                          : "bg-emerald-100 text-emerald-800"
+                          ? "bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300" 
+                          : "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
                       }`}>
                         {item.hukum === "Jawa" ? "Adat Jawa" : item.hukum === "Perdata" ? "Perdata" : "Faraid Islam"}
                       </span>
@@ -164,26 +164,26 @@ function KeluargaContent() {
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
                         item.hasilWaris?.length > 0 
-                          ? "bg-blue-50 text-blue-700 border border-blue-200" 
-                          : "bg-slate-100 text-slate-600 border border-slate-200"
+                          ? "bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800" 
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                       }`}>
                         {item.hasilWaris?.length > 0 ? "Sudah Dihitung" : "Draft Input"}
                       </span>
                     </td>
-                    <td className="px-5 py-4 font-semibold text-[#0b6245] whitespace-nowrap">
+                    <td className="px-5 py-4 font-semibold text-[#0b6245] dark:text-emerald-400 whitespace-nowrap">
                       Rp {item.hartaKotor.toLocaleString('id-ID')}
                     </td>
                     <td className="px-5 py-4 text-right whitespace-nowrap">
                       <div className="inline-flex gap-2">
                         <Link 
                           href={`/admin/keluarga/${item.id}`} 
-                          className="size-8 rounded-lg bg-emerald-50 hover:bg-[#0b6245] text-[#0b6245] hover:text-white flex items-center justify-center transition-all no-underline shadow-2xs"
+                          className="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/15 hover:bg-[#0b6245] text-[#0b6245] dark:text-emerald-400 hover:text-white flex items-center justify-center transition-all no-underline shadow-2xs"
                           title="Lihat Detail"
                         >
                           <Eye className="size-4" />
                         </Link>
                         <button 
-                          className="size-8 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center transition-all border-0 cursor-pointer shadow-2xs"
+                          className="size-8 rounded-lg bg-rose-50 dark:bg-rose-500/15 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white flex items-center justify-center transition-all border-0 cursor-pointer shadow-2xs"
                           onClick={() => setDeleteId(item.id)}
                           title="Hapus"
                         >
@@ -197,12 +197,12 @@ function KeluargaContent() {
                 <tr>
                   <td colSpan={6} className="px-5 py-16 text-center">
                     <div className="max-w-sm mx-auto space-y-3">
-                      <div className="size-12 rounded-2xl bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
+                      <div className="size-12 rounded-2xl bg-rose-50 dark:bg-rose-500/15 text-rose-500 dark:text-rose-400 mx-auto flex items-center justify-center">
                         <FolderX className="size-6" />
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-slate-900">Data Tidak Ditemukan</h4>
-                        <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white">Data Tidak Ditemukan</h4>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed">
                           {searchTerm 
                             ? `Tidak ada data pewaris atau NIK yang sesuai dengan kata kunci "${searchTerm}".` 
                             : "Belum ada data keluarga yang tersimpan di sistem."}
@@ -212,7 +212,7 @@ function KeluargaContent() {
                         <button
                           type="button"
                           onClick={handleResetSearch}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all cursor-pointer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl transition-all cursor-pointer"
                         >
                           <RefreshCw className="size-3.5" /> Reset Pencarian
                         </button>
@@ -228,18 +228,18 @@ function KeluargaContent() {
 
       {/* Pagination */}
       {!loading && totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-slate-500 pt-2">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2">
           <span>Halaman {page} dari {totalPages}</span>
           <div className="flex gap-2">
             <button 
-              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1 cursor-pointer" 
+              className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-[#131b2b] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1 cursor-pointer" 
               disabled={page === 1}
               onClick={() => setPage(p => Math.max(1, p - 1))}
             >
               <ChevronLeft className="size-4" /> Sebelumnya
             </button>
             <button 
-              className="px-4 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1 cursor-pointer" 
+              className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-[#131b2b] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 font-medium transition-colors shadow-2xs flex items-center gap-1 cursor-pointer" 
               disabled={page === totalPages}
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             >
@@ -256,8 +256,8 @@ function KeluargaContent() {
 export default function KeluargaPage() {
   return (
     <Suspense fallback={
-      <div className="p-8 text-center text-xs text-slate-400">
-        <span className="inline-block size-5 border-2 border-[#0b6245] border-t-transparent rounded-full animate-spin me-2"></span>
+      <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
+        <span className="inline-block size-5 border-2 border-[#0b6245] dark:border-emerald-400 border-t-transparent rounded-full animate-spin me-2"></span>
         Memuat halaman...
       </div>
     }>

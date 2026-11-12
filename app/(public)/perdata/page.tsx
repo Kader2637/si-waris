@@ -113,17 +113,17 @@ export default function PerdataPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[oklch(0.985_0.004_247)] text-[oklch(0.21_0.03_258)] font-sans antialiased">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* PAGE HERO WITH EXACT WARIS-WISE STYLE */}
-      <section className="hero-aurora border-b border-[oklch(0.9_0.012_250)]">
+      <section className="hero-aurora border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
           <ScrollReveal className="max-w-3xl space-y-3">
-            <span className="inline-block rounded-full border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[oklch(0.4_0.093_158)]">
+            <span className="inline-block rounded-full border border-[#0b6245]/30 dark:border-emerald-500/30 bg-[#0b6245]/10 dark:bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#0b6245] dark:text-emerald-400">
               Hukum Perdata
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900">Perhitungan Waris KUHPerdata (BW)</h1>
-            <p className="text-lg leading-relaxed text-[oklch(0.53_0.03_255)]">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900 dark:text-white">Perhitungan Waris KUHPerdata (BW)</h1>
+            <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-300">
               Pewarisan ab intestato menurut Kitab Undang-Undang Hukum Perdata dengan sistem empat golongan ahli waris — golongan yang lebih tinggi menutup golongan berikutnya.
             </p>
           </ScrollReveal>
@@ -136,8 +136,8 @@ export default function PerdataPage() {
         <ScrollReveal>
           <AudioExplanation
             title="Sistem Pembagian Waris Hukum Perdata (BW KUHPerdata)"
-            badge="Voice Assistant Perdata"
-            text="Hukum Waris Perdata diatur dalam Kitab Undang-Undang Hukum Perdata atau BW. Sistem ini membagi ahli waris ke dalam empat golongan utama di mana golongan yang lebih tinggi menutup hak golongan di bawahnya, tanpa membedakan jatah bagian antara laki-laki dan perempuan."
+            badge="Panduan Audio Perdata"
+            text="Menurut Hukum Waris Perdata dalam KUHPerdata, ahli waris dibagi ke dalam empat golongan utama. Golongan yang lebih dekat dengan pewaris akan menutup hak golongan berikutnya. Di sini, seluruh ahli waris dalam golongan yang sama menerima bagian yang setara tanpa membedakan jenis kelamin."
           />
         </ScrollReveal>
 
@@ -145,21 +145,21 @@ export default function PerdataPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {GOLONGAN.map((g, idx) => (
             <ScrollReveal key={g.n} delay={idx * 80}>
-              <div className="lift rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 shadow-2xs h-full">
-                <span className="grid size-10 place-items-center rounded-xl bg-[oklch(0.4_0.093_158/0.1)] font-extrabold text-[oklch(0.4_0.093_158)] text-base">
+              <div className="lift rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131b2b] p-6 shadow-2xs h-full">
+                <span className="grid size-10 place-items-center rounded-xl bg-[#0b6245]/10 dark:bg-emerald-500/15 font-extrabold text-[#0b6245] dark:text-emerald-400 text-base">
                   {g.n}
                 </span>
-                <h3 className="mt-4 font-bold text-slate-900 text-base">{g.judul}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[oklch(0.53_0.03_255)]">{g.desc}</p>
+                <h3 className="mt-4 font-bold text-slate-900 dark:text-white text-base">{g.judul}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{g.desc}</p>
               </div>
             </ScrollReveal>
           ))}
         </div>
 
         {/* LEGITIEME PORTIE BANNER */}
-        <ScrollReveal className="rounded-3xl border border-[oklch(0.76_0.12_87/0.3)] bg-[oklch(0.76_0.12_87/0.1)] p-6 space-y-2">
-          <h3 className="font-bold text-base text-slate-900">Legitieme Portie (Bagian Mutlak)</h3>
-          <p className="text-sm leading-relaxed text-[oklch(0.53_0.03_255)]">
+        <ScrollReveal className="rounded-3xl border border-[#ca9a28]/30 dark:border-amber-500/30 bg-[#ca9a28]/10 dark:bg-amber-500/10 p-6 space-y-2">
+          <h3 className="font-bold text-base text-slate-900 dark:text-amber-300">Legitieme Portie (Bagian Mutlak)</h3>
+          <p className="text-sm leading-relaxed text-slate-700 dark:text-amber-100/80">
             Ahli waris garis lurus (legitimaris) memiliki bagian yang dijamin undang-undang dan tidak dapat
             dikurangi oleh hibah maupun wasiat: <strong>1/2</strong> dari bagian ab intestato bila hanya ada
             satu anak, <strong>2/3</strong> bila ada dua anak, dan <strong>3/4</strong> bila ada tiga anak atau
@@ -168,10 +168,10 @@ export default function PerdataPage() {
         </ScrollReveal>
 
         {/* WIZARD CONTAINER */}
-        <ScrollReveal className="rounded-3xl border border-[oklch(0.9_0.012_250)] bg-white p-6 sm:p-8 shadow-2xs space-y-8">
+        <ScrollReveal className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131b2b] p-6 sm:p-8 shadow-2xs space-y-8">
           
-          <div className="flex items-center justify-between border-b border-slate-100 pb-6">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+            <div className="flex flex-wrap items-center gap-2">
               {[
                 { idx: 0, label: "1. Data Harta" },
                 { idx: 1, label: "2. Ahli Waris" },
@@ -181,10 +181,10 @@ export default function PerdataPage() {
                   key={s.idx}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold ${
                     step === s.idx
-                      ? "bg-[oklch(0.4_0.093_158)] text-white"
+                      ? "bg-[#0b6245] text-white"
                       : step > s.idx
-                      ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]"
-                      : "bg-slate-100 text-slate-400"
+                      ? "bg-[#0b6245]/10 dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                   }`}
                 >
                   {s.label}
@@ -194,7 +194,7 @@ export default function PerdataPage() {
 
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer"
               onClick={() => {
                 setHartaTunai("");
                 setHutang("");
@@ -212,10 +212,10 @@ export default function PerdataPage() {
           {step === 0 && (
             <div className="space-y-6">
               <div>
-                <label className="text-xs font-medium text-slate-800 block mb-1.5">Nama Pewaris / Almarhum</label>
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200 block mb-1.5">Nama Pewaris / Almarhum</label>
                 <input
                   type="text"
-                  className="w-full h-11 rounded-xl border border-[oklch(0.9_0.012_250)] px-4 text-sm font-medium focus:ring-2 focus:ring-[oklch(0.4_0.093_158/0.2)] focus:border-[oklch(0.4_0.093_158)]"
+                  className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-medium focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500 outline-none"
                   placeholder="Contoh: Bpk. Herman"
                   value={namaPewaris}
                   onChange={(e) => setNamaPewaris(e.target.value)}
@@ -255,12 +255,12 @@ export default function PerdataPage() {
                   </label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-mono font-bold focus:ring-2 focus:ring-[#0b6245] dark:focus:ring-emerald-500 outline-none"
                     placeholder="Masukkan nominal tunai/kas"
                     value={hartaTunai ? Number(hartaTunai.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setHartaTunai(e.target.value)}
                   />
-                  <span className="text-[10px] text-slate-400 block mt-1">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-1">
                     Nominal tunai / uang kas tambahan yang belum ada di konversi
                   </span>
                 </div>
@@ -271,7 +271,7 @@ export default function PerdataPage() {
                   <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1.5">Hutang Pewaris (Rp)</label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] dark:focus:ring-emerald-500 outline-none"
                     placeholder="Rp 0"
                     value={hutang ? Number(hutang.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setHutang(e.target.value)}
@@ -282,7 +282,7 @@ export default function PerdataPage() {
                   <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1.5">Wasiat Pewaris (Rp)</label>
                   <input
                     type="text"
-                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 px-4 text-sm font-mono focus:ring-2 focus:ring-[#0b6245] dark:focus:ring-emerald-500 outline-none"
                     placeholder="Rp 0"
                     value={wasiat ? Number(wasiat.replace(/\D/g, "")).toLocaleString("id-ID") : ""}
                     onChange={(e) => setWasiat(e.target.value)}
@@ -292,11 +292,11 @@ export default function PerdataPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4 space-y-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Total Harta Kotor (Tirkah)</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">Total Harta Kotor (Tirkah)</p>
                   <p className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">
                     {formatIDR(hartaKotorVal)}
                   </p>
-                  <p className="text-[10px] text-slate-400">Konversi ({formatIDR(hartaKonversiVal)}) + Tunai ({formatIDR(hartaTunaiVal)})</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Konversi ({formatIDR(hartaKonversiVal)}) + Tunai ({formatIDR(hartaTunaiVal)})</p>
                 </div>
 
                 <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-1">
@@ -304,7 +304,7 @@ export default function PerdataPage() {
                   <p className="text-xl font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono">
                     {formatIDR(Math.max(0, hartaKotorVal - hutangVal - wasiatVal))}
                   </p>
-                  <p className="text-[10px] text-slate-500">Setelah dikurangi Hutang ({formatIDR(hutangVal)}) & Wasiat ({formatIDR(wasiatVal)})</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Setelah dikurangi Hutang ({formatIDR(hutangVal)}) & Wasiat ({formatIDR(wasiatVal)})</p>
                 </div>
               </div>
             </div>
@@ -314,28 +314,28 @@ export default function PerdataPage() {
           {step === 1 && (
             <div className="space-y-5">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-900">Pilih Ahli Waris</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Pilih Ahli Waris</h3>
                 <button
                   type="button"
                   onClick={addHeir}
-                  className="px-4 py-2 bg-[oklch(0.4_0.093_158)] hover:bg-[oklch(0.35_0.09_158)] text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer"
+                  className="px-4 py-2 bg-[#0b6245] hover:bg-[#084b34] text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer"
                 >
                   + Tambah Ahli Waris
                 </button>
               </div>
 
               {ahliWaris.length === 0 ? (
-                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
+                <div className="p-8 text-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl text-xs text-slate-400 dark:text-slate-500">
                   Belum ada ahli waris ditambahkan.
                 </div>
               ) : (
                 <div className="space-y-3">
                   {ahliWaris.map((h, i) => (
-                    <div key={i} className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-slate-200 bg-slate-50">
+                    <div key={i} className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
                       <div className="flex-1 min-w-[180px]">
                         <input
                           type="text"
-                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium"
+                          className="w-full h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 placeholder-slate-400 px-3 text-xs font-medium outline-none focus:border-[#0b6245]"
                           placeholder="Nama Ahli Waris (Opsional)"
                           value={h.nama}
                           onChange={(e) => updateHeir(i, "nama", e.target.value)}
@@ -355,7 +355,7 @@ export default function PerdataPage() {
                       <button
                         type="button"
                         onClick={() => removeHeir(i)}
-                        className="px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl border border-rose-200 cursor-pointer"
+                        className="px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl border border-rose-200 dark:border-rose-800/60 cursor-pointer"
                       >
                         Hapus
                       </button>
@@ -370,19 +370,19 @@ export default function PerdataPage() {
           {step === 2 && (
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="p-4 rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Dasar Hukum</p>
-                  <p className="text-lg font-extrabold text-slate-900 mt-1">KUHPerdata / BW (4 Golongan)</p>
+                <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60">
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Dasar Hukum</p>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white mt-1">KUHPerdata / BW (4 Golongan)</p>
                 </div>
-                <div className="p-4 rounded-2xl border border-[oklch(0.4_0.093_158/0.3)] bg-[oklch(0.4_0.093_158/0.1)]">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[oklch(0.53_0.03_255)]">Harta Bersih</p>
-                  <p className="text-lg font-extrabold text-[oklch(0.4_0.093_158)] font-mono mt-1">{formatIDR(hasil.hartaBersih)}</p>
+                <div className="p-4 rounded-2xl border border-[#0b6245]/30 dark:border-emerald-500/30 bg-[#0b6245]/10 dark:bg-emerald-500/15">
+                  <p className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Harta Bersih</p>
+                  <p className="text-lg font-extrabold text-[#0b6245] dark:text-emerald-400 font-mono mt-1">{formatIDR(hasil.hartaBersih)}</p>
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-[oklch(0.9_0.012_250)] bg-white shadow-2xs">
-                <table className="w-full text-left text-sm text-slate-600">
-                  <thead className="bg-slate-50 text-[oklch(0.53_0.03_255)] font-semibold uppercase text-xs border-b border-slate-200">
+              <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#131b2b] shadow-2xs">
+                <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                  <thead className="bg-slate-50 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-semibold uppercase text-xs border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="px-4 py-3">Ahli Waris</th>
                       <th className="px-4 py-3">Status</th>
@@ -390,20 +390,20 @@ export default function PerdataPage() {
                       <th className="px-4 py-3 text-right">Nominal Rupiah</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {hasil.ahliWarisGetted.map((b: any, i: number) => (
-                      <tr key={i} className="hover:bg-slate-50">
+                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="px-4 py-3.5">
-                          <strong className="text-slate-900 block font-semibold">{b.nama}</strong>
-                          <span className="text-xs text-[oklch(0.53_0.03_255)] block">{b.alasan}</span>
+                          <strong className="text-slate-900 dark:text-slate-100 block font-semibold">{b.nama}</strong>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 block">{b.alasan}</span>
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${b.status === "Mewarisi" ? "bg-[oklch(0.4_0.093_158/0.1)] text-[oklch(0.4_0.093_158)]" : "bg-amber-100 text-amber-800"}`}>
+                          <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${b.status === "Mewarisi" ? "bg-[#0b6245]/10 dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400" : "bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300"}`}>
                             {b.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 font-mono font-bold text-[oklch(0.4_0.093_158)]">{b.jatahPersen}</td>
-                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900">{formatIDR(b.jatahNominal)}</td>
+                        <td className="px-4 py-3.5 font-mono font-bold text-[#0b6245] dark:text-emerald-400">{b.jatahPersen}</td>
+                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-slate-100">{formatIDR(b.jatahNominal)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -413,7 +413,7 @@ export default function PerdataPage() {
               <button
                 type="button"
                 onClick={exportPDF}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[oklch(0.76_0.12_87)] hover:bg-[oklch(0.7_0.12_87)] text-slate-950 text-sm font-semibold rounded-full shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#ca9a28] hover:bg-[#a87e1c] text-white text-sm font-semibold rounded-full shadow-md transition-all cursor-pointer"
               >
                 <Download className="size-4" /> Unduh Laporan PDF
               </button>
@@ -421,12 +421,12 @@ export default function PerdataPage() {
           )}
 
           {/* ACTION NAVIGATION */}
-          <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+          <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               disabled={step === 0}
               onClick={() => setStep((s) => (s - 1) as any)}
-              className="px-4 py-2 text-xs font-semibold border border-slate-200 hover:bg-slate-100 rounded-lg disabled:opacity-40 flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg disabled:opacity-40 flex items-center gap-1.5 cursor-pointer"
             >
               <ArrowLeft className="size-4" /> Sebelumnya
             </button>

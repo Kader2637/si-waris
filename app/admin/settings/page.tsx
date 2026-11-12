@@ -137,7 +137,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6 text-[#0f172a] font-sans antialiased">
+    <div className="space-y-6 text-[#0f172a] dark:text-slate-100 font-sans antialiased">
       
       {/* Toast Notification */}
       {toastMessage && (
@@ -148,7 +148,7 @@ export default function SettingsPage() {
       )}
 
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100">Pengaturan Sistem Portal</h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
@@ -159,9 +159,9 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleExportBackup}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-[#0f172a] hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
           >
-            <Download className="size-4 text-slate-500" /> Export Backup
+            <Download className="size-4 text-slate-500 dark:text-slate-400" /> Export Backup
           </button>
         </div>
       </div>
@@ -197,10 +197,10 @@ export default function SettingsPage() {
       {activeTab === "overview" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
-          <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-4">
+          <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="size-10 bg-[#e6f4ee] dark:bg-[#0b6245]/20 text-[#0b6245] dark:text-emerald-400 rounded-xl flex items-center justify-center font-bold">
+                <div className="size-10 bg-[#e6f4ee] dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400 rounded-xl flex items-center justify-center font-bold">
                   <Shield className="size-5" />
                 </div>
                 <div>
@@ -220,10 +220,10 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-4">
+          <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="size-10 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-bold">
+                <div className="size-10 bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-bold">
                   <Database className="size-5" />
                 </div>
                 <div>
@@ -243,10 +243,10 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-4">
+          <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="size-10 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center font-bold">
+                <div className="size-10 bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center font-bold">
                   <Sliders className="size-5" />
                 </div>
                 <div>
@@ -271,9 +271,9 @@ export default function SettingsPage() {
 
       {/* TAB 2: PROFIL & KEAMANAN */}
       {activeTab === "security" && (
-        <form onSubmit={handleSaveSecurity} className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6 w-full">
+        <form onSubmit={handleSaveSecurity} className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6 w-full">
           <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-            <div className="size-10 bg-[#e6f4ee] dark:bg-[#0b6245]/20 text-[#0b6245] dark:text-emerald-400 rounded-xl flex items-center justify-center font-bold">
+            <div className="size-10 bg-[#e6f4ee] dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400 rounded-xl flex items-center justify-center font-bold">
               <Shield className="size-5" />
             </div>
             <div>
@@ -285,34 +285,34 @@ export default function SettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <User className="size-3.5 text-[#0b6245]" /> Nama Lengkap Admin
+                <User className="size-3.5 text-[#0b6245] dark:text-emerald-400" /> Nama Lengkap Admin
               </label>
               <input
                 type="text"
                 required
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Globe className="size-3.5 text-[#0b6245]" /> Email Administrator
+                <Globe className="size-3.5 text-[#0b6245] dark:text-emerald-400" /> Email Administrator
               </label>
               <input
                 type="email"
                 required
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div className="border-t border-slate-100 dark:border-slate-800 pt-5 space-y-4">
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Key className="size-4 text-[#ca9a28]" /> Ganti Kata Sandi (Opsional)
+              <Key className="size-4 text-[#ca9a28] dark:text-amber-400" /> Ganti Kata Sandi (Opsional)
             </h3>
 
             <div className="space-y-3">
@@ -323,7 +323,7 @@ export default function SettingsPage() {
                   placeholder="Masukkan kata sandi lama"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="mt-1 w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                  className="mt-1 w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
                 />
               </div>
 
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                     placeholder="Minimal 8 karakter"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="mt-1 w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                    className="mt-1 w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -345,7 +345,7 @@ export default function SettingsPage() {
                     placeholder="Ulangi kata sandi baru"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mt-1 w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                    className="mt-1 w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                 id="2fa"
                 checked={twoFactorEnabled}
                 onChange={(e) => setTwoFactorEnabled(e.target.checked)}
-                className="size-4 rounded text-[#0b6245] focus:ring-[#0b6245]"
+                className="size-4 rounded accent-[#0b6245] dark:accent-emerald-500 focus:ring-[#0b6245] dark:focus:ring-emerald-500 cursor-pointer"
               />
               <label htmlFor="2fa" className="text-xs text-slate-700 dark:text-slate-300 font-medium cursor-pointer">
                 Aktifkan Verifikasi Dua Langkah (2FA) saat login
@@ -377,10 +377,10 @@ export default function SettingsPage() {
 
       {/* TAB 3: DATABASE PRISMA & SISTEM */}
       {activeTab === "database" && (
-        <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6 w-full">
+        <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6 w-full">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
             <div className="flex items-center gap-3">
-              <div className="size-10 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-bold">
+              <div className="size-10 bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-bold">
                 <Database className="size-5" />
               </div>
               <div>
@@ -401,19 +401,19 @@ export default function SettingsPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 space-y-1">
+            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a] space-y-1">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">STATUS KONEKSI</span>
               <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold text-base">
                 <CheckCircle2 className="size-5 shrink-0" /> PostgreSQL Ready
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 space-y-1">
+            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a] space-y-1">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">PRISMA CLIENT VERSION</span>
               <p className="text-slate-900 dark:text-slate-100 font-extrabold text-base font-mono">v7.7.0</p>
             </div>
 
-            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 space-y-1">
+            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a] space-y-1">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">DB LATENCY</span>
               <p className="text-blue-600 dark:text-blue-400 font-extrabold text-base font-mono">{dbLatency ? `${dbLatency} ms` : "Checking..."}</p>
             </div>
@@ -422,15 +422,15 @@ export default function SettingsPage() {
           <div className="space-y-3 pt-2">
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Statistik Tabel Data</h3>
             <div className="divide-y divide-slate-100 dark:divide-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden text-xs">
-              <div className="p-3.5 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+              <div className="p-3.5 flex justify-between items-center bg-slate-50 dark:bg-[#0f172a]">
                 <span className="font-semibold text-slate-700 dark:text-slate-300">Pewaris Table (`Pewaris`)</span>
                 <span className="font-bold font-mono text-[#0b6245] dark:text-emerald-400">Active Record</span>
               </div>
-              <div className="p-3.5 flex justify-between items-center bg-white dark:bg-[#151c2c]">
+              <div className="p-3.5 flex justify-between items-center bg-white dark:bg-[#131b2b]">
                 <span className="font-semibold text-slate-700 dark:text-slate-300">Ahli Waris Table (`AhliWaris`)</span>
                 <span className="font-bold font-mono text-[#0b6245] dark:text-emerald-400">Active Record</span>
               </div>
-              <div className="p-3.5 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+              <div className="p-3.5 flex justify-between items-center bg-slate-50 dark:bg-[#0f172a]">
                 <span className="font-semibold text-slate-700 dark:text-slate-300">Hasil Perhitungan Table (`HasilPerhitungan`)</span>
                 <span className="font-bold font-mono text-[#0b6245] dark:text-emerald-400">Active Record</span>
               </div>
@@ -444,7 +444,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={handleExportBackup}
-              className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition-all cursor-pointer inline-flex items-center gap-2"
+              className="px-5 py-2.5 bg-slate-900 dark:bg-[#0f172a] hover:bg-slate-800 dark:hover:bg-slate-800 border border-transparent dark:border-slate-700 text-white text-xs font-semibold rounded-xl transition-all cursor-pointer inline-flex items-center gap-2"
             >
               <Download className="size-4" /> Download Backup JSON
             </button>
@@ -454,9 +454,9 @@ export default function SettingsPage() {
 
       {/* TAB 4: PREFERENSI PORTAL & GENERAL */}
       {activeTab === "general" && (
-        <form onSubmit={handleSaveGeneral} className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6 w-full">
+        <form onSubmit={handleSaveGeneral} className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6 w-full">
           <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-            <div className="size-10 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center font-bold">
+            <div className="size-10 bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center font-bold">
               <Sliders className="size-5" />
             </div>
             <div>
@@ -473,7 +473,7 @@ export default function SettingsPage() {
                 required
                 value={portalTitle}
                 onChange={(e) => setPortalTitle(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
               />
             </div>
 
@@ -520,7 +520,7 @@ export default function SettingsPage() {
                     id="marqueeCheck"
                     checked={marqueeEnabled}
                     onChange={(e) => setMarqueeEnabled(e.target.checked)}
-                    className="size-3.5 rounded text-[#0b6245]"
+                    className="size-3.5 rounded accent-[#0b6245] dark:accent-emerald-500 cursor-pointer"
                   />
                   <label htmlFor="marqueeCheck" className="text-xs text-slate-500 dark:text-slate-400 cursor-pointer">Tampilkan Marquee</label>
                 </div>
@@ -529,7 +529,7 @@ export default function SettingsPage() {
                 rows={2}
                 value={marqueeText}
                 onChange={(e) => setMarqueeText(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 dark:focus:ring-emerald-500/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
               />
             </div>
           </div>

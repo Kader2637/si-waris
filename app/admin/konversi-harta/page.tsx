@@ -352,17 +352,17 @@ export default function AdminKonversiHartaPage() {
   };
 
   return (
-    <div className="space-y-8 p-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* HEADER PAGE */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0b6245]/10 text-[#0b6245] dark:text-emerald-400 text-xs font-bold font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0b6245]/10 dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400 text-xs font-bold font-mono">
             ADMIN PORTAL — PENDATAAN KASUS & DATABASE HARTA
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
             Konversi & Input Database Harta Warisan
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Pendataan resmi aset warisan almarhum/ah berdasarkan Zonasi PU/ZNT & Penilaian PUPR untuk disimpan ke Database Arsip Sistem.
           </p>
         </div>
@@ -372,7 +372,7 @@ export default function AdminKonversiHartaPage() {
       {saveSuccess && (
         <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex items-center justify-between shadow-md animate-in fade-in">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-6 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="size-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <div>
               <div className="font-bold text-sm">Data Kasus Berhasil Disimpan ke Database!</div>
               <div className="text-xs">No. Berkas: {noBerkas} — Nama Pewaris: {namaPewaris} ({formatIDR(totalHartaKotor)})</div>
@@ -388,7 +388,7 @@ export default function AdminKonversiHartaPage() {
       )}
 
       {/* FORM METADATA PEWARIS (MUST BE ENTERED BY ADMIN) */}
-      <div className="glass rounded-3xl p-6 border border-slate-200 dark:border-slate-800 space-y-4 shadow-lg bg-white dark:bg-slate-900">
+      <div className="rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 space-y-4 shadow-2xs bg-white dark:bg-[#131b2b]">
         <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
           <User className="size-5 text-[#0b6245] dark:text-emerald-400" /> 1. Identitas Pewaris / Almarhum (Wajib untuk Database)
         </h2>
@@ -402,7 +402,7 @@ export default function AdminKonversiHartaPage() {
               value={namaPewaris}
               onChange={(e) => setNamaPewaris(e.target.value)}
               placeholder="Contoh: H. Ahmad Subardjo"
-              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-[#0b6245] outline-none"
+              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-[#0b6245] outline-none"
             />
           </div>
           <div>
@@ -414,7 +414,7 @@ export default function AdminKonversiHartaPage() {
               value={nikPewaris}
               onChange={(e) => setNikPewaris(e.target.value)}
               placeholder="Contoh: 3273123456780001"
-              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
+              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-mono focus:ring-2 focus:ring-[#0b6245] outline-none"
             />
           </div>
           <div>
@@ -425,7 +425,7 @@ export default function AdminKonversiHartaPage() {
               type="text"
               value={noBerkas}
               onChange={(e) => setNoBerkas(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold text-[#0b6245] dark:text-emerald-400 outline-none"
+              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-[#0f172a] border border-slate-300 dark:border-slate-700 font-mono font-bold text-[#0b6245] dark:text-emerald-400 outline-none"
             />
           </div>
           <div>
@@ -436,21 +436,21 @@ export default function AdminKonversiHartaPage() {
               type="date"
               value={tglMeninggal}
               onChange={(e) => setTglMeninggal(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-semibold outline-none"
+              className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-semibold outline-none"
             />
           </div>
         </div>
       </div>
 
       {/* FORM INPUT ASET WARISAN */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-7 space-y-6">
-          <div className="glass rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 space-y-6 shadow-xl bg-white dark:bg-slate-900">
+          <div className="rounded-2xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 space-y-6 shadow-2xs bg-white dark:bg-[#131b2b]">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
               <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <Plus className="size-5 text-[#0b6245] dark:text-emerald-400" /> 2. Rincian Aset Warisan (ZNT & PUPR)
               </h2>
-              <span className="text-xs text-[#0b6245] font-bold font-mono">Standar ZNT E-MAWARIST & PUPR</span>
+              <span className="text-xs text-[#0b6245] dark:text-emerald-400 font-bold font-mono">Standar ZNT E-MAWARIST & PUPR</span>
             </div>
 
             {/* KATEGORI TABS */}
@@ -472,7 +472,7 @@ export default function AdminKonversiHartaPage() {
                     className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                       isActive
                         ? "bg-[#0b6245] text-white border-[#0b6245] shadow-md scale-105"
-                        : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"
+                        : "bg-slate-50 dark:bg-[#0f172a] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
                     <Icon className="size-4 mb-1" />
@@ -494,7 +494,7 @@ export default function AdminKonversiHartaPage() {
                     value={formNama}
                     onChange={(e) => setFormNama(e.target.value)}
                     placeholder="Contoh: Tanah Sawah / Rumah Tinggal"
-                    className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-[#0b6245] outline-none"
                   />
                 </div>
                 <div>
@@ -506,7 +506,7 @@ export default function AdminKonversiHartaPage() {
                     value={formKet}
                     onChange={(e) => setFormKet(e.target.value)}
                     placeholder="Contoh: SHM No. 12345"
-                    className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-[#0b6245] outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-[#0b6245] outline-none"
                   />
                 </div>
               </div>
@@ -566,7 +566,7 @@ export default function AdminKonversiHartaPage() {
                         value={formLuasTanah}
                         onChange={(e) => setFormLuasTanah(e.target.value)}
                         placeholder="Contoh: 200"
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 outline-none"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 outline-none"
                       />
                     </div>
                     <div>
@@ -588,7 +588,7 @@ export default function AdminKonversiHartaPage() {
                         type="text"
                         value={formHargaTanahM2}
                         onChange={(e) => setFormHargaTanahM2(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold text-[#0b6245] dark:text-emerald-400 outline-none"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-[#0f172a] border border-slate-300 dark:border-slate-700 font-mono font-bold text-[#0b6245] dark:text-emerald-400 outline-none"
                       />
                     </div>
                   </div>
@@ -600,7 +600,7 @@ export default function AdminKonversiHartaPage() {
                         type="checkbox"
                         checked={formAdaBangunan}
                         onChange={(e) => setFormAdaBangunan(e.target.checked)}
-                        className="size-4 rounded text-[#0b6245] focus:ring-[#0b6245]"
+                        className="size-4 rounded accent-[#0b6245] dark:accent-emerald-500 focus:ring-[#0b6245] dark:focus:ring-emerald-500 cursor-pointer"
                       />
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                         Termasuk Bangunan / Rumah Di Atas Lahan
@@ -610,7 +610,7 @@ export default function AdminKonversiHartaPage() {
                     {formAdaBangunan && (
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                         <div>
-                          <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                             Luas Bangunan (m²)
                           </label>
                           <input
@@ -618,11 +618,11 @@ export default function AdminKonversiHartaPage() {
                             value={formLuasBangunan}
                             onChange={(e) => setFormLuasBangunan(e.target.value)}
                             placeholder="Contoh: 120"
-                            className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 outline-none"
+                            className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 outline-none"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                             Tipe Bangunan (PUPR)
                           </label>
                           <Select2
@@ -634,14 +634,14 @@ export default function AdminKonversiHartaPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                             Biaya Bangunan/m² (Rp)
                           </label>
                           <input
                             type="text"
                             value={formHargaBangunanM2}
                             onChange={(e) => setFormHargaBangunanM2(e.target.value)}
-                            className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono outline-none"
+                            className="w-full px-2.5 py-1.5 rounded-lg text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-mono outline-none"
                           />
                         </div>
                       </div>
@@ -663,7 +663,7 @@ export default function AdminKonversiHartaPage() {
                         value={formBeratEmas}
                         onChange={(e) => setFormBeratEmas(e.target.value)}
                         placeholder="Contoh: 50"
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 outline-none"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 outline-none"
                       />
                     </div>
                     <div>
@@ -674,7 +674,7 @@ export default function AdminKonversiHartaPage() {
                         type="text"
                         value={formHargaEmas}
                         onChange={(e) => setFormHargaEmas(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold text-yellow-600 outline-none"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-[#0f172a] border border-slate-300 dark:border-slate-700 font-mono font-bold text-yellow-600 dark:text-yellow-400 outline-none"
                       />
                     </div>
                   </div>
@@ -715,7 +715,7 @@ export default function AdminKonversiHartaPage() {
                         type="text"
                         value={formNominalKendaraan}
                         onChange={(e) => setFormNominalKendaraan(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold text-blue-600 outline-none"
+                        className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-[#0f172a] border border-slate-300 dark:border-slate-700 font-mono font-bold text-blue-600 dark:text-blue-400 outline-none"
                       />
                     </div>
                   </div>
@@ -734,7 +734,7 @@ export default function AdminKonversiHartaPage() {
                       value={formNominalKasUsaha}
                       onChange={(e) => setFormNominalKasUsaha(e.target.value)}
                       placeholder="Masukkan nominal tunai / saham"
-                      className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold text-emerald-600 outline-none"
+                      className="w-full px-3 py-2 rounded-xl text-xs bg-white dark:bg-[#0f172a] border border-slate-300 dark:border-slate-700 font-mono font-bold text-emerald-600 dark:text-emerald-400 outline-none"
                     />
                   </div>
                 </div>
@@ -753,7 +753,7 @@ export default function AdminKonversiHartaPage() {
 
         {/* SUMMARY & SAVE TO DATABASE CARD */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="glass rounded-3xl p-6 border border-[#0b6245]/30 bg-gradient-to-br from-white via-[#0b6245]/5 to-[#ca9a28]/10 dark:from-[#151c2c] space-y-6 shadow-xl">
+          <div className="rounded-2xl p-6 border border-[#0b6245]/30 dark:border-emerald-500/30 bg-gradient-to-br from-white via-[#0b6245]/5 to-[#ca9a28]/10 dark:from-[#131b2b] dark:via-[#131b2b] dark:to-[#0b6245]/20 space-y-6 shadow-sm">
             <div className="space-y-2 border-b border-slate-200 dark:border-slate-800 pb-4">
               <span className="text-[10px] font-bold tracking-widest text-[#0b6245] dark:text-emerald-400 uppercase font-mono">
                 TOTAL KASUS BERKAS {noBerkas}
@@ -771,25 +771,25 @@ export default function AdminKonversiHartaPage() {
               <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
                 <span>Rincian Item ({items.length} Aset)</span>
                 {items.length > 0 && (
-                  <button onClick={() => setItems([])} className="text-rose-500 hover:underline text-[11px]">
+                  <button onClick={() => setItems([])} className="text-rose-500 dark:text-rose-400 hover:underline text-[11px] cursor-pointer">
                     Reset All
                   </button>
                 )}
               </div>
 
               {items.length === 0 ? (
-                <div className="p-4 rounded-xl border border-dashed text-center text-xs text-slate-400">
+                <div className="p-4 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-center text-xs text-slate-500 dark:text-slate-400">
                   Belum ada aset terdaftar di kasus ini.
                 </div>
               ) : (
                 <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                   {items.map((it) => (
-                    <div key={it.id} className="p-3 rounded-xl bg-white dark:bg-slate-800 border text-xs flex justify-between items-center">
+                    <div key={it.id} className="p-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-xs flex justify-between items-center">
                       <div>
                         <div className="font-bold text-slate-900 dark:text-white">{it.namaItem}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">{formatIDR(it.subtotal)}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{formatIDR(it.subtotal)}</div>
                       </div>
-                      <button onClick={() => handleRemoveItem(it.id)} className="text-slate-400 hover:text-rose-500">
+                      <button onClick={() => handleRemoveItem(it.id)} className="text-slate-400 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 cursor-pointer">
                         <Trash2 className="size-4" />
                       </button>
                     </div>

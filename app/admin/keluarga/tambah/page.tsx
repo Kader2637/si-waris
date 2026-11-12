@@ -113,7 +113,7 @@ export default function TambahKeluargaPage() {
   };
 
   return (
-    <div className="space-y-6 text-[#0f172a] font-sans">
+    <div className="space-y-6 text-[#0f172a] dark:text-slate-100 font-sans">
       <ConfirmModal 
         isOpen={removeIndex !== null}
         onClose={() => setRemoveIndex(null)}
@@ -123,14 +123,14 @@ export default function TambahKeluargaPage() {
       />
 
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Form Tambah Kasus Waris Baru</h1>
-          <p className="text-slate-500 text-xs mt-1">Input identitas pewaris, parameter harta, dan silsilah keluarga.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Form Tambah Kasus Waris Baru</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Input identitas pewaris, parameter harta, dan silsilah keluarga.</p>
         </div>
         <Link 
           href="/admin/keluarga" 
-          className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all no-underline"
+          className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 transition-all no-underline"
         >
           <ArrowLeft className="size-4" /> Kembali ke Tabel
         </Link>
@@ -141,13 +141,13 @@ export default function TambahKeluargaPage() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Card 1: Identitas Pewaris */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <UserPlus className="size-5 text-[#0b6245]" /> Identitas Almarhum / Pewaris
+          <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
+              <UserPlus className="size-5 text-[#0b6245] dark:text-emerald-400" /> Identitas Almarhum / Pewaris
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-600">Sistem Hukum Pembagian</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Sistem Hukum Pembagian</label>
               <div className="grid grid-cols-3 gap-2">
                 {["Islam", "Jawa", "Perdata"].map((h) => (
                   <button
@@ -156,7 +156,7 @@ export default function TambahKeluargaPage() {
                     className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                       hukum === h
                         ? "bg-[#0b6245] text-white border-[#0b6245] shadow-xs"
-                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                        : "bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                     onClick={() => setHukum(h)}
                   >
@@ -167,9 +167,9 @@ export default function TambahKeluargaPage() {
             </div>
 
             {hukum === "Jawa" && (
-              <div className="p-4 bg-amber-50 rounded-xl border border-amber-200/80 space-y-3">
+              <div className="p-4 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200/80 dark:border-amber-800/60 space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-amber-900 block mb-1">Metode Adat Jawa</label>
+                  <label className="text-xs font-semibold text-amber-900 dark:text-amber-300 block mb-1">Metode Adat Jawa</label>
                   <Select2
                     options={METODE_ADAT_OPTIONS}
                     value={metodeAdat}
@@ -177,7 +177,7 @@ export default function TambahKeluargaPage() {
                     placeholder="Pilih Metode Adat..."
                   />
                 </div>
-                <label className="flex items-center gap-2 text-xs font-medium text-amber-900 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs font-medium text-amber-900 dark:text-amber-200 cursor-pointer">
                   <input 
                     type="checkbox" 
                     className="rounded text-[#0b6245]"
@@ -191,10 +191,10 @@ export default function TambahKeluargaPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600">Nama Lengkap Pewaris *</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Nama Lengkap Pewaris *</label>
                 <input 
                   type="text" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 focus:border-[#0b6245]"
+                  className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
                   placeholder="Nama almarhum..."
                   value={jenazah.nama}
                   onChange={(e) => setJenazah({...jenazah, nama: e.target.value})}
@@ -203,10 +203,10 @@ export default function TambahKeluargaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600">NIK (16 Digit)</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">NIK (16 Digit)</label>
                 <input 
                   type="text" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 focus:border-[#0b6245]"
+                  className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0b6245]/20 focus:border-[#0b6245] dark:focus:border-emerald-500"
                   placeholder="3171..."
                   value={jenazah.nik}
                   onChange={(e) => setJenazah({...jenazah, nik: e.target.value})}
@@ -214,7 +214,7 @@ export default function TambahKeluargaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600 block mb-1">Jenis Kelamin</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 block mb-1">Jenis Kelamin</label>
                 <Select2
                   options={GENDER_OPTIONS}
                   value={jenazah.gender}
@@ -224,10 +224,10 @@ export default function TambahKeluargaPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600">Tanggal Wafat</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Tanggal Wafat</label>
                 <input 
                   type="date" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-slate-100 focus:outline-none"
                   value={jenazah.tanggalWafat}
                   onChange={(e) => setJenazah({...jenazah, tanggalWafat: e.target.value})}
                 />
@@ -236,23 +236,23 @@ export default function TambahKeluargaPage() {
           </div>
 
           {/* Card 2: Ahli Waris Table */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+          <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-                <Users className="size-5 text-[#0b6245]" /> Silsilah Ahli Waris ({ahliWaris.length})
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
+                <Users className="size-5 text-[#0b6245] dark:text-emerald-400" /> Silsilah Ahli Waris ({ahliWaris.length})
               </div>
               <button 
                 type="button" 
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f4ee] text-[#0b6245] text-xs font-semibold rounded-xl hover:bg-[#0b6245] hover:text-white transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f4ee] dark:bg-emerald-500/15 text-[#0b6245] dark:text-emerald-400 text-xs font-semibold rounded-xl hover:bg-[#0b6245] hover:text-white transition-colors cursor-pointer"
                 onClick={handleAddAhliWaris}
               >
                 <Plus className="size-3.5" /> Tambah Anggota
               </button>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-100">
+            <div className="overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-semibold text-[11px]">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-semibold text-[11px]">
                   <tr>
                     <th className="px-3 py-3 text-center">No</th>
                     <th className="px-3 py-3">Nama Ahli Waris</th>
@@ -261,21 +261,21 @@ export default function TambahKeluargaPage() {
                     <th className="px-3 py-3 text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {ahliWaris.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                      <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                         Belum ada anggota keluarga. Klik Tambah Anggota.
                       </td>
                     </tr>
                   ) : (
                     ahliWaris.map((heir, idx) => (
                       <tr key={heir.id}>
-                        <td className="px-3 py-3 text-center font-mono font-semibold text-slate-400">{idx + 1}</td>
+                        <td className="px-3 py-3 text-center font-mono font-semibold text-slate-500 dark:text-slate-400">{idx + 1}</td>
                         <td className="px-3 py-3">
                           <input 
                             type="text" 
-                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                            className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                             placeholder="Nama..."
                             value={heir.nama}
                             onChange={(e) => updateAhliWaris(idx, "nama", e.target.value)}
@@ -301,7 +301,7 @@ export default function TambahKeluargaPage() {
                         <td className="px-3 py-3 text-center">
                           <button 
                             type="button" 
-                            className="size-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center transition-colors mx-auto cursor-pointer"
+                            className="size-7 rounded-lg bg-rose-50 dark:bg-rose-500/15 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white flex items-center justify-center transition-colors mx-auto cursor-pointer"
                             onClick={() => setRemoveIndex(idx)}
                           >
                             <Trash2 className="size-3.5" />
@@ -319,16 +319,16 @@ export default function TambahKeluargaPage() {
 
         {/* Right Sidebar Parameter Harta */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-              <Wallet className="size-5 text-[#0b6245]" /> Rincian Aset
+          <div className="bg-white dark:bg-[#131b2b] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
+              <Wallet className="size-5 text-[#0b6245] dark:text-emerald-400" /> Rincian Aset
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Total Harta Kotor (Rp)</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Total Harta Kotor (Rp)</label>
               <input 
                 type="text" 
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-[#0b6245] placeholder-slate-400 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-bold text-[#0b6245] dark:text-emerald-400 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                 placeholder="0"
                 value={harta}
                 onChange={(e) => setHarta(formatIDR(e.target.value))}
@@ -336,10 +336,10 @@ export default function TambahKeluargaPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Total Utang & Tajhiz (Rp)</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Total Utang & Tajhiz (Rp)</label>
               <input 
                 type="text" 
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                 placeholder="0"
                 value={utang}
                 onChange={(e) => setUtang(formatIDR(e.target.value))}
@@ -347,10 +347,10 @@ export default function TambahKeluargaPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Wasiat (Rp)</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Wasiat (Rp)</label>
               <input 
                 type="text" 
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                 placeholder="0"
                 value={wasiat}
                 onChange={(e) => setWasiat(formatIDR(e.target.value))}
