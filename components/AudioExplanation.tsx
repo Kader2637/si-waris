@@ -45,11 +45,20 @@ function scoreIndonesianVoice(voice: SpeechSynthesisVoice): number {
 function getIndonesianVoices(): SpeechSynthesisVoice[] {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return [];
   const voices = window.speechSynthesis.getVoices();
+  const seenKeys = new Set<string>();
+
   return voices
     .map((voice) => ({ voice, score: scoreIndonesianVoice(voice) }))
     .filter((entry) => entry.score >= 0)
     .sort((a, b) => b.score - a.score)
-    .map((entry) => entry.voice);
+    .map((entry) => entry.voice)
+    .filter((voice) => {
+      // Cegah duplikasi voiceURI dari macOS / Chromium speech engine
+      const key = `${voice.voiceURI}__${voice.name}`;
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    });
 }
 
 function normalizeTextForSpeech(raw: string): string[] {
@@ -258,8 +267,8 @@ export default function AudioExplanation({
             }}
             className="h-9 max-w-[170px] rounded-xl border border-emerald-200 dark:border-emerald-800/70 bg-white dark:bg-[#131b2b] px-2.5 text-[11px] font-medium text-slate-700 dark:text-slate-200 outline-none cursor-pointer"
           >
-            {voices.map((v) => (
-              <option key={v.voiceURI} value={v.voiceURI}>
+            {voices.map((v, idx) => (
+              <option key={`${v.voiceURI || v.name}-${idx}`} value={v.voiceURI}>
                 {v.name.replace(/Microsoft |Google /g, "").replace(/\s*\([^)]*\)/g, "")}
               </option>
             ))}
