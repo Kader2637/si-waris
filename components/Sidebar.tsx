@@ -57,7 +57,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
 
       {/* FIXED PINNED SIDEBAR (STAYS PINNED ON SCROLL) */}
       <aside
-        className={`w-64 min-w-64 bg-white dark:bg-[#0f1624] text-slate-700 dark:text-slate-300 border-r border-slate-200/80 dark:border-slate-800 flex flex-col shrink-0 h-screen sticky top-0 left-0 transition-all duration-300 z-50 overflow-y-auto ${
+        className={`print:hidden w-64 min-w-64 bg-white dark:bg-[#0f1624] text-slate-700 dark:text-slate-300 border-r border-slate-200/80 dark:border-slate-800 flex flex-col shrink-0 h-screen sticky top-0 left-0 transition-all duration-300 z-50 overflow-y-auto ${
           mobileOpen ? "fixed inset-y-0 left-0 shadow-2xl flex" : "hidden lg:flex"
         }`}
       >

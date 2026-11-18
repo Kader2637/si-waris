@@ -97,7 +97,7 @@ export default function AdminLayout({
       <div className="flex-1 flex flex-col min-w-0">
         
         {/* Top Header Navbar Fixed/Sticky Translucent Glass */}
-        <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0f1624]/85 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/80 px-4 md:px-8 h-16 flex items-center justify-between shadow-2xs transition-colors">
+        <header className="print:hidden sticky top-0 z-40 bg-white/80 dark:bg-[#0f1624]/85 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/80 px-4 md:px-8 h-16 flex items-center justify-between shadow-2xs transition-colors">
           
           <div className="flex items-center gap-4 relative">
             <button 
